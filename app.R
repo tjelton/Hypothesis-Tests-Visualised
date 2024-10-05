@@ -162,6 +162,8 @@ ui <- dashboardPage(
               ),
               
               
+              
+              
       )
     )
   )
@@ -174,6 +176,7 @@ server <- function(input, output, session) {
   
   ticket_numbers <- reactiveVal(NULL)
   invalid_tickets_string_bool <- reactiveVal(FALSE)
+  number_of_ticket_draws <- reactiveVal(25)
   
   # Process tickets text box strings.
   observeEvent(input$box_tickets_text_entry, {
@@ -207,6 +210,13 @@ server <- function(input, output, session) {
     }
   })
   
+  # Process number_of_draws value.
+  observeEvent(input$number_of_draws, {
+    if (!is.na(input$number_of_draws)) {
+      number_of_ticket_draws(input$number_of_draws)
+    }
+  })
+  
   output$tickets_text_error_message <- renderUI({
     if (invalid_tickets_string_bool()) {
       return(
@@ -234,7 +244,8 @@ server <- function(input, output, session) {
     tickets_string <- substring(tickets_string,2)
     
     # Get other elements for the box model
-    n = as.character(input$number_of_draws)
+    n = number_of_ticket_draws()
+    print(n)
     sample = "Sample Sum"
     if (input$box_sum_or_mean == 2) {
       sample = "Sample Mean"
@@ -266,10 +277,6 @@ server <- function(input, output, session) {
     # Create edge between box and circle.
     # Annotate edge with n value.
     diagram = paste(diagram, " edge [minlen = 2] box->sample [label = '  n = ", n, "', fontsize = 12, labeldistance = 5]}", sep = "")
-    
-    print(diagram)
-    
-    
     
     return (grViz(diagram))
   })
