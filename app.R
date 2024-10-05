@@ -200,8 +200,11 @@ server <- function(input, output, session) {
     # Convert the values to numbers.
     numeric_vec <- as.numeric(values)
     
-    # Any na's present means that some non-numbers were added.
+    # Set the tickets in the box to default (1,0,0,0) if NA's present, or the string is empty.
     if (any(is.na(numeric_vec))) {
+      invalid_tickets_string_bool(TRUE)
+      ticket_numbers(c(1,0,0,0))
+    } else if (length(numeric_vec) == 0) {
       invalid_tickets_string_bool(TRUE)
       ticket_numbers(c(1,0,0,0))
     } else {
@@ -245,7 +248,6 @@ server <- function(input, output, session) {
     
     # Get other elements for the box model
     n = number_of_ticket_draws()
-    print(n)
     sample = "Sample Sum"
     if (input$box_sum_or_mean == 2) {
       sample = "Sample Mean"
