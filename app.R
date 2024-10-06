@@ -7,6 +7,20 @@ library(DiagrammeR)
 
 options(shiny.autoreload = TRUE)
 
+# We assume that if mean_or_sample_as_int = 1 then we are talking about sum, and mean_or_sample_as_int = 2 is mean.
+simulate_box <- function(mean_or_sample_as_int, n, box) {
+  print("REACHED")
+  print(box)
+  value = sample(box, n, replace = TRUE)
+  print("REACHED")
+  if (mean_or_sample_as_int == 2) {
+    value = mean(value)
+  } else {
+    value = sum(value)
+  }
+  return(value)
+}
+
 ui <- dashboardPage(
   skin = "black",
   
@@ -78,7 +92,7 @@ ui <- dashboardPage(
                     to to model the sum or means of the draw using the normal curve. We start by specifying the box that we will be using
                     and then verifying that we are taking a sufficient number of draws for the central limit theorem to apply.<p>"),
               
-              # Setting up the box model.
+              ############ SECTION: Setting up the Box Model ############ 
               fluidRow(
                 column(7,
                        box(
@@ -153,6 +167,7 @@ ui <- dashboardPage(
                 # Box model output.
                 column(5,
                        box(
+                         solidHeader = TRUE,
                          width = "100%",
                          HTML("<center>"),
                          grVizOutput('box_model', width = "70%", height = "70%"),
@@ -160,6 +175,86 @@ ui <- dashboardPage(
                        )
                 )
               ),
+              
+              # Continue button (to display CLT section)
+              column(12,
+                     HTML("<center>"),
+                     actionButton("continue_CLT_section", "Continue", width = "200px", 
+                                  style="color: #fff; background-color: #337ab7; border-color: #2e6da4"),
+                     HTML("</center>")
+                
+              ),
+
+              HTML("<br><br>"),
+              
+              ############ SECTION: Checking Central Limit Theorem ############ 
+              fluidRow(
+                
+                # Only display this section if continue button is pressed.
+                conditionalPanel(
+                  condition = "typeof continue_CLT_section == \"undefined\"",
+                  
+                  column(5,
+                     box(
+                       title = HTML("<u><b>Central Limit Theorem</b></u>"),
+                       status = "primary",
+                       solidHeader = FALSE,
+                       width = "100%",
+                       uiOutput("CLT_text_instructions_output"),
+                       HTML("<br>"),
+                       fluidRow(
+                         column(1),
+                         
+                         # Button for repeating adding the mean or sample sum to the histogram.
+                         column(5,
+                                actionButton(
+                                  inputId = "repeat_1", label = HTML('<i class="fa fa-plus"></i> Repeat 1'),
+                                  class = "btn btn-primary", style="color: #fff;", width = "100%"
+                                ),
+                                HTML("<br><br>"),
+                                actionButton(
+                                  inputId = "repeat_25", label = HTML('<i class="fa fa-plus"></i> Repeat 25'),
+                                  class = "btn btn-primary", style="color: #fff;", width = "100%"
+                                ),
+                         ),
+                         column(5,
+                                actionButton(
+                                  inputId = "repeat_10", label = HTML('<i class="fa fa-plus"></i> Repeat 10'),
+                                  class = "btn btn-primary", style="color: #fff;", width = "100%"
+                                ),
+                                HTML("<br><br>"),
+                                actionButton(
+                                  inputId = "repeat_100", label = HTML('<i class="fa fa-plus"></i> Repeat 100'),
+                                  class = "btn btn-primary", style="color: #fff;", width = "100%"
+                                ),
+                         ),
+                       ),
+                       HTML("<br><center>"),
+                       
+                       # On click, resets the histogram
+                       actionButton(
+                         inputId = "reset_button", label = HTML('<i class="fa fa-redo"></i> Reset'),
+                         class = "btn btn-danger", style="color: #fff;"
+                       ),
+                       HTML("</center>")
+                     ),
+
+                  ),
+                  
+                  # Histogram Distribution
+                  column(7,
+                         box(
+                           solidHeader = TRUE,
+                           width = "100%",
+                           HTML("<center>"),
+                           plotOutput("histogram_frequencies"),
+                           HTML("</center>")
+                         )
+                  )
+                  
+                  
+                )
+              )
               
               
               
@@ -220,6 +315,7 @@ server <- function(input, output, session) {
     }
   })
   
+  # Error message for when the text box for entering the tickets for the box is invalid
   output$tickets_text_error_message <- renderUI({
     if (invalid_tickets_string_bool()) {
       return(
@@ -227,6 +323,21 @@ server <- function(input, output, session) {
              check what you entered. Setting contents of the box to 1,0,0,0.</p></span>")
       )
     }
+  })
+  
+  # Text instructions for the central limit theorem section
+  output$CLT_text_instructions_output <- renderUI({
+    sample = "sums"
+    if (input$box_sum_or_mean == 2) {
+      sample = "means"
+    }
+    
+    string = paste("<p>Recall that the central limit theorem tells us that if we take a <b>sufficiently large number of draws</b> 
+                   from the box, then the <b>sample ", sample, " will follow a normal distribution</b>.<br><br>Now we will empirically
+                   test whether n = ", number_of_ticket_draws(), " is a sufficient number of draws for the central limit theorem to
+                   apply.<br><br>To do this, ....")
+  
+    return(HTML(string))
   })
   
   output$box_model <- renderGrViz({
@@ -282,6 +393,54 @@ server <- function(input, output, session) {
     
     return (grViz(diagram))
   })
+  
+  ########## Process empirical sample sums and means ########## 
+  empirical_data <- reactiveVal(NULL)
+  
+  # Event: single draw.
+  observeEvent(input$repeat_1, {
+    print(simulate_box(input$box_sum_or_mean, number_of_ticket_draws(), ticket_numbers()))
+  })
+  
+  
+  
+  
+  # Histogram of mean and sum frequencies.
+  output$histogram_frequencies = renderPlot({
+    
+      title_string = "Empiricial Distribution of Sample Sums"
+      x_axis_string = "Sample Sum Value"
+      if (input$box_sum_or_mean == 2) {
+        title_string = "Empiricial Distribution of Sample Means"
+        x_axis_string = "Sample Mean Value"
+      }
+      
+      # Default empty plot for when no data has been simulated yet.
+      plot = ggplot() +
+        xlim(0, 10) +  # Set x-axis limits
+        ylim(0, 100) +
+        labs(x = x_axis_string, y = "Frequency", title = title_string) +
+        theme_minimal() +
+        theme(
+          panel.grid = element_blank(),
+          axis.line = element_line(color = "black")
+        )
+      
+      # If data has been generated, create a histogram
+      if (!is.null(empirical_data())) {
+        
+      }
+      
+      return(plot)
+  })
+  
+  ####################################################
+  ################# CONTINUE BUTTONS ################# 
+  ####################################################
+  # Delete the continue button once it has been pressed.
+  observeEvent(input$continue_CLT_section, {
+    removeUI(selector='#continue_CLT_section', immediate=TRUE)
+  }, autoDestroy=TRUE)
   
 }
 
