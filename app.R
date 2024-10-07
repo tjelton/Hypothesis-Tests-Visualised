@@ -233,7 +233,7 @@ ui <- dashboardPage(
                          inputId = "reset_button", label = HTML('<i class="fa fa-redo"></i> Reset'),
                          class = "btn btn-danger", style="color: #fff;"
                        ),
-                       HTML("</center>")
+                       HTML("</center><br>"),
                      ),
 
                   ),
@@ -243,15 +243,26 @@ ui <- dashboardPage(
                          box(
                            solidHeader = TRUE,
                            width = "100%",
+                           height = "80%",
                            HTML("<center>"),
                            plotOutput("histogram_frequencies"),
                            HTML("</center>")
-                         )
+                         ),
+                         box(
+                           solidHeader = TRUE,
+                           width = "100%",
+                           uiOutput("CLT_satisfied_text"),
+                         ),
                   )
                   
                   
-                )
-              )
+                ),
+                
+              ),
+              
+              HTML("<br>"),
+              
+              
               
               
               
@@ -320,21 +331,6 @@ server <- function(input, output, session) {
              check what you entered. Setting contents of the box to 1,0,0,0.</p></span>")
       )
     }
-  })
-  
-  # Text instructions for the central limit theorem section
-  output$CLT_text_instructions_output <- renderUI({
-    sample = "sums"
-    if (input$box_sum_or_mean == 2) {
-      sample = "means"
-    }
-    
-    string = paste("<p>Recall that the central limit theorem tells us that if we take a <b>sufficiently large number of draws</b> 
-                   from the box, then the <b>sample ", sample, " will follow a normal distribution</b>.<br><br>Now we will empirically
-                   test whether n = ", number_of_ticket_draws(), " is a sufficient number of draws for the central limit theorem to
-                   apply.<br><br>To do this, ....")
-  
-    return(HTML(string))
   })
   
   output$box_model <- renderGrViz({
@@ -431,10 +427,12 @@ server <- function(input, output, session) {
   # Histogram of mean and sum frequencies.
   output$histogram_frequencies = renderPlot({
     
-      title_string = "Empiricial Distribution of Sample Sums"
+      num_values = as.character(length(empirical_data())) 
+    
+      title_string = paste("Empiricial Distribution of Sample Sums (n = ", num_values, ")", sep = "")
       x_axis_string = "Sample Sum Value"
       if (input$box_sum_or_mean == 2) {
-        title_string = "Empiricial Distribution of Sample Means"
+        title_string = paste("Empiricial Distribution of Sample Means (n = ", num_values, ")", sep = "")
         x_axis_string = "Sample Mean Value"
       }
       
@@ -468,6 +466,37 @@ server <- function(input, output, session) {
       }
       
       return(plot)
+  })
+  
+  # Text instructions for the central limit theorem section
+  output$CLT_text_instructions_output <- renderUI({
+    sample = "sum"
+    if (input$box_sum_or_mean == 2) {
+      sample = "mean"
+    }
+    
+    string = paste("<p>Recall that the central limit theorem tells us that if we take a <b>sufficiently large number of draws</b> 
+                   from the box, then the <b>sample ", sample, "s will follow a normal distribution</b>.<br><br>Now we will empirically
+                   test whether n = ", number_of_ticket_draws(), " is a sufficient number of draws for the central limit theorem to
+                   apply.<br><br>To do this, press the button below to repeat the process of drawing from the box ", number_of_ticket_draws(),
+                   " and finding the ", sample, ". These will be added to the histogram. If we have taken enough draws from the box, then the 
+                   histogram should look normally distributed.", sep = "")
+    
+    return(HTML(string))
+  })
+  
+  # Text instructions for whether the CLT applies to this box model.
+  output$CLT_satisfied_text <- renderUI({
+    sample = "sum"
+    if (input$box_sum_or_mean == 2) {
+      sample = "mean"
+    }
+    
+    string = paste("<p>Does the data in the histogram above look normally distributed? Ensure that you have repeated the process of
+                   drawing from the box, and finding the sample ", sample, "many times. If it does not, scroll back above and update the
+                   number of draws in step 2. If it does, continue below!</p>")
+    
+    return(HTML(string))
   })
   
   ####################################################
