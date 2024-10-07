@@ -9,10 +9,7 @@ options(shiny.autoreload = TRUE)
 
 # We assume that if mean_or_sample_as_int = 1 then we are talking about sum, and mean_or_sample_as_int = 2 is mean.
 simulate_box <- function(mean_or_sample_as_int, n, box) {
-  print("REACHED")
-  print(box)
   value = sample(box, n, replace = TRUE)
-  print("REACHED")
   if (mean_or_sample_as_int == 2) {
     value = mean(value)
   } else {
@@ -342,6 +339,9 @@ server <- function(input, output, session) {
   
   output$box_model <- renderGrViz({
     
+    # If there has been a change to the input values (and hence this graph has been re-generated), reset the empirical data.
+    empirical_data(c())
+    
     # Place the tickets into a string.
     # If greater than 15 tickets, split tickets onto new line.
     tickets_string = ""
@@ -395,15 +395,38 @@ server <- function(input, output, session) {
   })
   
   ########## Process empirical sample sums and means ########## 
-  empirical_data <- reactiveVal(NULL)
+  empirical_data <- reactiveVal(c())
   
-  # Event: single draw.
+  # Event: 1 repeat.
   observeEvent(input$repeat_1, {
-    print(simulate_box(input$box_sum_or_mean, number_of_ticket_draws(), ticket_numbers()))
+    value = simulate_box(input$box_sum_or_mean, number_of_ticket_draws(), ticket_numbers())
+    empirical_data(c(empirical_data(), value))
   })
   
+  # Event: 10 repeats.
+  observeEvent(input$repeat_10, {
+    value = replicate(10, simulate_box(input$box_sum_or_mean, number_of_ticket_draws(), ticket_numbers()))
+    empirical_data(c(empirical_data(), value))
+  })
   
+  # Event: 25 repeats.
+  observeEvent(input$repeat_25, {
+    value = replicate(25, simulate_box(input$box_sum_or_mean, number_of_ticket_draws(), ticket_numbers()))
+    empirical_data(c(empirical_data(), value))
+  })
   
+  # Event: 100 repeats.
+  observeEvent(input$repeat_100, {
+    value = replicate(100, simulate_box(input$box_sum_or_mean, number_of_ticket_draws(), ticket_numbers()))
+    empirical_data(c(empirical_data(), value))
+  })
+  
+  # Event: reset histogram.
+  observeEvent(input$reset_button, {
+    empirical_data(c())
+  })
+  
+  ################################################################
   
   # Histogram of mean and sum frequencies.
   output$histogram_frequencies = renderPlot({
@@ -416,19 +439,32 @@ server <- function(input, output, session) {
       }
       
       # Default empty plot for when no data has been simulated yet.
-      plot = ggplot() +
-        xlim(0, 10) +  # Set x-axis limits
-        ylim(0, 100) +
-        labs(x = x_axis_string, y = "Frequency", title = title_string) +
-        theme_minimal() +
-        theme(
-          panel.grid = element_blank(),
-          axis.line = element_line(color = "black")
-        )
+      plot = ggplot()
       
       # If data has been generated, create a histogram
-      if (!is.null(empirical_data())) {
-        
+      if (length(empirical_data()) > 0) {
+        bins_to_include = length(table(empirical_data()))
+        plot = ggplot(data.frame(values = empirical_data()), aes(x = values)) +
+          geom_histogram(aes(y = after_stat(count / sum(count))), bins = bins_to_include) +
+          scale_y_continuous(labels = scales::percent) +
+          labs(x = x_axis_string, y = "Percentage Frequency", title = title_string) +
+          theme_minimal() +
+          theme(
+            panel.grid = element_blank(),
+            axis.line = element_line(color = "black")
+          )
+
+      # Default empty plot for when no data has been simulated yet.
+      } else {
+        plot = ggplot() +
+          xlim(0, 10) +  # Set x-axis limits
+          ylim(0, 100) +
+          labs(x = x_axis_string, y = "Percentage Frequency", title = title_string) +
+          theme_minimal() +
+          theme(
+            panel.grid = element_blank(),
+            axis.line = element_line(color = "black")
+          )
       }
       
       return(plot)
