@@ -555,11 +555,62 @@ server <- function(input, output, session) {
       sample = "mean"
     }
     
-    string = paste("<p>Now that we have confirmed that we are taking a sufficient number of draws for the sample ", sample, "'s to follow a
+    instructions = HTML(paste("<p>Now that we have confirmed that we are taking a sufficient number of draws for the sample ", sample, "s to follow a
                    normal distribution, we now want to specify this general normal curve. We will set the mean to
-                   be equal to the the sample ", sample, "'s expected value, and the standard deviation equal to its standard error.</p>")
+                   be equal to the the <b>sample ", sample, "'s</b> expected value, and the standard deviation equal to its standard error:</p>", sep = ""))
     
-    return(HTML(string))
+    # EV and SE text (changes based upon whether the sample sum or mean is being used).
+    expected_value = ""
+    standard_error = ""
+    EV = ""
+    SE = ""
+    
+    # Mean
+    if (input$box_sum_or_mean == 2) { 
+      EV = as.character(round(mean(ticket_numbers()), 5))
+      print(EV)
+      expected_value = withMathJax(
+        HTML("<p><b>Expected Value:</b></p>"),
+        HTML(paste("$$\\begin{align*} \\text{EV} &= \\mu \\\\ &=", round(mean(ticket_numbers()), 5), "\\\\ &= ", EV, "\\end{align*}$$", sep = ""))
+      )
+      
+      SE = as.character(round(popsd(ticket_numbers())/sqrt(number_of_ticket_draws()),5))
+      standard_error = withMathJax(
+        HTML("<p><b>Standard Error:</b></p>"),
+        HTML(paste("$$\\begin{align*} \\text{SE} &= \\frac{\\sigma}{\\sqrt{n}} \\\\ &= \\frac{", round(popsd(ticket_numbers()), 5) , "}{\\sqrt{", 
+                   as.character(number_of_ticket_draws()), "}}\\\\ &= ", SE, "\\end{align*}$$", sep = ""))
+      )
+      
+    # Sum
+    } else {
+      EV = as.character(round(number_of_ticket_draws() * mean(ticket_numbers())), 5)
+      expected_value = withMathJax(
+        HTML("<p><b>Expected Value:</b></p>"),
+        HTML(paste("$$\\begin{align*} \\text{EV} &= n \\times \\mu \\\\ &=", as.character(number_of_ticket_draws()), "\\times", round(mean(ticket_numbers()), 5),
+                   "\\\\ &= ", EV, "\\end{align*}$$", sep = ""))
+      )
+      
+      SE = as.character(round(sqrt(number_of_ticket_draws()) * popsd(ticket_numbers())),5)
+      standard_error = withMathJax(
+        HTML("<p><b>Standard Error:</b></p>"),
+        HTML(paste("$$\\begin{align*} \\text{SE} &= \\sqrt{n} \\times \\sigma \\\\ &= \\sqrt{", as.character(number_of_ticket_draws()), "} \\times", 
+                   round(popsd(ticket_numbers()), 5), "\\\\ &= ", SE, "\\end{align*}$$", sep = ""))
+      )
+    }
+    
+
+    normal_curve_text = HTML(paste("<p>Having found the expected value and standard error, we can model the distribution of the sample ", sample, "s using the
+                              following <b>general normal curve:</b></p>", sep = ""))
+   
+    noraml_curve = withMathJax(
+        paste("$$\\begin{align*} \\text{Sample Sum} &\\sim N(\\text{EV}, \\text{SE}^2) \\\\ &= N(", EV, ", ", SE, "^2) \\end{align*}$$", sep = "")
+    )
+  
+    return(
+      tagList(
+        instructions, expected_value, standard_error, normal_curve_text, noraml_curve
+      )
+    )
   })
   
   ####################################################
