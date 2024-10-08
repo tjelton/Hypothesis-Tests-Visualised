@@ -280,19 +280,26 @@ ui <- dashboardPage(
               
               HTML("<br><br>"),
               
-              ############ SECTION: Checking Central Limit Theorem ############ 
+              ############ SECTION: Modelling Using the Normal Curve ############ 
               fluidRow(
                 
                 # Only display this section if continue button is pressed.
                 conditionalPanel(
                   condition = "typeof modelling_using_normal_curve == \"undefined\"",
-                  column(6,
+                  column(5,
                          box(title = HTML("<u><b>Modelling Using a Normal Distribution</b></u>"),
                              status = "primary",
                              solidHeader = FALSE,
                              width = "100%",
                              uiOutput("normal_distribution_text")
                           )
+                  ),
+                  column(7,
+                         box(
+                             solidHeader = TRUE,
+                             width = "100%",
+                             plotOutput("normal_curve_model")
+                         )
                   )
                 )
               )
@@ -365,6 +372,42 @@ server <- function(input, output, session) {
     }
   })
   
+  ########## Process empirical sample sums and means ########## 
+  empirical_data <- reactiveVal(c())
+  
+  # Event: 1 repeat.
+  observeEvent(input$repeat_1, {
+    value = simulate_box(input$box_sum_or_mean, number_of_ticket_draws(), ticket_numbers())
+    empirical_data(c(empirical_data(), value))
+  })
+  
+  # Event: 10 repeats.
+  observeEvent(input$repeat_10, {
+    value = replicate(10, simulate_box(input$box_sum_or_mean, number_of_ticket_draws(), ticket_numbers()))
+    empirical_data(c(empirical_data(), value))
+  })
+  
+  # Event: 25 repeats.
+  observeEvent(input$repeat_25, {
+    value = replicate(25, simulate_box(input$box_sum_or_mean, number_of_ticket_draws(), ticket_numbers()))
+    empirical_data(c(empirical_data(), value))
+  })
+  
+  # Event: 100 repeats.
+  observeEvent(input$repeat_100, {
+    value = replicate(100, simulate_box(input$box_sum_or_mean, number_of_ticket_draws(), ticket_numbers()))
+    empirical_data(c(empirical_data(), value))
+  })
+  
+  # Event: reset histogram.
+  observeEvent(input$reset_button, {
+    empirical_data(c())
+  })
+  
+  ################################################################
+  
+  ############################ Plots ############################# 
+  
   output$box_model <- renderGrViz({
     
     # If there has been a change to the input values (and hence this graph has been re-generated), reset the empirical data.
@@ -422,40 +465,6 @@ server <- function(input, output, session) {
     return (grViz(diagram))
   })
   
-  ########## Process empirical sample sums and means ########## 
-  empirical_data <- reactiveVal(c())
-  
-  # Event: 1 repeat.
-  observeEvent(input$repeat_1, {
-    value = simulate_box(input$box_sum_or_mean, number_of_ticket_draws(), ticket_numbers())
-    empirical_data(c(empirical_data(), value))
-  })
-  
-  # Event: 10 repeats.
-  observeEvent(input$repeat_10, {
-    value = replicate(10, simulate_box(input$box_sum_or_mean, number_of_ticket_draws(), ticket_numbers()))
-    empirical_data(c(empirical_data(), value))
-  })
-  
-  # Event: 25 repeats.
-  observeEvent(input$repeat_25, {
-    value = replicate(25, simulate_box(input$box_sum_or_mean, number_of_ticket_draws(), ticket_numbers()))
-    empirical_data(c(empirical_data(), value))
-  })
-  
-  # Event: 100 repeats.
-  observeEvent(input$repeat_100, {
-    value = replicate(100, simulate_box(input$box_sum_or_mean, number_of_ticket_draws(), ticket_numbers()))
-    empirical_data(c(empirical_data(), value))
-  })
-  
-  # Event: reset histogram.
-  observeEvent(input$reset_button, {
-    empirical_data(c())
-  })
-  
-  ################################################################
-  
   # Histogram of mean and sum frequencies.
   output$histogram_frequencies = renderPlot({
     
@@ -475,7 +484,7 @@ server <- function(input, output, session) {
       if (length(empirical_data()) > 0) {
         bins_to_include = length(table(empirical_data()))
         plot = ggplot(data.frame(values = empirical_data()), aes(x = values)) +
-          geom_histogram(aes(y = after_stat(count / sum(count))), bins = bins_to_include) +
+          geom_histogram(aes(y = after_stat(count / sum(count))), bins = bins_to_include, fill = "lightgreen", color = "black") +
           scale_y_continuous(labels = scales::percent) +
           labs(x = x_axis_string, y = "Percentage Frequency", title = title_string) +
           theme_minimal() +
@@ -500,6 +509,45 @@ server <- function(input, output, session) {
       return(plot)
   })
   
+  # Histogram with normal curve to shown normal curve approximation.
+  output$normal_curve_model = renderPlot({
+    
+    x_axis_string = "Sample Sum Value"
+    title_string = "Empirical Distribution of 10000 Sample Sums with\nOverlaid Normal Curve"
+    if (input$box_sum_or_mean == 2) {
+      title_string = "Empirical Distribution of 10000 Sample Means with\nOverlaid Normal Curve"
+      x_axis_string = "Sample Mean Value"
+    }
+    
+    # Get 1000 samples for the histogram.
+    data = replicate(10000, simulate_box(input$box_sum_or_mean, number_of_ticket_draws(), ticket_numbers()))
+    data = data.frame(values = data)
+    
+    # Normal curve parameters.
+    EV = number_of_ticket_draws() * mean(ticket_numbers())
+    SE = sqrt(number_of_ticket_draws()) * popsd(ticket_numbers())
+    if (input$box_sum_or_mean == 2) { 
+      EV = mean(ticket_numbers())
+      SE = popsd(ticket_numbers())/sqrt(number_of_ticket_draws())
+    }
+
+    
+    bins_to_include = length(table(data))
+    plot = ggplot(data.frame(values = data), aes(x = values)) +
+      geom_histogram(aes(y = after_stat(density)), bins = bins_to_include, fill = "lightgreen", color = "black") + 
+      labs(x = x_axis_string, y = "Density", title = title_string) +
+      theme_minimal() +
+      theme(
+        panel.grid = element_blank(),
+        axis.line = element_line(color = "black")
+      ) +
+      stat_function(fun = dnorm, args = list(mean = EV, sd = SE), color = "red", size = 1)
+    
+    return(plot)
+  })
+  
+  
+  ################################################################
   
   # Text telling the user the boxes mean and popsd.
   output$box_statistics <- renderUI({
@@ -568,7 +616,6 @@ server <- function(input, output, session) {
     # Mean
     if (input$box_sum_or_mean == 2) { 
       EV = as.character(round(mean(ticket_numbers()), 5))
-      print(EV)
       expected_value = withMathJax(
         HTML("<p><b>Expected Value:</b></p>"),
         HTML(paste("$$\\begin{align*} \\text{EV} &= \\mu \\\\ &=", round(mean(ticket_numbers()), 5), "\\\\ &= ", EV, "\\end{align*}$$", sep = ""))
@@ -583,14 +630,14 @@ server <- function(input, output, session) {
       
     # Sum
     } else {
-      EV = as.character(round(number_of_ticket_draws() * mean(ticket_numbers())), 5)
+      EV = as.character(round(number_of_ticket_draws() * mean(ticket_numbers()), 5))
       expected_value = withMathJax(
         HTML("<p><b>Expected Value:</b></p>"),
         HTML(paste("$$\\begin{align*} \\text{EV} &= n \\times \\mu \\\\ &=", as.character(number_of_ticket_draws()), "\\times", round(mean(ticket_numbers()), 5),
                    "\\\\ &= ", EV, "\\end{align*}$$", sep = ""))
       )
       
-      SE = as.character(round(sqrt(number_of_ticket_draws()) * popsd(ticket_numbers())),5)
+      SE = as.character(round(sqrt(number_of_ticket_draws()) * popsd(ticket_numbers()),5))
       standard_error = withMathJax(
         HTML("<p><b>Standard Error:</b></p>"),
         HTML(paste("$$\\begin{align*} \\text{SE} &= \\sqrt{n} \\times \\sigma \\\\ &= \\sqrt{", as.character(number_of_ticket_draws()), "} \\times", 
