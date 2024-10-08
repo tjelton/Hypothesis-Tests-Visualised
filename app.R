@@ -3,6 +3,8 @@ source("Box-Model/template_srv.R")
 source("Box-Model/template_ui.R")
 
 library(DiagrammeR)
+library(rafalib)
+
 
 
 options(shiny.autoreload = TRUE)
@@ -161,14 +163,21 @@ ui <- dashboardPage(
                        )
                 ),
                 
-                # Box model output.
                 column(5,
+                       # Box model output.
                        box(
                          solidHeader = TRUE,
                          width = "100%",
                          HTML("<center>"),
                          grVizOutput('box_model', width = "70%", height = "70%"),
                          HTML("</center>")
+                       ),
+                       
+                       # Mean and SD of the box output.
+                       box(
+                         solidHeader = TRUE,
+                         width = "100%",
+                         uiOutput("box_statistics")
                        )
                 )
               ),
@@ -179,7 +188,6 @@ ui <- dashboardPage(
                      actionButton("continue_CLT_section", "Continue", width = "200px", 
                                   style="color: #fff; background-color: #337ab7; border-color: #2e6da4"),
                      HTML("</center>")
-                
               ),
 
               HTML("<br><br>"),
@@ -243,7 +251,6 @@ ui <- dashboardPage(
                          box(
                            solidHeader = TRUE,
                            width = "100%",
-                           height = "80%",
                            HTML("<center>"),
                            plotOutput("histogram_frequencies"),
                            HTML("</center>")
@@ -254,16 +261,41 @@ ui <- dashboardPage(
                            uiOutput("CLT_satisfied_text"),
                          ),
                   )
-                  
-                  
                 ),
-                
               ),
               
-              HTML("<br>"),
+              # Continue button (to display CLT section)
+              fluidRow(
+                conditionalPanel(
+                  condition = "typeof continue_CLT_section == \"undefined\"",
+                  column(12,
+                         HTML("<center>"),
+                         actionButton("modelling_using_normal_curve", "Continue", width = "200px", 
+                                      style="color: #fff; background-color: #337ab7; border-color: #2e6da4"),
+                         HTML("</center>")
+                  )
+                )
+              ),
               
               
+              HTML("<br><br>"),
               
+              ############ SECTION: Checking Central Limit Theorem ############ 
+              fluidRow(
+                
+                # Only display this section if continue button is pressed.
+                conditionalPanel(
+                  condition = "typeof modelling_using_normal_curve == \"undefined\"",
+                  column(6,
+                         box(title = HTML("<u><b>Modelling Using a Normal Distribution</b></u>"),
+                             status = "primary",
+                             solidHeader = FALSE,
+                             width = "100%",
+                             uiOutput("normal_distribution_text")
+                          )
+                  )
+                )
+              )
               
               
               
@@ -277,7 +309,7 @@ server <- function(input, output, session) {
   
   templateServer(id = "template")
   
-  ticket_numbers <- reactiveVal(NULL)
+  ticket_numbers <- reactiveVal(c(1,0,0,0))
   invalid_tickets_string_bool <- reactiveVal(FALSE)
   number_of_ticket_draws <- reactiveVal(25)
   
@@ -468,6 +500,23 @@ server <- function(input, output, session) {
       return(plot)
   })
   
+  
+  # Text telling the user the boxes mean and popsd.
+  output$box_statistics <- renderUI({
+    
+    mean_ = mean(ticket_numbers())
+    sd_ = popsd(ticket_numbers())
+    
+    mean_statment = HTML(paste("<p><b>Mean of the box:</b> $$ \\mu =  ", as.character(round(mean_, digits = 5)), "$$</p>", sep = ""))
+    sd_statment = HTML(paste("<p><b>Population SD of the box: </b> $$ \\sigma = ", as.character(round(sd_, digits = 5)), "$$</p>", sep = ""))
+    
+    return(tagList(
+      withMathJax(
+        mean_statment, sd_statment
+      )
+    ))
+  })
+
   # Text instructions for the central limit theorem section
   output$CLT_text_instructions_output <- renderUI({
     sample = "sum"
@@ -494,7 +543,21 @@ server <- function(input, output, session) {
     
     string = paste("<p>Does the data in the histogram above look normally distributed? Ensure that you have repeated the process of
                    drawing from the box, and finding the sample ", sample, "many times. If it does not, scroll back above and update the
-                   number of draws in step 2. If it does, continue below!</p>")
+                   number of draws in step 2. If it does, continue below!</p>", sep = "")
+    
+    return(HTML(string))
+  })
+  
+  # Text instructions for whether the CLT applies to this box model.
+  output$normal_distribution_text <- renderUI({
+    sample = "sum"
+    if (input$box_sum_or_mean == 2) {
+      sample = "mean"
+    }
+    
+    string = paste("<p>Now that we have confirmed that we are taking a sufficient number of draws for the sample ", sample, "'s to follow a
+                   normal distribution, we now want to specify this general normal curve. We will set the mean to
+                   be equal to the the sample ", sample, "'s expected value, and the standard deviation equal to its standard error.</p>")
     
     return(HTML(string))
   })
@@ -502,9 +565,13 @@ server <- function(input, output, session) {
   ####################################################
   ################# CONTINUE BUTTONS ################# 
   ####################################################
-  # Delete the continue button once it has been pressed.
+  # Delete the continue buttons once they have been pressed.
   observeEvent(input$continue_CLT_section, {
     removeUI(selector='#continue_CLT_section', immediate=TRUE)
+  }, autoDestroy=TRUE)
+  
+  observeEvent(input$modelling_using_normal_curve, {
+    removeUI(selector='#modelling_using_normal_curve', immediate=TRUE)
   }, autoDestroy=TRUE)
   
 }
