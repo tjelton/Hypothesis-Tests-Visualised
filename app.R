@@ -189,8 +189,6 @@ ui <- dashboardPage(
                                   style="color: #fff; background-color: #337ab7; border-color: #2e6da4"),
                      HTML("</center>")
               ),
-
-              HTML("<br><br>"),
               
               ############ SECTION: Checking Central Limit Theorem ############ 
               fluidRow(
@@ -198,7 +196,7 @@ ui <- dashboardPage(
                 # Only display this section if continue button is pressed.
                 conditionalPanel(
                   condition = "typeof continue_CLT_section == \"undefined\"",
-                  
+                  HTML("<br><br>"),
                   column(5,
                      box(
                        title = HTML("<u><b>Central Limit Theorem</b></u>"),
@@ -277,15 +275,13 @@ ui <- dashboardPage(
                 )
               ),
               
-              
-              HTML("<br><br>"),
-              
               ############ SECTION: Modelling Using the Normal Curve ############ 
               fluidRow(
                 
                 # Only display this section if continue button is pressed.
                 conditionalPanel(
                   condition = "typeof modelling_using_normal_curve == \"undefined\"",
+                  HTML("<br><br>"),
                   column(5,
                          box(title = HTML("<u><b>Modelling Using a Normal Distribution</b></u>"),
                              status = "primary",
@@ -302,10 +298,78 @@ ui <- dashboardPage(
                          )
                   )
                 )
-              )
+              ),
+              
+              # Continue button (to display probabilities section)
+              fluidRow(
+                conditionalPanel(
+                  condition = "typeof modelling_using_normal_curve == \"undefined\"",
+                  column(12,
+                         HTML("<center>"),
+                         actionButton("probabilities_normal_curve", "Continue", width = "200px", 
+                                      style="color: #fff; background-color: #337ab7; border-color: #2e6da4"),
+                         HTML("</center>")
+                  )
+                )
+              ),
               
               
-              
+              ############ SECTION: Finding Probabilites ############ 
+              fluidRow(
+                
+                # Only display this section if continue button is pressed.
+                conditionalPanel(
+                  condition = "typeof probabilities_normal_curve == \"undefined\"",
+                  HTML("<br><br>"),
+                  column(6,
+                         box(title = HTML("<u><b>Finding Probabilities</b></u>"),
+                             status = "primary",
+                             solidHeader = FALSE,
+                             width = "100%",
+                             uiOutput("finding_probabilities_text"),
+                             fluidRow(
+                               column(1),
+                               column(4,
+                                  HTML("<center><h5><b>Lower Boundary</b></h5></center>"),
+                                  checkboxInput("lower_boundary_infinity", HTML(paste("<p>", withMathJax("\\(-\\infty\\)"),"</p>")), FALSE),
+                                  conditionalPanel(
+                                    condition = "input.lower_boundary_infinity == false",
+                                    numericInput( 
+                                      "lower_boundary_numeric", 
+                                      label = NULL,
+                                      value = 0
+                                    ),
+                                  ),
+                               ),
+                               column(2),
+                               column(4,
+                                  HTML("<center><h5><b>Upper Boundary</b></h5></center>"),
+                                  checkboxInput("upper_boundary_infinity", HTML(paste("<p>", withMathJax("\\(\\infty\\)"),"</p>")), FALSE),
+                                  conditionalPanel(
+                                    condition = "input.upper_boundary_infinity == false",
+                                    numericInput( 
+                                      "upper_boundary_numeric", 
+                                      label = NULL,
+                                      value = 0
+                                    ),
+                                  ),
+                               ),
+                               column(1)
+                             ),
+                             uiOutput('interval_error_message')
+                         )
+                  ),
+                  column(6,
+                         box(
+                           solidHeader = TRUE,
+                           width = "100%",
+                           uiOutput("probability_answer_text"),
+                           plotOutput("shaded_normal_curve"),
+                         )
+                  )
+                )
+              ),
+
       )
     )
   )
@@ -483,6 +547,9 @@ server <- function(input, output, session) {
       # If data has been generated, create a histogram
       if (length(empirical_data()) > 0) {
         bins_to_include = length(table(empirical_data()))
+        if (bins_to_include > 20) {
+          bins_to_include = 20
+        }
         plot = ggplot(data.frame(values = empirical_data()), aes(x = values)) +
           geom_histogram(aes(y = after_stat(count / sum(count))), bins = bins_to_include, fill = "lightgreen", color = "black") +
           scale_y_continuous(labels = scales::percent) +
@@ -531,8 +598,11 @@ server <- function(input, output, session) {
       SE = popsd(ticket_numbers())/sqrt(number_of_ticket_draws())
     }
 
-    
     bins_to_include = length(table(data))
+    if (bins_to_include > 20) {
+      bins_to_include = 20
+    }
+    
     plot = ggplot(data.frame(values = data), aes(x = values)) +
       geom_histogram(aes(y = after_stat(density)), bins = bins_to_include, fill = "lightgreen", color = "black") + 
       labs(x = x_axis_string, y = "Density", title = title_string) +
@@ -544,6 +614,63 @@ server <- function(input, output, session) {
       stat_function(fun = dnorm, args = list(mean = EV, sd = SE), color = "red", size = 1)
     
     return(plot)
+  })
+  
+  # Histogram with normal curve to shown normal curve approximation.
+  output$shaded_normal_curve = renderPlot({
+    
+    # If the lower threshold is greater than the upper threshold, return early.
+    if (error_message_interval_flag()) {
+      return()
+    }
+    
+    EV_val = as.numeric(EV_string())
+    SE_val = as.numeric(SE_string())
+    lower_value = lower_boundary_num_store()
+    upper_value = upper_boundary_num_store()
+    
+    # Define the limits for shading
+    lower_xlimit_plot <- EV_val - SE_val * 4
+    upper_xlimit_plot <- EV_val + SE_val * 4
+    
+    # When we have infinity values, lower and upper_values set to NA. Set to the lower and upper xlimits.
+    if (is.na(lower_value)) {
+      lower_value = lower_xlimit_plot
+    }
+    if (is.na(upper_value)) {
+      upper_value = upper_xlimit_plot
+    }
+    
+    # Reset the upper and lower value when they exceed the xlimits.
+    if (upper_value > upper_xlimit_plot) {
+      upper_value = upper_xlimit_plot
+    } else if (lower_value < lower_xlimit_plot) {
+      lower_value = lower_xlimit_plot
+    }
+    
+    # Create a data frame for shading
+    shade_data <- data.frame(x = seq(lower_xlimit_plot, upper_xlimit_plot, length.out = 100))
+    
+    # Create the ggplot
+    ggplot(shade_data, aes(x)) +
+      # Plot the normal distribution curve
+      stat_function(fun = dnorm, args = list(mean = EV_val, sd = SE_val), color = "black", size = 1) +
+      # Shade the area between the lower and upper limits
+      geom_area(stat = "function", fun = dnorm, 
+                args = list(mean = EV_val, sd = SE_val), 
+                fill = "red", alpha = 0.5,
+                xlim = c(lower_value, upper_value)) +
+      theme_minimal() +
+      theme(
+        panel.grid = element_blank(),
+        axis.line = element_line(color = "black"),
+        axis.text.y = element_blank(),
+        axis.ticks.y = element_blank(),
+        axis.title.y = element_blank(),
+        axis.title.x = element_blank(),
+        axis.line.y = element_blank(),
+        panel.border = element_blank()
+      )
   })
   
   
@@ -582,6 +709,9 @@ server <- function(input, output, session) {
     return(HTML(string))
   })
   
+  EV_string <- reactiveVal("")
+  SE_string <- reactiveVal("")
+  
   # Text instructions for whether the CLT applies to this box model.
   output$CLT_satisfied_text <- renderUI({
     sample = "sum"
@@ -616,12 +746,14 @@ server <- function(input, output, session) {
     # Mean
     if (input$box_sum_or_mean == 2) { 
       EV = as.character(round(mean(ticket_numbers()), 5))
+      EV_string(EV)
       expected_value = withMathJax(
         HTML("<p><b>Expected Value:</b></p>"),
         HTML(paste("$$\\begin{align*} \\text{EV} &= \\mu \\\\ &=", round(mean(ticket_numbers()), 5), "\\\\ &= ", EV, "\\end{align*}$$", sep = ""))
       )
       
       SE = as.character(round(popsd(ticket_numbers())/sqrt(number_of_ticket_draws()),5))
+      SE_string(SE)
       standard_error = withMathJax(
         HTML("<p><b>Standard Error:</b></p>"),
         HTML(paste("$$\\begin{align*} \\text{SE} &= \\frac{\\sigma}{\\sqrt{n}} \\\\ &= \\frac{", round(popsd(ticket_numbers()), 5) , "}{\\sqrt{", 
@@ -631,6 +763,7 @@ server <- function(input, output, session) {
     # Sum
     } else {
       EV = as.character(round(number_of_ticket_draws() * mean(ticket_numbers()), 5))
+      EV_string(EV)
       expected_value = withMathJax(
         HTML("<p><b>Expected Value:</b></p>"),
         HTML(paste("$$\\begin{align*} \\text{EV} &= n \\times \\mu \\\\ &=", as.character(number_of_ticket_draws()), "\\times", round(mean(ticket_numbers()), 5),
@@ -638,6 +771,7 @@ server <- function(input, output, session) {
       )
       
       SE = as.character(round(sqrt(number_of_ticket_draws()) * popsd(ticket_numbers()),5))
+      SE_string(SE)
       standard_error = withMathJax(
         HTML("<p><b>Standard Error:</b></p>"),
         HTML(paste("$$\\begin{align*} \\text{SE} &= \\sqrt{n} \\times \\sigma \\\\ &= \\sqrt{", as.character(number_of_ticket_draws()), "} \\times", 
@@ -660,6 +794,106 @@ server <- function(input, output, session) {
     )
   })
   
+  # Text instructions for the finding probabilities section.
+  output$finding_probabilities_text <- renderUI({
+    
+    sample = "sum"
+    if (input$box_sum_or_mean == 2) {
+      sample = "mean"
+    }
+
+    instructions = paste("<p>Now that we are modelling the sample ", sample , "s using a normal curve with mean ", EV_string(), " and standard deviation ",
+                         SE_string(), " we can start to ask probability based questions like, <br>",
+                         "<ul>
+                            <li>What is the chance that we see a value greater than", withMathJax("\\(x\\)"), "?</li>",
+                            "<li>What is the chance that we see a value between", withMathJax("\\(y\\)"), " and ", withMathJax("\\(z\\)"), "?</li>",
+                           "</ul>",
+                         "Use the controls below to find the the probabilities that values lie within the ranges you set.</p>")
+    return(
+      tagList(
+        HTML(instructions)
+      )
+    ) 
+  })
+  
+  error_message_interval_flag <- reactiveVal(FALSE)
+  lower_boundary_num_store <- reactiveVal(NA)
+  upper_boundary_num_store <- reactiveVal(NA)
+  
+  # Probability for values within a range text.
+  output$probability_answer_text <- renderUI({
+    
+    lower_boundary_str = ""
+    lower_boundary_num = NA 
+    if (input$lower_boundary_infinity == TRUE || is.na(input$lower_boundary_numeric)) {
+      lower_boundary_str = "-\\infty"
+      lower_boundary_num_store(NA)
+    } else {
+      lower_boundary_str = as.character(input$lower_boundary_numeric)
+      lower_boundary_num = input$lower_boundary_numeric
+      lower_boundary_num_store(lower_boundary_num)
+    }
+    
+    upper_boundary_str = ""
+    upper_boundary_num = NA 
+    if (input$upper_boundary_infinity == TRUE || is.na(input$upper_boundary_numeric)) {
+      upper_boundary_str = "\\infty"
+      upper_boundary_num_store(NA)
+    } else {
+      upper_boundary_str = as.character(input$upper_boundary_numeric)
+      upper_boundary_num = input$upper_boundary_numeric
+      upper_boundary_num_store(upper_boundary_num)
+    }
+    
+    # Check that the lower boundary num is not higher than the upper boundary num.
+    if (!is.na(lower_boundary_num) && !is.na(upper_boundary_num)) {
+      if (lower_boundary_num > upper_boundary_num) {
+        error_message_interval_flag(TRUE)
+        return()
+      } else {
+        error_message_interval_flag(FALSE)
+      }
+    } else {
+      error_message_interval_flag(FALSE)
+    }
+    
+    # Find area between the lower and upper boundary.
+    area = 1
+    # This is the case where we are finding the area from -infty to +infty. This area is simply 1.
+    EV_num = as.numeric(EV_string())
+    SE_num = as.numeric(SE_string())
+    # [-inf, inf]
+    if (is.na(lower_boundary_num) && is.na(upper_boundary_num)) {
+      area = 1
+    # [-inf, x]
+    } else if (is.na(lower_boundary_num)) {
+      area = pnorm(upper_boundary_num, mean = EV_num, sd = SE_num, lower.tail = TRUE)
+    # [x, inf]
+    } else if (is.na(upper_boundary_num)) {
+      area = pnorm(lower_boundary_num, mean = EV_num, sd = SE_num, lower.tail = FALSE)
+    # [x, y]
+    } else {
+      area  = pnorm(upper_boundary_num, mean = EV_num, sd = SE_num) - pnorm(lower_boundary_num, mean = EV_num, sd = SE_num)
+    }
+    area = as.character(round(area, digits = 5))
+    
+    text = paste("<p>The probability that a value lies wthin the range \\([", lower_boundary_str, ",", upper_boundary_str, "]\\) is ", 
+                 area, ".</p>", sep = "")
+    
+    return(
+      tagList(
+        withMathJax(HTML(text))
+      )
+    )
+  })
+  
+  # Error message to display if the lower interval is greater than the upper interval.
+  output$interval_error_message <- renderUI({
+    if (error_message_interval_flag() == TRUE) {
+      return(HTML("<p style='color: red;'>ERROR: The lower interval cannot be greater than the upper interval.</p>"))
+    }
+  })
+ 
   ####################################################
   ################# CONTINUE BUTTONS ################# 
   ####################################################
@@ -670,6 +904,10 @@ server <- function(input, output, session) {
   
   observeEvent(input$modelling_using_normal_curve, {
     removeUI(selector='#modelling_using_normal_curve', immediate=TRUE)
+  }, autoDestroy=TRUE)
+  
+  observeEvent(input$probabilities_normal_curve, {
+    removeUI(selector='#probabilities_normal_curve', immediate=TRUE)
   }, autoDestroy=TRUE)
   
 }
