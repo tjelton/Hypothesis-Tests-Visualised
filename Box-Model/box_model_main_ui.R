@@ -153,8 +153,8 @@ boxModelMainUI <- function(id) {
       
       # Histogram Distribution
       column(7,
-             plotOutput(ns("histogram_frequencies"), width = "90.5%"),
-             HTML("<br><br><br>"),
+             plotOutput(ns("histogram_frequencies"), width = "80%", height = "300px"),
+             HTML("<br><br><br><br>"),
              box(
                solidHeader = TRUE,
                width = "100%",
@@ -177,7 +177,7 @@ boxModelMainUI <- function(id) {
               )
       ),
       column(7,
-             plotOutput(ns("normal_curve_model"), width = "90.5%"),
+             plotOutput(ns("normal_curve_model"), width = "80%"),
       )
     ),
     
@@ -229,7 +229,7 @@ boxModelMainUI <- function(id) {
              )
       ),
       column(6,
-             plotOutput(ns("shaded_normal_curve"), width = "90.5%", height = "250px"),
+             plotOutput(ns("shaded_normal_curve"), width = "80%", height = "250px"),
              HTML("<br><br>"),
              box(
                solidHeader = TRUE,
