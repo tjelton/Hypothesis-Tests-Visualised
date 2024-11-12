@@ -100,7 +100,7 @@ boxModelMainUI <- function(id) {
       )
     ),
     
-    HTML("<br><br>"),
+    HTML("<br><br><br>"),
     
     ############ SECTION: Checking Central Limit Theorem ############ 
     fluidRow(
@@ -153,13 +153,8 @@ boxModelMainUI <- function(id) {
       
       # Histogram Distribution
       column(7,
-             box(
-               solidHeader = TRUE,
-               width = "100%",
-               HTML("<center>"),
-               plotOutput(ns("histogram_frequencies")),
-               HTML("</center>")
-             ),
+             plotOutput(ns("histogram_frequencies"), width = "90.5%"),
+             HTML("<br><br><br>"),
              box(
                solidHeader = TRUE,
                width = "100%",
@@ -169,7 +164,7 @@ boxModelMainUI <- function(id) {
       
     ),
     
-    HTML("<br><br>"),
+    HTML("<br><br><br>"),
     
     ############ SECTION: Modelling Using the Normal Curve ############
     fluidRow(
@@ -182,19 +177,16 @@ boxModelMainUI <- function(id) {
               )
       ),
       column(7,
-             box(
-                 solidHeader = TRUE,
-                 width = "100%",
-                 plotOutput(ns("normal_curve_model"))
-             )
+             plotOutput(ns("normal_curve_model"), width = "90.5%"),
       )
     ),
+    
+    HTML("<br><br><br>"),
     
     # ############ SECTION: Finding Probabilities ############ 
     fluidRow(
       
       # Only display this section if continue button is pressed.
-      HTML("<br><br>"),
       column(6,
              box(title = HTML("<u><b>Finding Probabilities</b></u>"),
                  status = "primary",
@@ -227,7 +219,7 @@ boxModelMainUI <- function(id) {
                         numericInput(
                           ns("upper_boundary_numeric"),
                           label = NULL,
-                          value = 0
+                          value = 1
                         ),
                       ),
                    ),
@@ -237,12 +229,14 @@ boxModelMainUI <- function(id) {
              )
       ),
       column(6,
+             plotOutput(ns("shaded_normal_curve"), width = "90.5%", height = "250px"),
+             HTML("<br><br>"),
              box(
                solidHeader = TRUE,
                width = "100%",
-               uiOutput(ns("probability_answer_text")),
-               plotOutput(ns("shaded_normal_curve")),
-             )
+               uiOutput(ns("probability_answer_text"))
+             ),
+             
       )
 
     ),
