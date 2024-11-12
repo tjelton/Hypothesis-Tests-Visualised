@@ -2,11 +2,6 @@ source("libraries.R")
 source("Box-Model/box_model_main_srv.R")
 source("Box-Model/box_model_main_ui.R")
 
-library(DiagrammeR)
-library(rafalib)
-
-
-
 options(shiny.autoreload = TRUE)
 
 
@@ -29,9 +24,13 @@ ui <- dashboardPage(
     # Make the browser zoomed in.
     tags$style(HTML("
       body {
-        zoom: 1.1;
+        zoom: 1.25;
       }
     ")),
+    
+    # tags$head(
+    #   tags$meta(name = "viewport", content = "width=device-width, initial-scale=1.8")
+    # ),
     
     # Remove top margin of the dashboard body.
     tags$style(HTML("
