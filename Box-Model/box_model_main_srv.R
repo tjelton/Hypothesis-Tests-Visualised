@@ -259,6 +259,10 @@ boxModelMainServer <- function(id) {
         return()
       }
       
+      # Ensure reactive variables are defined
+      req(lower_boundary_num_store())
+      req(upper_boundary_num_store())
+      
       EV_val = as.numeric(EV_string())
       SE_val = as.numeric(SE_string())
       lower_value = lower_boundary_num_store()
