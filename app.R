@@ -46,14 +46,22 @@ ui <- dashboardPage(
       }
     "))),
     
+    # Make the modal wider.
+    tags$style(HTML("
+        .modal-dialog {
+          max-width: 1100px !important; /* Adjust this value for desired width */
+          width: 100% !important;       /* Adjust this value for desired width */
+        }
+      ")),
+    
     tabItems(
-      
+
       # Home page.
       tabItem(tabName = "home",
               HTML("<h1>Home</h1><br>"),
               HTML("<p><b>Welcome! To get started, click on \"≡\" to navigate to your page of interest!</b></p>"),
               HTML("<p>More coming to the home page and this application soon...</p>"),
-              
+
       ),
       
       # Box plot playground page.
@@ -68,6 +76,7 @@ ui <- dashboardPage(
 server <- function(input, output, session) {
   
   boxModelMainServer(id = "box_model")
+  
   
 }
 

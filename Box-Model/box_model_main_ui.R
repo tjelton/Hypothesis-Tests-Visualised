@@ -1,13 +1,25 @@
+library(shinyBS)
 boxModelMainUI <- function(id) {
   ns <- NS(id)
   tagList(
-    
+
     ############ TITLE ############ 
-    HTML("<h1>Box Model: Playground</h1><br>"),
-    HTML("<p style='padding-bottom: 25px;'>Welcome to the box model playground! This page was designed as a way to visualise
-                    the box model, and see how if sufficient number of draws are taken from the box, the central limit theorem allows us
-                    to to model the sum or means of the draw using the normal curve. We start by specifying the box that we will be using
-                    and then verifying that we are taking a sufficient number of draws for the central limit theorem to apply.<p>"),
+    fluidRow(
+      column(8,
+             HTML("<h1>Box Model: Playground</h1><br>"),
+      ),
+      column(4,
+             HTML("<br>"),
+             tags$style(HTML(paste0("
+                [id='", ns("learning_text"), "'] {
+                  font-size: 20px; /* Adjust the font size as needed */
+                  padding: 10px 20px; /* Optional: adjust padding for a larger button */
+                }
+             "))),
+             actionButton(ns("learning_text"), "What is the box model?", class = "btn btn-primary", style="color: #fff;", width = "100%")
+      ),
+    ),
+    HTML("<br>"),
     
     ############ SECTION: Setting up the Box Model ############ 
     fluidRow(

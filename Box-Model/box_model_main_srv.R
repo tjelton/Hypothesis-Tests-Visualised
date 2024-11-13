@@ -310,8 +310,6 @@ boxModelMainServer <- function(id) {
         )
     })
     
-    
-    
     ################################################################
     
     # Text telling the user the boxes mean and popsd.
@@ -531,7 +529,140 @@ boxModelMainServer <- function(id) {
         return(HTML("<p style='color: red;'>ERROR: The lower interval cannot be greater than the upper interval.</p>"))
       }
     })
-  
+    
+    ############################ Modal Intro ############################# 
+    
+    
+    observeEvent(input$learning_text, {
+      showModal(modalDialog(
+        title = "The 'Box Model'",
+        
+        HTML("<p>
+            Let’s say that you flip a fair coin 50 times. You would expect to get 25 heads and 25 tails. But what if when you did this experiment, 
+            you actually found out that you got 27 heads and 23 tails? Would this be considered unusual?<br><br>
+            
+            The box model can help us investigate questions like this. But first, what is the box model?<br><br>
+            
+            
+      </p>"),
+        fluidRow(
+          column(8,
+                 HTML("<p>
+               <h5><u>What is the 'box model'?</u></h5><br>
+            
+                The box model is a construct used in statistics to help understand chance processes. As the name suggests, the main feature of the model
+                is the box component. Inside this box, we place tickets, which represent the possible outcomes that could occur from a single event.<br><br>
+                
+                In the case of flipping a coin, the possible outcomes are “head” or “tail.” Because of this, inside the box, we would place two tickets, 
+                one with the word “head” and the other with the word “tail.” Below the box is a flow line connected to an oval. Next to the flow line, we 
+                indicate the number of draws we are taking from the box (with replacement). In our example, we are flipping the coin 50 times, so we write 
+                n = 50. The oval represents the sample. For our example, we can think of this as a store of how many tails and heads we observed when drawing 
+                from the box.<br><br>
+          </p>")
+          ),
+          column(4,
+                 HTML("<br>"),
+                 grVizOutput(ns("example_coin_flip_1"), width = "80%", height = "80%"),
+          )
+        ),
+        fluidRow(
+          
+          column(8,
+                 HTML("<p>
+               <h5><u>Representing the Sample – Sum or Mean</u></h5><br>
+            
+                  For our coin-flipping example, let’s imagine that we flipped the coin 50 times. Using our box model analogy, this means that we randomly 
+                  went to the box, picked out a ticket, recorded the value of the ticket, replaced the ticket back into the box, and repeated this process 
+                  another 49 times.<br><br>
+                  
+                  Let’s consider that at the end of doing this, we had 27 “head”s and 23 “tail”s. Under the box model, this represents our sample, which 
+                  we represent by the oval.An issue that we will run into is that the words “head” and “tail” are not numbers. Ideally, we would like to 
+                  summarise our sample using a <b>single number</b>, without having to specify the number of heads and tails individually.<br><br>
+                  
+                  Because of this, let’s instead change the tickets of our box to the numbers “1” and “0”. We can say that the number “1” represents drawing
+                  a head, and the number “0” represents drawing a tail. Under the same example as before, this means that we drew 27 x “1” tickets and 23 x “0”
+                  tickets. Now that the tickets are numeric, we can <b>model the sample</b> using the <b>sum</b> or the <b>mean</b>:
+                  
+                  <ul>
+                    <li>Sum: 27 x 1 tickets + 23 x 0 tickets = 27 + 0 = 27</li>
+                    <li>Mean: (27 x 1 tickets + 23 x 0 tickets)/50 = (27 + 0)/50 = 0.54</li>
+                  </ul>
+                  
+                  In practice, it doesn’t matter whether we model the sample using the sum or mean, as long as we are consistent throughout. For the rest of 
+                  the discussion here about this coin-flipping example, we will assume that we are modelling the sample using the sum.<br><br>
+                </p>")
+          ),
+          column(4,
+                 HTML("<br><br><br><br><br><br>"),
+                 grVizOutput(ns("example_coin_flip_2"), width = "80%", height = "80%"),
+          ),
+        ),
+        HTML("<p>
+            <h5><u>Modelling Using a Normal Distribution</u></h5><br>
+            
+            The central limit theorem tells us that if we take a sufficiently large number of draws from a box, then the sample sums (or means) will
+            follow a normal distribution. The key word here is “sufficiently larger”. This means that our number of draws (n) must be a relatively high
+            number.<br><br>
+            
+            How high? This depends on the tickets in the box, with emphasis placed on how symmetric they are. Some textbooks will say that if you have 
+            greater than 35 draws, then the central limit theorem will hold, but this is not always the case. One way that we can empirically verify 
+            whether the central limit theorem holds or not is to simulate taking many samples from the box.<br><br>
+            
+            For the coin-flipping example, this means that we do the process of drawing 50 times from the box and calculating the sample sum many, many
+            times. As we are taking a sufficient number of draws in this example, you would see that the histograms of the sample sums will look normally 
+            distributed. You will have an opportunity to do that in this app (for this box model, or another of your choosing), and to see whether the 
+            histogram of the sample sums looks normally distributed or not.<br><br>
+            
+            If the distribution appears to be normally distributed, then we can model the sample sums (or means) using a normal distribution. To do this, 
+            we will calculate the expected value (EV) and standard error (SE) which both depend on whether we are modelling using the sample sum or mean, 
+            as well as the number of draws and the contents of the box.<br><br>
+            
+            The normal curve will be defined to have a mean equal to EV, and a standard deviation equal to SE. Using these values, you can start to ask
+            probability-style questions. Under our coin-flipping example, we could ask - what is the probability of observing a sample sum of 30 or greater
+            (that is, seeing 30 or more heads from 50 flips)?<br><br><br>
+            
+            <i>Now it’s your turn to experiment with the app below. This was a very brief introduction, but hopefully, by playing and experimenting below, 
+            you’ll gain a deeper conceptual understanding of the box model.</i>
+      </p>"),
+        easyClose = TRUE,
+        footer = modalButton("Close"),
+      ))
+    })
+    
+    output$example_coin_flip_1 <- renderGrViz({
+      string = "digraph diagram {
+        graph [layout = dot, rankdir = TB]
+      
+        node [shape = box, style = filled, fillcolor = \"#bdfeff\", fontsize = 12, width = 2.5]
+        box [label = 'Head, Tail']
+      
+        node [shape = oval,width = 1.5,fillcolor = \"#f9ffbd\", fontsize = 12]
+        sample [label = 'Sample']
+      
+        edge [minlen = 2]
+          box->sample [label = '  n = 50', fontsize = 12, labeldistance = 5]
+        }"
+      return(grViz(string))
+    })
+    
+    output$example_coin_flip_2 <- renderGrViz({
+      string = "digraph diagram {
+        graph [layout = dot, rankdir = TB]
+      
+        node [shape = box, style = filled, fillcolor = \"#bdfeff\", fontsize = 12, width = 2.5]
+        box [label = '1, 0']
+      
+        node [shape = oval,width = 1.5,fillcolor = \"#f9ffbd\", fontsize = 12]
+        sample [label = 'Sample Sum']
+      
+        edge [minlen = 2]
+          box->sample [label = '  n = 50', fontsize = 12, labeldistance = 5]
+        }"
+      return(grViz(string))
+    })
+    
+    ################################################################
+
   })
     
 }
