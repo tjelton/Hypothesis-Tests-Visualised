@@ -102,6 +102,8 @@ ui <- dashboardPage(
                            width = "100%",
                            solidHeader = FALSE,
                            
+                           p("We start by using the box model to represent our null hypothesis."),
+                           
                            # Step 1: Specify NULL Hypothesis
                            box(
                              title = "Step 1) Specify NULL Hypotheis (Box Tickets)",
@@ -203,6 +205,35 @@ ui <- dashboardPage(
                 )
               ),
               
+              HTML("<br><br><br>"),
+              
+              ############ SECTION: The Alternate Hypothesis ############ 
+              fluidRow(
+                column(6,
+                       box(
+                         title = HTML("<u><b>The Alternate Hypothesis</b></u>"),
+                         status = "primary", 
+                         width = "100%",
+                         solidHeader = FALSE,
+                         HTML("<p>Specify what type of alternate hypothesis you will be using below:</p>"),
+                         HTML("<br>"),
+                         radioButtons( 
+                           inputId = "alternate_hypothesis_choice", 
+                           label = NULL, 
+                           choices = list( 
+                             "Two Sided" = 1, 
+                             "One Sided (greater than)" = 2, 
+                             "One Sided (less than)" = 3 
+                           ) 
+                         ),
+                         HTML("<br>"),
+                         uiOutput('alternate_hypothesis_output')
+                       )
+                )
+              )
+              
+              
+              
       )
     )
   )
@@ -267,8 +298,7 @@ server <- function(input, output, session) {
     gcd_value = gcd(prop_temp, 100 - prop_temp)
     proportion_of_1s = prop_temp / gcd_value
     proportion_of_0s = (100 - prop_temp) / gcd_value
-    print(c(proportion_of_1s, proportion_of_0s))
-    
+
     is_float_1s = is.numeric(proportion_of_1s) && floor(proportion_of_1s) != proportion_of_1s
     is_float_0s = is.numeric(proportion_of_0s) && floor(proportion_of_0s) != proportion_of_0s
     
@@ -325,6 +355,31 @@ server <- function(input, output, session) {
   })
   
   
+  null_prop
+  
+  # Alternate hypothesis (rendered) output.
+  output$alternate_hypothesis_output <- renderUI({
+    
+    
+    hypothesis = paste("<p style='font-size: 16px;'>\\( H_1: \\) \\( p", "=", as.character(null_prop()), "\\)</p>")
+    if (input$alternate_hypothesis_choice == 2) {
+      hypothesis = paste("<p style='font-size: 16px;'>\\( H_1: \\) \\( p", ">", as.character(null_prop()), "\\)</p>")
+    } else if (input$alternate_hypothesis_choice == 3) {
+      hypothesis = paste("<p style='font-size: 16px;'>\\( H_1: \\) \\( p", "<", as.character(null_prop()), "\\)</p>")
+      
+    }
+    return (
+      tagList(
+        HTML("<center>"),
+        withMathJax(HTML(hypothesis)),
+        HTML("</center>")
+      )
+    )
+  })
+  
+  
+  
+ 
 }
 
 # Run the application
