@@ -6,7 +6,7 @@ boxModelMainUI <- function(id) {
     ############ TITLE ############ 
     fluidRow(
       column(8,
-             HTML("<h1>Box Model: Playground</h1><br>"),
+             HTML("<h1>Box Model</h1><br>"),
       ),
       column(4,
              HTML("<br>"),
