@@ -184,8 +184,8 @@ ui <- dashboardPage(
                              "box_sum_or_mean",
                              label = NULL,
                              choices = list( 
-                               "Sum" = 1, 
-                               "Mean" = 2
+                               "Mean" = 2,
+                               "Sum" = 1
                              ) 
                            ),
                          )
@@ -283,9 +283,69 @@ ui <- dashboardPage(
                                     plotOutput("empirical_draws_hist", width = "80%", height = "175px"),
                              )
                            )
-                           
-                           
                          )
+                       )
+                )
+              ),
+              
+              HTML("<br><br><br>"),
+              
+              ############ SECTION: Test Statistics ############ 
+              fluidRow(
+                column(12,
+                       box(
+                         title = HTML("<u><b>Test Statistic</b></u>"),
+                         status = "primary", 
+                         width = "100%",
+                         solidHeader = FALSE,
+                         
+                         fluidRow(
+                           column(6,
+                                  HTML("<p><b>Step 1) Observed Value (OV)</b></p>"),
+                                  uiOutput("observed_value_output"),
+                                  fluidRow(
+                                    column(2),
+                                    column(2,
+                                           withMathJax(HTML("<p style='font-size: 16px; text-align: right;'>\\( OV = \\)</p>"))
+                                    ),
+                                    column(3,
+                                           numericInput( 
+                                             "observed_value", 
+                                             NULL, 
+                                             value = 0.7, 
+                                             min = 0, 
+                                             max = 1, 
+                                             width = "100%"
+                                           ),
+                                    ),
+                                  ),
+                                  uiOutput("observed_val_warning_message"),
+                                  HTML("<p><b>Step 2) Calculate Expected Value (SE) and Standard Error (SE)</b></p>"),
+                                  uiOutput("ev_and_se_text")
+                           ),
+                           column(6,
+                                  HTML("<p><b>Step 3) Test Statistic Calculation</b></p>"),
+                                  uiOutput("test_statistic_calculation")
+                           )
+                         ),
+                        
+                         
+                       ),
+                ),
+
+              ),
+              
+              HTML("<br><br><br>"),
+              
+              ############ SECTION: p-value ############ 
+              fluidRow(
+                column(6,
+                       box(
+                         title = HTML("<u><b>p-value</b></u>"),
+                         status = "primary", 
+                         width = "100%",
+                         solidHeader = FALSE,
+                         uiOutput("p_value_prelude")
                        )
                 )
               )
@@ -472,18 +532,6 @@ server <- function(input, output, session) {
     )
   })
   
-  
-  # We assume that if mean_or_sample_as_int = 1 then we are talking about sum, and mean_or_sample_as_int = 2 is mean.
-  simulate_box <- function(mean_or_sample_as_int, n, box) {
-    value = sample(box, n, replace = TRUE)
-    if (mean_or_sample_as_int == 2) {
-      value = mean(value)
-    } else {
-      value = sum(value)
-    }
-    return(value)
-  }
-  
   # Histogram with normal curve to shown normal curve approximation.
   output$empirical_draws_hist = renderPlot({
     
@@ -531,6 +579,132 @@ server <- function(input, output, session) {
     return(plot)
   })
 
+  output$observed_value_output <- renderUI({
+    
+    sample = "sum"
+    if (input$box_sum_or_mean == 2) {
+      sample = "mean"
+    }
+    
+    string = paste("<p><i>What is the observed ", sample, " that you saw from your sample?</i></p>")
+    return(
+      tagList(
+        HTML(string)
+      )
+    )
+    
+  })
+  
+  # Process the number of draws text input.
+  observed_val = reactiveVal(0.7)
+  observed_val_warning = reactiveVal(FALSE)
+  observeEvent(input$observed_value, {
+    if (is.na(input$observed_value) || input$observed_value < 0 || input$observed_value > 1) {
+      observed_val(0.7)
+      observed_val_warning(TRUE)
+    } else {
+      observed_val(input$observed_value)
+      observed_val_warning(FALSE)
+    }
+  })
+  
+  # Error message for when the value for n is invalid.
+  output$observed_val_warning_message <- renderUI({
+    if (observed_val_warning()) {
+      return(
+        HTML("<span style='color: red;'><p>Error: The observed value must be between 0 and 1.</p></span>")
+      )
+    }
+  })
+  
+  EV_string = reactiveVal("")
+  SE_string = reactiveVal("")
+  
+  output$ev_and_se_text <- renderUI({
+    
+    # Find EV and SE.
+    mean_ = null_prop()
+    sd_ = sqrt(null_prop() * (1-null_prop()))
+    EV = sample_size() * mean_
+    SE = sqrt(sample_size()) *sd_
+    if (input$box_sum_or_mean == 2) { 
+      EV = mean_
+      SE = sd_/sqrt(sample_size())
+    }
+    
+    # EV and SE text (changes based upon whether the sample sum or mean is being used).
+    expected_value = ""
+    standard_error = ""
+    
+    EV_string(as.character(round(EV, 5)))
+    SE_string(as.character(round(SE, 5)))
+    
+    # Mean
+    if (input$box_sum_or_mean == 2) { 
+      expected_value = withMathJax(
+        HTML("<p>Expected Value:</p>"),
+        HTML(paste("$$\\begin{align*} \\text{EV} &= \\mu \\\\ &=", EV_string(), "\\end{align*}$$", sep = ""))
+      )
+      
+      standard_error = withMathJax(
+        HTML("<p>Standard Error:</p>"),
+        HTML(paste("$$\\begin{align*} \\text{SE} &= \\frac{\\sigma}{\\sqrt{n}} \\\\ &= \\frac{", round(sd_, 5) , "}{\\sqrt{", 
+                   as.character(sample_size()), "}}\\\\ &= ", SE_string(), "\\end{align*}$$", sep = ""))
+      )
+      
+    # Sum
+    } else {
+      expected_value = withMathJax(
+        HTML("<p>Expected Value:</p>"),
+        HTML(paste("$$\\begin{align*} \\text{EV} &= n \\times \\mu \\\\ &=", as.character(sample_size()), "\\times", round(mean_, 5),
+                   "\\\\ &= ", EV_string(), "\\end{align*}$$", sep = ""))
+      )
+      
+      standard_error = withMathJax(
+        HTML("<p>Standard Error:</p>"),
+        HTML(paste("$$\\begin{align*} \\text{SE} &= \\sqrt{n} \\times \\sigma \\\\ &= \\sqrt{", as.character(sample_size()), "} \\times", 
+                   round(sd_, 5), "\\\\ &= ", SE_string(), "\\end{align*}$$", sep = ""))
+      )
+    }
+    
+    return(
+      tagList(
+        expected_value, standard_error
+      )
+    )
+  })
+  
+  test_stat = reactiveVal("")
+  output$test_statistic_calculation <- renderUI({
+    temp = (observed_val() - as.numeric(EV_string()))/as.numeric(SE_string())
+    temp = as.character(temp)
+    test_stat(temp)
+    t_stat = withMathJax(
+      HTML(paste("$$\\begin{align*} \\text{TS} &= \\frac{\\text{OV} - \\text{EV}}{\\text{SE}} \\\\ &= \\frac{", as.character(round(observed_val(),5)), " - ", 
+                 EV_string(), "}{", SE_string(), "} \\\\ &= ", test_stat(), "\\end{align*}$$", sep = ""))
+    )
+    additional_line = HTML(paste("<p style = 'text-align: left;'><span style='color: blue;'><i>The value for the test-statistic is ", test_stat(), ". </i></span></p>", sep = ""))
+    return(
+      tagList(
+        t_stat,
+        additional_line
+      )
+    )
+  })
+  
+  output$p_value_prelude <- renderUI({
+    
+    first_string = HTML(paste("<p>The p-value is the probability of observing a test-statistic more extreme that our test statistic of ", test_stat(), ".<p>", sep = ""))
+    
+    
+    
+    return(
+      tagList(
+        first_string
+      )
+    )
+    
+  })
   
   
 }
