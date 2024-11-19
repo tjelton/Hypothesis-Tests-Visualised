@@ -336,7 +336,7 @@ boxModelMainServer <- function(id) {
       }
       
       string = paste("<p>Recall that the central limit theorem tells us that if we take a <b>sufficiently large number of draws</b> 
-                     from the box, then the <b>sample ", sample, "s will follow a normal distribution</b>.<br><br>Now we will empirically
+                     from the box, then the <b>sample ", sample, "s will follow an approximately normal distribution</b>.<br><br>Now we will empirically
                      test whether n = ", number_of_ticket_draws(), " is a sufficient number of draws for the central limit theorem to
                      apply.<br><br>To do this, press the button below to repeat the process of drawing from the box ", number_of_ticket_draws(),
                      " and finding the ", sample, ". These will be added to the histogram. If we have taken enough draws from the box, then the 
