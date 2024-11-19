@@ -285,7 +285,6 @@ boxModelMainServer <- function(id) {
         lower_value = lower_xlimit_plot
       }
       
-      # Create a data frame for shading
       shade_data <- data.frame(x = seq(lower_xlimit_plot, upper_xlimit_plot, length.out = 100))
       
       # Create the ggplot
@@ -385,7 +384,7 @@ boxModelMainServer <- function(id) {
         EV_string(EV)
         expected_value = withMathJax(
           HTML("<p><b>Expected Value:</b></p>"),
-          HTML(paste("$$\\begin{align*} \\text{EV} &= \\mu \\\\ &=", round(mean(ticket_numbers()), 5), "\\\\ &= ", EV, "\\end{align*}$$", sep = ""))
+          HTML(paste("$$\\begin{align*} \\text{EV} &= \\mu \\\\ &=", EV, "\\end{align*}$$", sep = ""))
         )
         
         SE = as.character(round(popsd(ticket_numbers())/sqrt(number_of_ticket_draws()),5))
