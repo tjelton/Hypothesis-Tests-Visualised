@@ -6,7 +6,6 @@ library(gmp)
 
 options(shiny.autoreload = TRUE)
 
-
 ui <- dashboardPage(
   skin = "black",
   
@@ -16,7 +15,7 @@ ui <- dashboardPage(
   
   dashboardSidebar(
     sidebarMenu(
-      menuItem("Proportion (Z-test)", tabName = "proportion_z_test", icon = icon("percent")),
+      menuItem("Proportion (z-test)", tabName = "proportion_z_test", icon = icon("percent")),
       menuItem("Home", tabName = "home", icon = icon("house")),
       menuItem("Box Model", tabName = "box_playground", icon = icon("box"))
     )
@@ -58,13 +57,13 @@ ui <- dashboardPage(
       ")),
     
     tabItems(
-
+      
       # Home page.
       tabItem(tabName = "home",
               HTML("<h1>Home</h1><br>"),
               HTML("<p><b>Welcome! To get started, click on \"≡\" to navigate to your page of interest!</b></p>"),
               HTML("<p>More coming to the home page and this application soon...</p>"),
-
+              
       ),
       
       # Box plot playground page.
@@ -97,22 +96,22 @@ ui <- dashboardPage(
               fluidRow(
                 column(7,
                        box(
-                           title = HTML("<u><b>The 'NULL' Hypothesis - Setting up the Box</b></u>"),
-                           status = "primary", 
+                         title = HTML("<u><b>The 'NULL' Hypothesis - Setting up the Box</b></u>"),
+                         status = "primary", 
+                         width = "100%",
+                         solidHeader = FALSE,
+                         
+                         p("We start by using the box model to represent our null hypothesis."),
+                         
+                         # Step 1: Specify NULL Hypothesis
+                         box(
+                           title = "Step 1) Specify NULL Hypotheis (Box Tickets)",
                            width = "100%",
+                           collapsible = TRUE,
+                           collapsed = TRUE,
+                           status = "info",
                            solidHeader = FALSE,
-                           
-                           p("We start by using the box model to represent our null hypothesis."),
-                           
-                           # Step 1: Specify NULL Hypothesis
-                           box(
-                             title = "Step 1) Specify NULL Hypotheis (Box Tickets)",
-                             width = "100%",
-                             collapsible = TRUE,
-                             collapsed = TRUE,
-                             status = "info",
-                             solidHeader = FALSE,
-                             HTML("<p>
+                           HTML("<p>
                               <ul>
                                 <li>First, we need to specify the 'null' hypothesis for our proportion test. As it is a proportion, the value must be between <b>0</b> and 
                                   <b>1</b>.</li>
@@ -120,14 +119,14 @@ ui <- dashboardPage(
                                 <li>The null hypothesis changes the tickets in our box that we are drawing from.</li>
                               </ul>
                              </p>"),
-                             
-                             withMathJax(HTML("<p style='font-size: 16px; text-align: right;'>Given \\( p \\), where \\( p \\) is the proportion of some event:</p>")),
-                             fluidRow(
-                               column(7),
-                               column(2,
+                           
+                           withMathJax(HTML("<p style='font-size: 16px; text-align: right;'>Given \\( p \\), where \\( p \\) is the proportion of some event:</p>")),
+                           fluidRow(
+                             column(7),
+                             column(2,
                                     withMathJax(HTML("<p style='font-size: 16px; text-align: right;'>\\( H_0: \\) \\( p = \\)</p>"))
-                               ),
-                               column(3,
+                             ),
+                             column(3,
                                     numericInput( 
                                       "null_porportion", 
                                       NULL, 
@@ -135,61 +134,61 @@ ui <- dashboardPage(
                                       min = 0, 
                                       max = 1, 
                                     ),
-                               ),
                              ),
-                             uiOutput('null_prop_warning')
                            ),
-                           
-                           # Step 2: Sample Size
-                           box(
-                             title = "Step 2) Sample Size (Number of Draws)",
-                             width = "100%",
-                             collapsible = TRUE,
-                             collapsed = TRUE,
-                             status = "info",
-                             solidHeader = FALSE,
-                             HTML("<p>
+                           uiOutput('null_prop_warning')
+                         ),
+                         
+                         # Step 2: Sample Size
+                         box(
+                           title = "Step 2) Sample Size (Number of Draws)",
+                           width = "100%",
+                           collapsible = TRUE,
+                           collapsed = TRUE,
+                           status = "info",
+                           solidHeader = FALSE,
+                           HTML("<p>
                               <ul>
                                 <li>Specify how large your sample will be in the text box below.</li>
                                 <li>You can think of this as how many tickets we are drawing from the box with replacement.</li>
                                 <li>You will enter the observed value (i.e. the proportion you saw from the sample) later.</li>
                               </ul>
                              </p>"),
-                             fluidRow(
-                               column(7),
-                               column(2,
-                                      withMathJax(HTML("<p style='font-size: 16px; text-align: right;'>\\( n =  \\)</p>"))
-                               ),
-                               column(3,
-                                      numericInput( 
-                                        "number_of_draws",
-                                        label = NULL,
-                                        value = 25, 
-                                        min = 1
-                                      ),
-                               ),
+                           fluidRow(
+                             column(7),
+                             column(2,
+                                    withMathJax(HTML("<p style='font-size: 16px; text-align: right;'>\\( n =  \\)</p>"))
                              ),
-                             uiOutput('n_warning_message')
+                             column(3,
+                                    numericInput( 
+                                      "number_of_draws",
+                                      label = NULL,
+                                      value = 25, 
+                                      min = 1
+                                    ),
+                             ),
                            ),
-                           
-                           # Step 3: Model Type
-                           box(
-                             title = "Step 3) Model Using Sum or Sample",
-                             width = "100%",
-                             collapsible = TRUE,
-                             collapsed = TRUE,
-                             status = "info",
-                             solidHeader = FALSE,
-                             HTML("<p>Third, we need to specify whether we will be modelling the sample using the mean or sum of the draws:<br><br></p>"),
-                             radioButtons( 
-                               "box_sum_or_mean",
-                               label = NULL,
-                               choices = list( 
-                                 "Sum" = 1, 
-                                 "Mean" = 2
-                               ) 
-                             ),
-                           )
+                           uiOutput('n_warning_message')
+                         ),
+                         
+                         # Step 3: Model Type
+                         box(
+                           title = "Step 3) Model Using Sum or Sample",
+                           width = "100%",
+                           collapsible = TRUE,
+                           collapsed = TRUE,
+                           status = "info",
+                           solidHeader = FALSE,
+                           HTML("<p>Third, we need to specify whether we will be modelling the sample using the mean or sum of the draws:<br><br></p>"),
+                           radioButtons( 
+                             "box_sum_or_mean",
+                             label = NULL,
+                             choices = list( 
+                               "Sum" = 1, 
+                               "Mean" = 2
+                             ) 
+                           ),
+                         )
                          
                        )
                 ),
@@ -209,7 +208,7 @@ ui <- dashboardPage(
               
               ############ SECTION: The Alternate Hypothesis ############ 
               fluidRow(
-                column(6,
+                column(7,
                        box(
                          title = HTML("<u><b>The Alternate Hypothesis</b></u>"),
                          status = "primary", 
@@ -226,8 +225,67 @@ ui <- dashboardPage(
                              "One Sided (less than)" = 3 
                            ) 
                          ),
-                         HTML("<br>"),
-                         uiOutput('alternate_hypothesis_output')
+                         
+                       )
+                ),
+                column(5,
+                       box(
+                         solidHeader = TRUE,
+                         width = "100%",
+                         HTML("<p><b>Null Hypothesis</b></p>"),
+                         uiOutput('null_hypothesis_output'),
+                         HTML("<p><b>Alternate Hypothesis</b></p>"),
+                         uiOutput('alternate_hypothesis_output'),
+                       )
+                )
+              ),
+              
+              HTML("<br><br><br>"),
+              
+              ############ SECTION: Assumptions ############ 
+              fluidRow(
+                column(12,
+                       box(
+                         title = HTML("<u><b>Assumptions</b></u>"),
+                         status = "primary", 
+                         width = "100%",
+                         solidHeader = FALSE,
+                         HTML("<p>For the hypothesis test to be valid, we need to check the following assumptions:</p>"),
+                         
+                         # Assumption 1: Independent Samples
+                         box(
+                           title = "Assumption 1: Independent Sample",
+                           width = "100%",
+                           collapsible = TRUE,
+                           collapsed = TRUE,
+                           status = "info",
+                           solidHeader = FALSE,
+                           HTML("<p>The first assumption is that our sample is <b>independent and randomly chosen</b>.</p>"),
+                           HTML("<p><span style='color: blue;'><b>How do we check?</b></span> <i>We check by investigating the experimental setup.</i><br><br>
+                                For example, consider we were investigating data for a proportion test involving human participants. We could read the accompanying scientific
+                                publication to understand the methodology they used to gather the people in the sample.</p>")
+                         ),
+                         
+                         # Assumption 2: Normal Approximation
+                         box(
+                           title = "Assumption 2: Normal Approximation",
+                           width = "100%",
+                           collapsible = TRUE,
+                           collapsed = TRUE,
+                           status = "info",
+                           solidHeader = FALSE,
+                           fluidRow(
+                             column(6,
+                                    uiOutput("assumption2_text_output"),
+                                    HTML("<br><br>")
+                             ),
+                             column(6,
+                                    plotOutput("empirical_draws_hist", width = "80%", height = "175px"),
+                             )
+                           )
+                           
+                           
+                         )
                        )
                 )
               )
@@ -291,14 +349,14 @@ server <- function(input, output, session) {
   output$box_model <- renderGrViz({
     
     tickets_string = ""
-   
+    
     prop_temp = null_prop() * 100
-
+    
     # Find simplified proportion of 1's and 0's so that they are equivalent to the proportion provided in the null hypothesis.
     gcd_value = gcd(prop_temp, 100 - prop_temp)
     proportion_of_1s = prop_temp / gcd_value
     proportion_of_0s = (100 - prop_temp) / gcd_value
-
+    
     is_float_1s = is.numeric(proportion_of_1s) && floor(proportion_of_1s) != proportion_of_1s
     is_float_0s = is.numeric(proportion_of_0s) && floor(proportion_of_0s) != proportion_of_0s
     
@@ -311,7 +369,7 @@ server <- function(input, output, session) {
     if (is_float_1s || is_float_0s) {
       prop_temp_complement = 100 - prop_temp
       tickets_string = paste("1 x ", as.character(round(proportion_of_1s, digits = 2)), "%, 0 x ", as.character(round(proportion_of_0s, digits = 2)), "%", sep = "")
-    
+      
     } else {
       
       # Add 1's to the string
@@ -330,9 +388,9 @@ server <- function(input, output, session) {
         tickets_string = paste(tickets_string, "0,")
       } 
       tickets_string <- sub(",$", "", tickets_string)
-
+      
     }
-
+    
     # Get other elements for the box model
     n = sample_size()
     sample = "Sample Sum"
@@ -355,13 +413,11 @@ server <- function(input, output, session) {
   })
   
   
-  null_prop
-  
   # Alternate hypothesis (rendered) output.
   output$alternate_hypothesis_output <- renderUI({
     
     
-    hypothesis = paste("<p style='font-size: 16px;'>\\( H_1: \\) \\( p", "=", as.character(null_prop()), "\\)</p>")
+    hypothesis = paste("<p style='font-size: 16px;'>\\( H_1: \\) \\( p", "\\neq", as.character(null_prop()), "\\)</p>")
     if (input$alternate_hypothesis_choice == 2) {
       hypothesis = paste("<p style='font-size: 16px;'>\\( H_1: \\) \\( p", ">", as.character(null_prop()), "\\)</p>")
     } else if (input$alternate_hypothesis_choice == 3) {
@@ -377,9 +433,106 @@ server <- function(input, output, session) {
     )
   })
   
+  # Null hypothesis (rendered) output.
+  output$null_hypothesis_output <- renderUI({
+    hypothesis = paste("<p style='font-size: 16px;'>\\( H_0: \\) \\( p", "=", as.character(null_prop()), "\\)</p>")
+    return (
+      tagList(
+        HTML("<center>"),
+        withMathJax(HTML(hypothesis)),
+        HTML("</center>")
+      )
+    )
+  })
+  
+  output$assumption2_text_output <- renderUI({
+    
+    sample = "sum"
+    if (input$box_sum_or_mean == 2) {
+      sample = "mean"
+    }
+    
+    string_1 = paste("<p>The second assumption is that the sample ", sample, "s follow an approximate normal distribution.</p>", sep = "")
+    
+    string_2 = paste("<p><span style='color: blue;'><b>How do we check?</b></span><br>
+                     <ul>
+                        <li>Recall that the central limit theorem tells us that if we take a sufficiently large number of draws from the box,
+                             then the sample ", sample, "s will approximately follow a normal distribution. <i>If confused, please see the box model exercise</i></li>
+                        <li>One way we can easily tell if the central limit theorem applies is to sample taking many draws from the box, and seeing whether the
+                            values appear normally distributed</li>
+                        <li>The plot to the left shows the distribution of 10000 simulated samples.</li>
+                      <ul>
+                      </p>")
+    
+    return(
+      tagList(
+        HTML(string_1),
+        HTML(string_2)
+      )
+    )
+  })
   
   
- 
+  # We assume that if mean_or_sample_as_int = 1 then we are talking about sum, and mean_or_sample_as_int = 2 is mean.
+  simulate_box <- function(mean_or_sample_as_int, n, box) {
+    value = sample(box, n, replace = TRUE)
+    if (mean_or_sample_as_int == 2) {
+      value = mean(value)
+    } else {
+      value = sum(value)
+    }
+    return(value)
+  }
+  
+  # Histogram with normal curve to shown normal curve approximation.
+  output$empirical_draws_hist = renderPlot({
+    
+    # Label titles.
+    x_axis_string = "Sample Sum Value"
+    title_string = "Empirical Distribution of 10000 Sample Sums with\nOverlaid Normal Curve"
+    if (input$box_sum_or_mean == 2) {
+      title_string = "Empirical Distribution of 10000 Sample Means with\nOverlaid Normal Curve"
+      x_axis_string = "Sample Mean Value"
+    }
+    
+    # Get data
+    data = 0
+    if (input$box_sum_or_mean == 1) {
+      data = replicate(10000, sum(sample(c(0,1), sample_size(), replace = TRUE, prob = c(null_prop(), 1-null_prop()))))
+    } else if (input$box_sum_or_mean == 2) {
+      data = replicate(10000, mean(sample(c(0,1), sample_size(), replace = TRUE, prob = c(null_prop(), 1-null_prop()))))
+    }
+    
+    # Normal curve parameters.
+    mean_ = null_prop()
+    sd_ = sqrt(null_prop() * (1-null_prop()))
+    EV = sample_size() * mean_
+    SE = sqrt(sample_size()) *sd_
+    if (input$box_sum_or_mean == 2) { 
+      EV = mean_
+      SE = sd_/sqrt(sample_size())
+    }
+    
+    bins_to_include = length(table(data))
+    if (bins_to_include > 20) {
+      bins_to_include = 20
+    }
+    
+    plot = ggplot(data.frame(values = data), aes(x = values)) +
+      geom_histogram(aes(y = after_stat(density)), bins = bins_to_include, fill = "lightgreen", color = "black") + 
+      labs(x = x_axis_string, y = "Density", title = title_string) +
+      theme_minimal() +
+      theme(
+        panel.grid = element_blank(),
+        axis.line = element_line(color = "black")
+      ) +
+      stat_function(fun = dnorm, args = list(mean = EV, sd = SE), color = "red", size = 1)
+    
+    return(plot)
+  })
+
+  
+  
 }
 
 # Run the application
