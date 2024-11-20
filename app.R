@@ -130,7 +130,7 @@ ui <- dashboardPage(
                                     numericInput( 
                                       "null_porportion", 
                                       NULL, 
-                                      value = 0.5, 
+                                      value = 0.7, 
                                       min = 0, 
                                       max = 1, 
                                     ),
@@ -163,7 +163,7 @@ ui <- dashboardPage(
                                     numericInput( 
                                       "number_of_draws",
                                       label = NULL,
-                                      value = 25, 
+                                      value = 30, 
                                       min = 1
                                     ),
                              ),
@@ -312,7 +312,7 @@ ui <- dashboardPage(
                                            numericInput( 
                                              "observed_value", 
                                              NULL, 
-                                             value = 0.7, 
+                                             value = 0.73, 
                                              min = 0, 
                                              max = 1, 
                                              width = "100%"
@@ -414,11 +414,11 @@ server <- function(input, output, session) {
   boxModelMainServer(id = "box_model")
   
   # Process the null hypothesis proportion input.
-  null_prop = reactiveVal(0.25)
+  null_prop = reactiveVal(0.7)
   null_proportion_warning = reactiveVal(FALSE)
   observeEvent(input$null_porportion, {
     if (is.na(input$null_porportion) || input$null_porportion < 0 || input$null_porportion > 1) {
-      null_prop(0.25)
+      null_prop(0.7)
       null_proportion_warning(TRUE)
     } else {
       null_prop(input$null_porportion)
@@ -647,11 +647,11 @@ server <- function(input, output, session) {
   })
   
   # Process the number of draws text input.
-  observed_val = reactiveVal(0.7)
+  observed_val = reactiveVal(0.73)
   observed_val_warning = reactiveVal(FALSE)
   observeEvent(input$observed_value, {
     if (is.na(input$observed_value) || input$observed_value < 0 || input$observed_value > 1) {
-      observed_val(0.7)
+      observed_val(0.73)
       observed_val_warning(TRUE)
     } else {
       observed_val(input$observed_value)
