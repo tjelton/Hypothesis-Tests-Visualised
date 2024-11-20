@@ -353,7 +353,52 @@ ui <- dashboardPage(
                 )
               ),
               
-              HTML("<br><br><br><br><br><br>"),
+              HTML("<br><br><br><br><br><br><br>"),
+              
+              ############ SECTION:Conclusion ############ 
+              fluidRow(
+                column(12,
+                       box(
+                         title = HTML("<u><b>Conclusion</b></u>"),
+                         status = "primary", 
+                         width = "100%",
+                         solidHeader = FALSE,
+                         
+                         fluidRow(
+                           
+                           # Section to enter significance level.
+                           column(6,
+                                  HTML("<p><b>Step 1) What is your significance level</b>?</p>"),
+                                  
+                                  # Space to enter significance value.
+                                  fluidRow(
+                                    column(1,
+                                           withMathJax(HTML("<p style='font-size: 16px; text-align: right;'>\\( \\alpha = \\)</p>"))
+                                    ),
+                                    column(3,
+                                           numericInput( 
+                                             "alpha_value", 
+                                             NULL, 
+                                             value = 0.05, 
+                                             min = 0, 
+                                             max = 1, 
+                                             width = "100%"
+                                           ),
+                                    ),
+                                  ),
+                                  uiOutput("significance_level_warning"),
+                           ),
+                           
+                           # Section to provide final result.
+                           column(6,
+                                  HTML("<p><b>Step 2) Final Conclusion</b></p>"),
+                                  uiOutput("conclusion_output"),
+                                  
+                           )
+                         )
+                       )
+                ),
+              )
               
               
               
@@ -698,6 +743,7 @@ server <- function(input, output, session) {
     )
   })
   
+  p_val = reactiveVal(0)
   output$p_value_prelude <- renderUI({
     
     # General prelude text about what the p-value is.
@@ -720,17 +766,18 @@ server <- function(input, output, session) {
     second_string = HTML(second_string)
     
     # Calculate p-value.
-    p_val = 0
+    p_val_local = 0
     if (input$alternate_hypothesis_choice == 1) {
-      p_val = 2 * (1 - pnorm(abs(as.numeric(test_stat()))))
+      p_val_local = 2 * (1 - pnorm(abs(as.numeric(test_stat()))))
     } else if (input$alternate_hypothesis_choice == 2) {
-      p_val = 1 - pnorm(as.numeric(test_stat()))
+      p_val_local = 1 - pnorm(as.numeric(test_stat()))
     } else if (input$alternate_hypothesis_choice == 3) {
-      p_val = pnorm(as.numeric(test_stat()))
+      p_val_local = pnorm(as.numeric(test_stat()))
     }
+    p_val(p_val_local)
     
     # String to output the p-value.
-    p_value = withMathJax(HTML("<p style='font-size: 16px; text-align: center;'>\\( p =", as.character(round(p_val,5)) ,"\\)</p>"))
+    p_value = withMathJax(HTML("<p style='font-size: 16px; text-align: center;'>\\( p =", as.character(round(p_val_local,5)) ,"\\)</p>"))
     
     return(
       tagList(
@@ -837,6 +884,51 @@ server <- function(input, output, session) {
   })
   
   
+  # Process the number of draws text input.
+  alpha = reactiveVal(0.05)
+  alpha_warning = reactiveVal(FALSE)
+  observeEvent(input$alpha_value, {
+    if (is.na(input$alpha_value) || input$alpha_value < 0 || input$alpha_value > 1) {
+      alpha(0.05)
+      alpha_warning(TRUE)
+    } else {
+      alpha(input$alpha_value)
+      alpha_warning(FALSE)
+    }
+  })
+  
+  # Error message for when the value for n is invalid.
+  output$significance_level_warning <- renderUI({
+    if (alpha_warning()) {
+      return(
+        HTML("<span style='color: red;'><p>Error: The value for α must be between 0 and 1.</p></span>")
+      )
+    }
+  })
+  
+  # Hypothesis test output
+  output$conclusion_output <- renderUI({
+    
+    
+    math_line = withMathJax(
+      HTML(paste("$$\\begin{align*} \\alpha &> p \\\\", as.character(alpha()), " &> ", as.character(round(p_val(), 4)), "\\end{align*}$$", sep = ""))
+    )
+    conclusion_line = HTML("<span style='color: blue;'><p>As the p value is less than our significance level, we <b>reject the null hypothesis</b>.</p></span>")
+    if (p_val() > alpha()) {
+      math_line = withMathJax(
+        HTML(paste("$$\\begin{align*} \\alpha &< p \\\\", as.character(alpha()), " &< ", as.character(round(p_val(), 4)), "\\end{align*}$$", sep = ""))
+      )
+      conclusion_line = HTML("<span style='color: blue;'><p>As the p value is greater than our significance level, we <b>accept the null hypothesis</b>.</p></span>")
+    }
+    
+    return(
+      tagList(
+        math_line,
+        conclusion_line
+      )
+    )
+  })
+
 }
 
 # Run the application
