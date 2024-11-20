@@ -49,19 +49,49 @@ ui <- dashboardPage(
     # Make the modal wider.
     tags$style(HTML("
         .modal-dialog {
-          max-width: 1100px !important; /* Adjust this value for desired width */
-          width: 100% !important;       /* Adjust this value for desired width */
+          max-width: 1100px !important;
+          width: 100% !important;
         }
       ")),
     
+    # Make value box title smaller
+    tags$style(HTML("
+        .small-box h3 {
+          font-size: 25px
+        }
+      ")),
+
     tabItems(
       
       # Home page.
       tabItem(tabName = "home",
-              HTML("<h1>Home</h1><br>"),
-              HTML("<p><b>Welcome! To get started, click on \"≡\" to navigate to your page of interest!</b></p>"),
-              HTML("<p>More coming to the home page and this application soon...</p>"),
               
+              HTML("<br>"),
+              
+              fluidRow(
+                column(6,
+                       infoBox("Welcome!", 
+                               "To get started, click on \"≡\" to navigate to your page of interest!",
+                               icon = icon("arrow-left"), 
+                               color = "light-blue", 
+                               fill = TRUE,
+                               width = "100%"),
+                ),
+                column(6,
+                       tags$a(
+                         href = "https://tjelton.com/2024/11/14/the-hypothesis-tests-visualised-project/", 
+                         target = "_blank",
+                         valueBox("About", "Click to find out more about the project",
+                                  icon = icon("question"), color = "red", width = "100%")
+                       ),
+                       tags$a(
+                         href = "https://docs.google.com/forms/d/e/1FAIpQLSdmyGBjQWRDg-ksPGqSsMuLNsuvnwwVgD0GW1bKvKVu6Rnplg/viewform?usp=sf_link", 
+                         target = "_blank",
+                         valueBox("Feedback", "Click to report errors or provide suggestions/feedback!",
+                                  icon = icon("comment"), color = "olive", width = "100%")
+                       )
+                )
+              ),
       ),
       
       # Box plot playground page.
