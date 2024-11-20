@@ -928,6 +928,86 @@ server <- function(input, output, session) {
       )
     )
   })
+  
+  # Modal Intro
+  observeEvent(input$learning_text, {
+    showModal(modalDialog(
+      title = "The 'Proportion Test'",
+      
+      
+      HTML("<p>
+            When you walk into a room, you can be assured that lots of epople will be Taylor Swift fans (you could say that people are cray-cray for Tay-Tay).<br><br>
+            
+            Let's say that we <b>'hypothesise' that 70% of people are Taylor Swift fans</b>. Now, to test our hypothesis, we go to our data science class of <b>30 students</b>
+            and ask <b>how many students are Taylor Swift fans</b>. The main goal here is to see if our <b>sample</b> is consistent with our 70% hypothesis.<br><br>
+            
+            In this regard, we set up a <b>null hypothesis</b> that the <b>proportion of Taylor Swift fans is 0.7</b> (70%). We mathematically write this as:<br>
+      </p>"),
+      withMathJax(HTML("<center><p style='font-size: 16px'>\\( H_{0} : p = 0.7 \\)</p></center>")),
+      HTML("<p><br>
+           We set up our alternate hypothesis to be that the proportion of Taylor Swift fans is <b>NOT 0.7</b>. We mathematically write this as:
+      </p>"),
+      withMathJax(HTML("<center><p style='font-size: 16px'>\\( H_{1} : p \\neq 0.7 \\)</p></center>")),
+      HTML("<p><br>
+           The main idea is that from our sample of 30 students, we want to see if there is <b>evidence to support or reject</b> the null hypothesis.
+      </p>"),
+      fluidRow(
+        column(8,
+               HTML("<p>
+                 <h5><u>How do we go about doing this?</u></h5><br>
+              
+                  We set up our box assuming that the <b>null hypothesis is true</b>. We add ticketgs valued <b>\"1\" to represent our target</b> (in this example, that someone 
+                  likes Taylor Swift), and <b>\"0\" to represent the complement</b>. The tickets are arranged such that the proportion of \"1\" tickets is the same as the null 
+                  hypothesis. As seen in the box model to the right, there are seven \"1\" tickets and three \"0\" tickets, meaning the proportion of \"1\"'s is correctly 70%.<br><br>
+                  
+                  After setting up our box model, we want to see if what we observe from the class is consistent with the null hypothesis. We call what we observe the <b>observed
+                  value (OV)</b>.<br><br>
+                  
+                  Let's say that in the class, 22 people like Taylor Swift, and 8 do not. We can represent the observed value derived from this observation using the <b>mean</b>
+                  or <b>sum</b>.<br><br>
+                  
+                  <u>Mean:</u>
+                  
+              </p>"),
+               withMathJax(
+                 HTML(paste("$$\\begin{align*} \\text{OV} &= \\frac{1 \\times \\text{Number of TS Fans} + 0 \\times \\text{Number of Non-TS Fans}}{\\text{Data Science Class Size}} 
+                            \\\\ &= \\frac{1 \\times 22 + 0 \\times 8}{30} \\\\ &= \\frac{22}{30} \\\\ &= 0.73 \\text{ (2 decimal places)} \\end{align*}$$", sep = ""))
+               ),
+               HTML("<p><u>Sum:</u></p>"),
+               withMathJax(
+                 HTML(paste("$$\\begin{align*} \\text{OV} &= 1 \\times \\text{Number of TS Fans} + 0 \\times \\text{Number of Non-TS Fans} 
+                            \\\\ &= 1 \\times 22 + 0 \\times 8 \\\\ &= 22 \\end{align*}$$", sep = ""))
+               ),
+        ),
+        column(4,
+               HTML("<br>"),
+               grVizOutput("intro_example_box_model", width = "80%", height = "70%"),
+        )
+      ),
+      HTML("<p><br>
+              Now that we've introduced how to set up the box for this test, as well as what the observed value is, it's your turn to use this app to test whether our
+              observed value is consistent with our null hypothesis or not. Good luck :)
+           </p>"),
+      easyClose = TRUE,
+      footer = modalButton("Close"),
+    ))
+  })
+  
+  output$intro_example_box_model <- renderGrViz({
+    string = "digraph diagram {
+        graph [layout = dot, rankdir = TB]
+      
+        node [shape = box, style = filled, fillcolor = \"#bdfeff\", fontsize = 12, width = 2.5]
+        box [label = '1, 1, 1, 1, 1, 1, 1, 0, 0, 0']
+      
+        node [shape = oval,width = 1.5,fillcolor = \"#f9ffbd\", fontsize = 12]
+        sample [label = 'Data Science Class']
+      
+        edge [minlen = 2]
+          box->sample [label = '  n = 30', fontsize = 12, labeldistance = 5]
+        }"
+    return(grViz(string))
+  })
 
 }
 
