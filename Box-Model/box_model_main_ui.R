@@ -1,4 +1,3 @@
-library(shinyBS)
 boxModelMainUI <- function(id) {
   ns <- NS(id)
   tagList(
