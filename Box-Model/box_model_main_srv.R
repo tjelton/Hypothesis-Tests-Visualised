@@ -14,7 +14,7 @@ boxModelMainServer <- function(id) {
   moduleServer(id, function(input, output, session) {
     
     ns <- session$ns
-  
+    
     ticket_numbers <- reactiveVal(c(1,0,0,0))
     invalid_tickets_string_bool <- reactiveVal(FALSE)
     number_of_ticket_draws <- reactiveVal(25)
@@ -45,7 +45,7 @@ boxModelMainServer <- function(id) {
       if (any(is.na(numeric_vec))) {
         invalid_tickets_string_bool(TRUE)
         ticket_numbers(c(1,0,0,0))
-      } else if (length(numeric_vec) == 0) {
+      } else if (length(numeric_vec) <= 1) {
         invalid_tickets_string_bool(TRUE)
         ticket_numbers(c(1,0,0,0))
       } else {
@@ -54,22 +54,40 @@ boxModelMainServer <- function(id) {
       }
     })
     
-    # Process number_of_draws value.
-    observeEvent(input$number_of_draws, {
-      if (!is.na(input$number_of_draws)) {
-        number_of_ticket_draws(input$number_of_draws)
-      }
-    })
-    
     # Error message for when the text box for entering the tickets for the box is invalid
     output$tickets_text_error_message <- renderUI({
       if (invalid_tickets_string_bool()) {
         return(
           HTML("<span style='color: red;'><p>Error: One or move values that you added cannot be interpreted. Please carefully
-               check what you entered. Setting contents of the box to 1,0,0,0.</p></span>")
+               check what you entered. You must enter at least 2 valid tickets. Setting contents of the box to 1,0,0,0.</p></span>")
         )
       }
     })
+    
+    invalid_number_of_draws_bool = reactiveVal(FALSE)
+    
+    # Process number_of_draws value.
+    observeEvent(input$number_of_draws, {
+      if (!is.na(input$number_of_draws) && input$number_of_draws >= 1) {
+        number_of_ticket_draws(ceiling(input$number_of_draws))
+        invalid_number_of_draws_bool(FALSE)
+      } else {
+        invalid_number_of_draws_bool(TRUE)
+        number_of_ticket_draws(25)
+      }
+    })
+    
+    # Error message for when the number of draws is invalid
+    output$number_of_draws_error_message <- renderUI({
+      if (invalid_number_of_draws_bool()) {
+        return(
+          HTML("<span style='color: red;'><p>Error: The value for the 'number of draws' must be an integer greater than or equal to 1.
+               Setting value to 25 until the error is resolved.</p></span>")
+        )
+      }
+    })
+    
+    
     
     ########## Process empirical sample sums and means ########## 
     empirical_data <- reactiveVal(c())
@@ -661,7 +679,7 @@ boxModelMainServer <- function(id) {
     })
     
     ################################################################
-
-  })
     
+  })
+  
 }

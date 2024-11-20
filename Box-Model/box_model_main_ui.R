@@ -11,8 +11,8 @@ boxModelMainUI <- function(id) {
              HTML("<br>"),
              tags$style(HTML(paste0("
                 [id='", ns("learning_text"), "'] {
-                  font-size: 20px; /* Adjust the font size as needed */
-                  padding: 10px 20px; /* Optional: adjust padding for a larger button */
+                  font-size: 20px;
+                  padding: 10px 20px;
                 }
              "))),
              actionButton(ns("learning_text"), "What is the box model?", class = "btn btn-primary", style="color: #fff;", width = "100%")
@@ -50,7 +50,7 @@ boxModelMainUI <- function(id) {
                    value = "1,0,0,0",
                    width = "100%"
                  ),
-                 uiOutput("tickets_text_error_message")
+                 uiOutput(ns("tickets_text_error_message"))
                ),
                
                # Step 2: Set n
@@ -67,7 +67,8 @@ boxModelMainUI <- function(id) {
                    label = NULL,
                    value = 25, 
                    min = 1
-                 ), 
+                 ),
+                 uiOutput(ns("number_of_draws_error_message"))
                ),
                
                # Step 3: Model Using Sum or Mean
