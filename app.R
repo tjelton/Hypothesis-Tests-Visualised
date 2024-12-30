@@ -4,8 +4,6 @@ source("Box-Model/box_model_main_ui.R")
 source("Proportion-Test/proportion_test_srv.R")
 source("Proportion-Test/proportion_test_ui.R")
 
-library(gmp)
-
 options(shiny.autoreload = TRUE)
 
 ui <- dashboardPage(
@@ -17,9 +15,13 @@ ui <- dashboardPage(
   
   dashboardSidebar(
     sidebarMenu(
-      menuItem("Home", tabName = "home", icon = icon("house")),
-      menuItem("Box Model", tabName = "box_playground", icon = icon("box")),
-      menuItem("Proportion (z-test)", tabName = "proportion_z_test", icon = icon("percent"))
+      menuItem("Home", tabName = "home"),
+      
+      menuItem("Fundamentals" , tabname = "Fundamentals", startExpanded = FALSE,
+               menuSubItem("The Box Model", tabName = "box_playground")),
+      
+      menuItem("z-test" , tabname = "z_test", startExpanded = FALSE,
+               menuSubItem("Proportion (z-test)", tabName = "proportion_z_test"))
     )
   ),
   
