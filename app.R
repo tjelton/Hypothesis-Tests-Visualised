@@ -154,6 +154,10 @@ ui <- dashboardPage(
                    uiOutput("numeric_column_seleciton_pre_uploaded_data"),
                    uiOutput("separate_categorical_variable_pre_uploaded_data"),
                    uiOutput("category_choice_pre_uploaded_data"),
+                   
+                   # These will output only for the case that the "manually_specified" option is selected.
+                   uiOutput("manual_entry_insufficient_unique_values"),
+                   uiOutput("manual_entry_missing_values_warning")
 
                    
                  )
@@ -223,6 +227,44 @@ server <- function(input, output, session) {
         )
       )
     }
+    
+    # Manual upload data.
+    if (input$data_upload_choice == "manually_specified") {
+      return(
+        tagList(
+          HTML("<br>"),
+          HTML("<p><b>Enter data into the text box below.</b>
+            <ul>
+              <li>All values must be numeric, and numbers should contain no spaces or any characters other than a '.' for a decimal place.</li>
+              <li>Each value must be on it's own line, or comma seperated.</li>
+              <li>Don't forget to press 'Upload' once you are finished!</li>
+            </ul></p>"),
+          
+          # Textbox
+          textAreaInput( 
+            "manual_data_upload_textbox", 
+            NULL, 
+            value = ""
+          ),
+          
+          # Upload action button. Wrapped in a fluid row to make it right-aligned.
+          fluidRow(
+            column(8),
+            column(4,
+               actionButton(
+                 inputId = "load_manual_data",
+                 label = "Upload",
+                 class = "btn-success text-white",
+                 style = "color: #fff;",
+                 width = "100%"
+               ),
+            )
+          )
+          
+        )
+      )
+    }
+    
   })
   
   # When the user chooses a pre uploaded data set, prompt them to choose the numeric column they wish to analyse.
@@ -314,6 +356,93 @@ server <- function(input, output, session) {
     data_to_store = data_to_store %>%
       filter(data_to_store[[input$factor_filtering_select_pre_uploaded]] == input$specific_category_select_pre_uploaded)
     data(data_to_store[[input$column_select_pre_uploaded]])
+  })
+  
+  num_missing_values_manual_upload <- reactiveVal(0)
+  error_message_insufficient_unique_values_manual_upload <- reactiveVal(FALSE)
+  
+  # Observe if the "Upload" button is clicked. This will involve checking the data, and triggering a warning if the data is not in the correct form.
+  observeEvent(input$load_manual_data, {
+    
+    req(input$manual_data_upload_textbox)
+    
+    input_string = input$manual_data_upload_textbox
+    
+    # Split string at commas and newline characters.
+    splits <- strsplit(input_string, "[,\n]")[[1]]
+    
+    # Remove any instances of empty strings.
+    splits <- trimws(splits)
+    splits = splits[splits != ""]
+    
+    # Convert the values to numbers.
+    numeric_vec <- as.numeric(splits)
+    
+    # Check that there are more than one unique value (table length will be greater than 1). Otherwise, sd = 0, and the test will break.
+    adequate_unique <- length(table(numeric_vec)) > 1
+    
+    # In the case that there are not unique values, raise an error with the user.
+    if (adequate_unique == FALSE) {
+      num_missing_values_manual_upload(0)
+      error_message_insufficient_unique_values_manual_upload(TRUE)
+      data(NULL)
+      return()
+    }
+    
+    error_message_insufficient_unique_values_manual_upload(FALSE)
+    
+    # Count number of NA values (NA values mean that there was an issue with the data upload).
+    na_count <- sum(sapply(numeric_vec, function(x) is.na(x)))
+    num_missing_values_manual_upload(na_count)
+    
+    # Updata the data store with manual data
+    data(numeric_vec)
+  })
+  
+  
+  # Warning message notifying that there were some NA values found when manually updating the values.
+  output$manual_entry_missing_values_warning <- renderUI({
+    req(input$data_upload_choice)
+    
+    # Only display if the pre_uploaded radio button option is selected.
+    if (input$data_upload_choice != "manually_specified") {
+      return()
+    }
+    
+    if (num_missing_values_manual_upload() > 0) {
+      string = paste("<span style='color: red;'><p>Warning: From the data that you uploaded, ", as.character(num_missing_values_manual_upload()), " of the values
+                     could not be interpreted. This could be becuase these values were not numeric, or because you did not specify the data into the required format.</p></span>")
+      return(
+        tagList(
+          HTML("<br>"),
+          HTML(string)
+        )
+      )
+    } else {
+      return()
+    }
+  })
+  
+  # Error message for when not enogh unique values.
+  output$manual_entry_insufficient_unique_values <- renderUI({
+    req(input$data_upload_choice)
+    
+    # Only display if the pre_uploaded radio button option is selected.
+    if (input$data_upload_choice != "manually_specified") {
+      return()
+    }
+    
+    if (error_message_insufficient_unique_values_manual_upload()) {
+      string = paste("<span style='color: red;'><p>Warning: You must have at least two unique values in your manually specified data.</p></span>")
+      return(
+        tagList(
+          HTML("<br>"),
+          HTML(string)
+        )
+      )
+    } else {
+      return()
+    }
   })
   
   
