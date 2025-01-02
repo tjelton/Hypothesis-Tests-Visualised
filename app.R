@@ -158,36 +158,20 @@ ui <- dashboardPage(
                    # These will output only for the case that the "manually_specified" option is selected.
                    uiOutput("manual_entry_insufficient_unique_values"),
                    uiOutput("manual_entry_missing_values_warning")
-
-                   
                  )
           ),
           column(5,
-                 box(
-                   solidHeader = TRUE,
-                   width = "100%",
-                   HTML("<p><b>TEST</b></p>"),
-                 )
+                 uiOutput("data_upload_plot_section_output")
           )
         ),
         
         HTML("<br><br><br>"),
-        
-        h1("TEST"),
-        radioButtons( 
-          inputId = "radio", 
-          label = "Radio buttons", 
-          choices = list( 
-            "Option 1" = 1, 
-            "Option 2" = 2, 
-            "Option 3" = 3 
-          ) 
-        ),
         conditionalPanel(
-          
-          condition = 'output.panelStatus',
+          condition = 'output.render_rest_of_exercise',
           h1("IT WORKED")
         )
+        
+        
       ),
       
       # Box plot playground page.
@@ -201,11 +185,13 @@ ui <- dashboardPage(
 # Server logic
 server <- function(input, output, session) {
   
-  
   ############################ Uploading Data Mechanism ############################# 
   
   # Store the sample data.
   data <- reactiveVal(NULL)
+  
+  # To trigger the pre_uploaded functions to re-run so data is re-updated.
+  re_run_flag <- reactiveVal(FALSE)
   
   # Mechanism to allow the user to specify the data sample they will be using.
   output$data_upload <- renderUI({
@@ -213,8 +199,15 @@ server <- function(input, output, session) {
     # Ensure some radio button option has been selected.
     req(input$data_upload_choice)
     
+    data(NULL)
+    
     # Pre-uploaded data
     if (input$data_upload_choice == "pre_uploaded") {
+      
+      isolate({
+        re_run_flag(!re_run_flag())
+      })
+      
       return(
         tagList(
           HTML("<br>"),
@@ -270,7 +263,7 @@ server <- function(input, output, session) {
   # When the user chooses a pre uploaded data set, prompt them to choose the numeric column they wish to analyse.
   output$numeric_column_seleciton_pre_uploaded_data <- renderUI({
     req(input$data_set_pre_uploaded)
-    
+
     # Only display if the pre_uploaded radio button option is selected.
     if (input$data_upload_choice != "pre_uploaded") {
       return()
@@ -352,10 +345,22 @@ server <- function(input, output, session) {
   
   # Re-update the data store if a filter is selected.
   observeEvent(input$specific_category_select_pre_uploaded, {
+    if (input$factor_filtering_select_pre_uploaded == "(None)") {
+      return()
+    }
     data_to_store = get(input$data_set_pre_uploaded)
     data_to_store = data_to_store %>%
       filter(data_to_store[[input$factor_filtering_select_pre_uploaded]] == input$specific_category_select_pre_uploaded)
     data(data_to_store[[input$column_select_pre_uploaded]])
+  })
+  
+  # Used to update the data when returning to the "pre-uploaded data" state.
+  observe({
+    re_run_flag()
+    req(input$data_set_pre_uploaded)
+    req(input$column_select_pre_uploaded)
+    data_to_store = get(input$data_set_pre_uploaded)[[input$column_select_pre_uploaded]]
+    data(data_to_store)
   })
   
   num_missing_values_manual_upload <- reactiveVal(0)
@@ -433,7 +438,7 @@ server <- function(input, output, session) {
     }
     
     if (error_message_insufficient_unique_values_manual_upload()) {
-      string = paste("<span style='color: red;'><p>Warning: You must have at least two unique values in your manually specified data.</p></span>")
+      string = "<span style='color: red;'><p>Warning: You must have at least two unique values in your manually specified data.</p></span>"
       return(
         tagList(
           HTML("<br>"),
@@ -445,6 +450,80 @@ server <- function(input, output, session) {
     }
   })
   
+  # Plot of data
+  output$initial_data_plots = renderPlot({
+    
+    # If data has not been uploaded, don't display anything.
+    if (is.null(data())) {
+      return()
+    }
+    
+    data_plotting = data.frame(data())
+    
+    # Boxplot of data
+    boxplot = data_plotting %>%
+      ggplot() +
+      aes(x = `data..`) +
+      geom_boxplot(fill = "blue") +
+      labs(title = "Boxplot", x = "Values") +
+      theme_minimal() + 
+      theme(
+        axis.ticks.y = element_blank(),
+        axis.text.y = element_blank()
+      )
+    
+    # Histogram of data
+    histogram = data_plotting %>%
+      ggplot() +
+      aes(x = `data..`) +
+      geom_histogram(bins = 30, fill = "blue", color = "black") +
+      labs(title = "Histogram", x = "Values", y = "Frequency") +
+      theme_minimal()
+    
+    # Place plots on top of each other using cowplot.
+    combined = plot_grid(
+      boxplot,
+      histogram,
+      ncol = 1,
+      rel_heights = c(1,2)
+    )
+    
+    return(combined)
+  })
+  
+  # Plot UI or warning message output.
+  output$data_upload_plot_section_output <- renderUI({
+    
+    # Text to render alerting the user that they can't proceed until they make a data choice.
+    # This is when no data has been set.
+    if (is.null(data())) {
+      string = "<span style='color: blue;'><p>In order to proceed, you must select some data to act as your sample.</p></span>"
+      return(
+        tagList(
+          box(
+            solidHeader = TRUE,
+            width = "100%",
+            HTML(string)
+          )
+        )
+      )
+    }
+    
+    # If data has been set, display the plots.
+    return(
+      tagList(
+        plotOutput("initial_data_plots",  width = "80%")
+      )
+    )
+    
+  })
+  
+  # Variable that is true when the data has been specified, meaning the rest of the exercise can commence
+  # This variable can be accessed by the ui conditional panel.
+  output$render_rest_of_exercise <- reactive({
+    !is.null(data())
+  })
+  outputOptions(output, "render_rest_of_exercise", suspendWhenHidden = FALSE)
   
   ################################################################
   
