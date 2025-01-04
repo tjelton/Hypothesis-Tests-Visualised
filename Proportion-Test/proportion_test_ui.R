@@ -195,9 +195,22 @@ proportionTestMainUI <- function(id) {
                                 publication to understand the methodology they used to gather the people in the sample.</p>")
                ),
                
-               # Assumption 2: Normal Approximation
+               # Assumption 2: Independent Samples
                box(
-                 title = "Assumption 2: Normal Approximation",
+                 title = "Assumption 2: Constant Proportion",
+                 width = "100%",
+                 collapsible = TRUE,
+                 collapsed = TRUE,
+                 status = "info",
+                 solidHeader = FALSE,
+                 HTML("<p>The second assumption is that our sample is the <b>constant proportion</b> assumption. This assumption states that the probability that each sample
+                      element falls within the event of interest (stipulated in our hypotheses) is unchanging.</p>"),
+                 HTML("<p><span style='color: blue;'><b>How do we check?</b></span> <i>We check by investigating the experimental setup.</i><br><br></p>")
+               ),
+               
+               # Assumption 3: Normal Approximation
+               box(
+                 title = "Assumption 3: Normal Approximation",
                  width = "100%",
                  collapsible = TRUE,
                  collapsed = TRUE,

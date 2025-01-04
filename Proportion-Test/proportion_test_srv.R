@@ -89,7 +89,7 @@ proportionTestMainServer <- function(id) {
         sample = "mean"
       }
       
-      string_1 = paste("<p>The second assumption is that the sample ", sample, "s follow an approximate normal distribution.</p>", sep = "")
+      string_1 = paste("<p>The third assumption is that the sample ", sample, "s follow an approximate normal distribution.</p>", sep = "")
       string_2 = paste("<p><span style='color: blue;'><b>How do we check?</b></span><br>
                      <ul>
                         <li>Recall that the central limit theorem tells us that if we take a sufficiently large number of draws from the box,
