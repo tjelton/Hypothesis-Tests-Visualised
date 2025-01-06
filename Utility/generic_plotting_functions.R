@@ -21,7 +21,6 @@ curve_shaded_test_stat <- function(function_stat, stat_function_args, test_stat,
   data <- data.frame(x = seq(lower_xlimit_plot, upper_xlimit_plot, length.out = 100))
   
   # Define general ggplot.
-  print("RECHED 24")
   base_plot = ggplot(data, aes(x)) +
     # Plot the normal distribution curve
     stat_function(fun = function_stat, args = stat_function_args, color = "black", size = 1) +
@@ -36,7 +35,7 @@ curve_shaded_test_stat <- function(function_stat, stat_function_args, test_stat,
       axis.line.y = element_blank(),
       panel.border = element_blank()
     )
-  print("REACHED 39")
+
   # Create a data frame for shading based upon alternate hypothesis choice.
   if (alternate_hypothesis_choice == 1) {
     base_plot = base_plot + 
