@@ -517,95 +517,98 @@ proportionTestMainServer <- function(id) {
     # Histogram with normal curve to shown normal curve approximation.
     output$test_stat_normal_plot = renderPlot({
       
-      ts = as.numeric(test_stat())
+      return(curve_shaded_test_stat(dnorm, list(mean = 0, sd = 1), as.numeric(test_stat()), input$alternate_hypothesis_choice))
       
-      # Define the plots lowest and highest x-value.
-      lower_xlimit_plot = -3.5
-      upper_xlimit_plot = 3.5
-      if (input$alternate_hypothesis_choice == 1 && abs(ts) > upper_xlimit_plot) {
-        lower_xlimit_plot = -abs(ts) - 1
-        upper_xlimit_plot = abs(ts) + 1
-      } else if (ts < lower_xlimit_plot) {
-        lower_xlimit_plot = ts - 1
-      } else if (ts > upper_xlimit_plot) {
-        upper_xlimit_plot = ts + 1
-      }
       
-      data <- data.frame(x = seq(lower_xlimit_plot, upper_xlimit_plot, length.out = 100))
-      
-      # Define general ggplot.
-      base_plot = ggplot(data, aes(x)) +
-        # Plot the normal distribution curve
-        stat_function(fun = dnorm, args = list(mean = 0, sd = 1), color = "black", size = 1) +
-        theme_minimal() +
-        theme(
-          panel.grid = element_blank(),
-          axis.line = element_line(color = "black"),
-          axis.text.y = element_blank(),
-          axis.ticks.y = element_blank(),
-          axis.title.y = element_blank(),
-          axis.title.x = element_blank(),
-          axis.line.y = element_blank(),
-          panel.border = element_blank()
-        )
-      
-      # Create a data frame for shading based upon alternate hypothesis choice.
-      if (input$alternate_hypothesis_choice == 1) {
-        base_plot = base_plot + 
-          # Lower tail
-          geom_area(stat = "function", 
-                    fun = dnorm,
-                    args = list(mean = 0, sd = 1),
-                    fill = "red",
-                    alpha = 0.5,
-                    xlim = c(lower_xlimit_plot, -abs(ts))) +
-          # Add annotated line on test statistic
-          geom_vline(xintercept = -abs(ts), linetype = "dashed", color = "blue") +
-          annotate("text", x = -abs(ts) - 0.8, y = 0.3, 
-                   label = as.character(round(-abs(ts), 2)), color = "blue", hjust = 0) +
-          
-          # Upper tail
-          geom_area(stat = "function", 
-                    fun = dnorm,
-                    args = list(mean = 0, sd = 1),
-                    fill = "red",
-                    alpha = 0.5,
-                    xlim = c(abs(ts), upper_xlimit_plot)) +
-          # Add annotated line on test statistic
-          geom_vline(xintercept = abs(ts), linetype = "dashed", color = "blue") +
-          annotate("text", x = abs(ts) + 0.25, y = 0.3, 
-                   label = as.character(round(abs(ts), 2)), color = "blue", hjust = 0)
-        
-      } else if (input$alternate_hypothesis_choice == 2) {
-        base_plot = base_plot +
-          # Upper tail
-          geom_area(stat = "function", 
-                    fun = dnorm,
-                    args = list(mean = 0, sd = 1),
-                    fill = "red",
-                    alpha = 0.5,
-                    xlim = c(ts, upper_xlimit_plot)) +
-          # Add annotated line on test statistic
-          geom_vline(xintercept = ts, linetype = "dashed", color = "blue") +
-          annotate("text", x = ts + 0.25, y = 0.3, 
-                   label = as.character(round(ts, 2)), color = "blue", hjust = 0)
-        
-      } else if (input$alternate_hypothesis_choice == 3) {
-        base_plot = base_plot + 
-          # Lower tail
-          geom_area(stat = "function", 
-                    fun = dnorm,
-                    args = list(mean = 0, sd = 1),
-                    fill = "red",
-                    alpha = 0.5,
-                    xlim = c(lower_xlimit_plot, ts)) +
-          # Add annotated line on test statistic
-          geom_vline(xintercept = ts, linetype = "dashed", color = "blue") +
-          annotate("text", x = ts - 0.8, y = 0.3, 
-                   label = as.character(round(ts, 2)), color = "blue", hjust = 0)
-      }
-      
-      return(base_plot)
+      # ts = as.numeric(test_stat())
+      # 
+      # # Define the plots lowest and highest x-value.
+      # lower_xlimit_plot = -3.5
+      # upper_xlimit_plot = 3.5
+      # if (input$alternate_hypothesis_choice == 1 && abs(ts) > upper_xlimit_plot) {
+      #   lower_xlimit_plot = -abs(ts) - 1
+      #   upper_xlimit_plot = abs(ts) + 1
+      # } else if (ts < lower_xlimit_plot) {
+      #   lower_xlimit_plot = ts - 1
+      # } else if (ts > upper_xlimit_plot) {
+      #   upper_xlimit_plot = ts + 1
+      # }
+      # 
+      # data <- data.frame(x = seq(lower_xlimit_plot, upper_xlimit_plot, length.out = 100))
+      # 
+      # # Define general ggplot.
+      # base_plot = ggplot(data, aes(x)) +
+      #   # Plot the normal distribution curve
+      #   stat_function(fun = dnorm, args = list(mean = 0, sd = 1), color = "black", size = 1) +
+      #   theme_minimal() +
+      #   theme(
+      #     panel.grid = element_blank(),
+      #     axis.line = element_line(color = "black"),
+      #     axis.text.y = element_blank(),
+      #     axis.ticks.y = element_blank(),
+      #     axis.title.y = element_blank(),
+      #     axis.title.x = element_blank(),
+      #     axis.line.y = element_blank(),
+      #     panel.border = element_blank()
+      #   )
+      # 
+      # # Create a data frame for shading based upon alternate hypothesis choice.
+      # if (input$alternate_hypothesis_choice == 1) {
+      #   base_plot = base_plot + 
+      #     # Lower tail
+      #     geom_area(stat = "function", 
+      #               fun = dnorm,
+      #               args = list(mean = 0, sd = 1),
+      #               fill = "red",
+      #               alpha = 0.5,
+      #               xlim = c(lower_xlimit_plot, -abs(ts))) +
+      #     # Add annotated line on test statistic
+      #     geom_vline(xintercept = -abs(ts), linetype = "dashed", color = "blue") +
+      #     annotate("text", x = -abs(ts) - 0.8, y = 0.3, 
+      #              label = as.character(round(-abs(ts), 2)), color = "blue", hjust = 0) +
+      #     
+      #     # Upper tail
+      #     geom_area(stat = "function", 
+      #               fun = dnorm,
+      #               args = list(mean = 0, sd = 1),
+      #               fill = "red",
+      #               alpha = 0.5,
+      #               xlim = c(abs(ts), upper_xlimit_plot)) +
+      #     # Add annotated line on test statistic
+      #     geom_vline(xintercept = abs(ts), linetype = "dashed", color = "blue") +
+      #     annotate("text", x = abs(ts) + 0.25, y = 0.3, 
+      #              label = as.character(round(abs(ts), 2)), color = "blue", hjust = 0)
+      #   
+      # } else if (input$alternate_hypothesis_choice == 2) {
+      #   base_plot = base_plot +
+      #     # Upper tail
+      #     geom_area(stat = "function", 
+      #               fun = dnorm,
+      #               args = list(mean = 0, sd = 1),
+      #               fill = "red",
+      #               alpha = 0.5,
+      #               xlim = c(ts, upper_xlimit_plot)) +
+      #     # Add annotated line on test statistic
+      #     geom_vline(xintercept = ts, linetype = "dashed", color = "blue") +
+      #     annotate("text", x = ts + 0.25, y = 0.3, 
+      #              label = as.character(round(ts, 2)), color = "blue", hjust = 0)
+      #   
+      # } else if (input$alternate_hypothesis_choice == 3) {
+      #   base_plot = base_plot + 
+      #     # Lower tail
+      #     geom_area(stat = "function", 
+      #               fun = dnorm,
+      #               args = list(mean = 0, sd = 1),
+      #               fill = "red",
+      #               alpha = 0.5,
+      #               xlim = c(lower_xlimit_plot, ts)) +
+      #     # Add annotated line on test statistic
+      #     geom_vline(xintercept = ts, linetype = "dashed", color = "blue") +
+      #     annotate("text", x = ts - 0.8, y = 0.3, 
+      #              label = as.character(round(ts, 2)), color = "blue", hjust = 0)
+      # }
+      # 
+      # return(base_plot)
     })
     
     

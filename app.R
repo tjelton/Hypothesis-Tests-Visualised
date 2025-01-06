@@ -6,6 +6,8 @@ source("Proportion-Test/proportion_test_ui.R")
 source("Utility/load_data_1_sample_srv.R")
 source("Utility/load_data_1_sample_ui.R")
 
+source("Utility/generic_plotting_functions.R")
+
 options(shiny.autoreload = TRUE)
 options(shiny.reactlog = TRUE)
 
@@ -366,6 +368,24 @@ ui <- dashboardPage(
               ),
               
               HTML("<br><br><br>"),
+          
+              ############ SECTION: p-value ############
+              fluidRow(
+                column(6,
+                       box(
+                         title = HTML("<u><b>p-value</b></u>"),
+                         status = "primary",
+                         width = "100%",
+                         solidHeader = FALSE,
+                         uiOutput("p_value_prelude")
+                       )
+                ),
+                column(6,
+                       plotOutput("test_stat_normal_plot", width = "80%", heigh = "275px"),
+                )
+              ),
+              
+              HTML("<br><br><br><br><br><br><br>"),
 
         )
         
@@ -549,10 +569,59 @@ server <- function(input, output, session) {
     )
   })
   
+  p_val = reactiveVal(0)
+  
+  # P-value text output and calculation.
+  output$p_value_prelude <- renderUI({
+    
+    # General prelude text about what the p-value is.
+    first_string = HTML(paste("<p>The p-value is the probability of observing a test-statistic <b>more extreme that our test statistic of ", test_stat(), ".</b></p>", sep = ""))
+    
+    # Specifically how to find the p-value (based upon alternate hypothesis).
+    second_string = "<p>The test statistics fall on a standard normal curve. "
+    if (input$alternate_hypothesis_choice == 1) {
+      negative_test_stat = as.character(-abs(as.numeric(test_stat())))
+      positive_test_stat = as.character(abs(as.numeric(test_stat())))
+      second_string = paste(second_string, "As we are doing a two-sided alternate hypothesis, we are interested in finding the <b>area below ", negative_test_stat, 
+                            " and above ", positive_test_stat, ".</p></b>", sep = "")
+    } else if (input$alternate_hypothesis_choice == 2){
+      second_string = paste(second_string, "As we are doing a one-sided greater than alternate hypothesis, we are interested in finding the <b>area above ", test_stat(), 
+                            ".</p></b>", sep = "")
+    } else if (input$alternate_hypothesis_choice == 3){
+      second_string = paste(second_string, "As we are doing a one-sided less than alternate hypothesis, we are interested in finding the <b>area below ", test_stat(), 
+                            ".</p></b>", sep = "")
+    }
+    second_string = HTML(second_string)
+    
+    # Calculate p-value.
+    p_val_local = 0
+    if (input$alternate_hypothesis_choice == 1) {
+      p_val_local = 2 * (1 - pnorm(abs(as.numeric(test_stat()))))
+    } else if (input$alternate_hypothesis_choice == 2) {
+      p_val_local = 1 - pnorm(as.numeric(test_stat()))
+    } else if (input$alternate_hypothesis_choice == 3) {
+      p_val_local = pnorm(as.numeric(test_stat()))
+    }
+    p_val(p_val_local)
+    
+    # String to output the p-value.
+    p_value = withMathJax(HTML("<p style='font-size: 16px; text-align: center;'>\\( p =", as.character(round(p_val_local,5)) ,"\\)</p>"))
+    
+    return(
+      tagList(
+        first_string,
+        second_string,
+        p_value
+      )
+    )
+    
+  })
   
   
-  
-  
+  # Histogram with normal curve to shown normal curve approximation.
+  output$test_stat_normal_plot = renderPlot({
+    return(curve_shaded_test_stat(dnorm, list(mean = 0, sd = 1), as.numeric(test_stat()), input$alternate_hypothesis_choice))
+  })
   
   boxModelMainServer(id = "box_model")
   
