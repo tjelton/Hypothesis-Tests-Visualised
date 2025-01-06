@@ -156,13 +156,14 @@ ui <- dashboardPage(
                            collapsed = FALSE,
                            status = "info",
                            solidHeader = FALSE,
-                           withMathJax(HTML("<p>An assumption for the 1-sample z-test is that the standard deviation of the population (denoted \\(\\sigma\\)) in which our sample is drawn is known. For example,
-                                a prior research paper may have estimated the population standard deviation, and you could use the value they discovered.<br><br>
+                           withMathJax(HTML("<p>
+                                An assumption for the 1-sample z-test is that the standard deviation of the population (denoted \\(\\sigma\\)) in which our sample is drawn is
+                                known. For example, a prior research paper may have estimated the population standard deviation, and you could use the value they discovered.<br><br>
                                 
                                 For this exercise, you can manually set the population standard deviation. However, for the most part, it is likely that the population standard
                                 deviation is unknown. Hence, for the purposes of this exercise, you can set the population standard deviation to be equal to the sample standard
-                                deviation (this has been automatically done below, but you are free to change the value). In practice, this is far from ideal, and in a future exercise, we will use the 1-sample t-test when the population standard deviation
-                                is unknown.</p>")),
+                                deviation (this has been automatically done below, but you are free to change the value). In practice, this is far from ideal, and in a future 
+                                exercise, we will use the 1-sample t-test when the population standard deviation is unknown.</p>")),
                            HTML("<br>"),
                            fluidRow(
                              column(7,
@@ -239,7 +240,42 @@ ui <- dashboardPage(
                 )
               ),
           
+              HTML("<br><br><br>"),
           
+              ############ SECTION: The Alternate Hypothesis ############
+              fluidRow(
+                column(7,
+                       box(
+                         title = HTML("<u><b>The Alternate Hypothesis</b></u>"),
+                         status = "primary",
+                         width = "100%",
+                         solidHeader = FALSE,
+                         HTML("<p>Specify what type of alternate hypothesis you will be using below:</p>"),
+                         HTML("<br>"),
+                         radioButtons(
+                           inputId = "alternate_hypothesis_choice",
+                           label = NULL,
+                           choices = list(
+                             "Two Sided" = 1,
+                             "One Sided (greater than)" = 2,
+                             "One Sided (less than)" = 3
+                           )
+                         ),
+                         
+                       )
+                ),
+                column(5,
+                       box(
+                         solidHeader = TRUE,
+                         width = "100%",
+                         HTML("<p><b>Null Hypothesis</b></p>"),
+                         uiOutput('null_hypothesis_output'),
+                         HTML("<p><b>Alternate Hypothesis</b></p>"),
+                         uiOutput('alternate_hypothesis_output'),
+                       )
+                )
+              ),
+              
               HTML("<br><br><br>"),
 
         )
@@ -328,8 +364,42 @@ server <- function(input, output, session) {
     diagram = paste(diagram, " edge [minlen = 2] box->sample [label = '  n = ", n, "', fontsize = 12, labeldistance = 5]}", sep = "")
     
     return (grViz(diagram))
-    
   })
+  
+  # Null hypothesis (rendered) output.
+  output$null_hypothesis_output <- renderUI({
+    hypothesis = paste("<p style='font-size: 16px;'>\\( H_0: \\) \\( \\mu", "=", as.character(round(input$null_mu, digits = 3)), "\\)</p>")
+    return (
+      tagList(
+        HTML("<center>"),
+        withMathJax(HTML(hypothesis)),
+        HTML("</center>")
+      )
+    )
+  })
+  
+  # Alternate hypothesis (rendered) output.
+  output$alternate_hypothesis_output <- renderUI({
+    
+    null_mean_string = as.character(round(input$null_mu, digits = 3))
+    
+    # Specify alternate hypothesis in reference to whether the user chooses to do a one-sided or two-sided test.
+    hypothesis = paste("<p style='font-size: 16px;'>\\( H_1: \\) \\(\\mu", "\\neq", null_mean_string, "\\)</p>")
+    if (input$alternate_hypothesis_choice == 2) {
+      hypothesis = paste("<p style='font-size: 16px;'>\\( H_1: \\) \\(\\mu", ">", null_mean_string, "\\)</p>")
+    } else if (input$alternate_hypothesis_choice == 3) {
+      hypothesis = paste("<p style='font-size: 16px;'>\\( H_1: \\) \\(\\mu", "<", null_mean_string, "\\)</p>")
+      
+    }
+    return (
+      tagList(
+        HTML("<center>"),
+        withMathJax(HTML(hypothesis)),
+        HTML("</center>")
+      )
+    )
+  })
+  
   
   
   
