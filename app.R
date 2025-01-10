@@ -217,14 +217,14 @@ ui <- dashboardPage(
                          width = "100%",
                          solidHeader = TRUE,
                          
-                         HTML("<p>The slider below changes the degrees of freedom (df) of the red t-curve in the graph below.</p>"),
+                         HTML("<p>The slider below changes the degrees of freedom of the red t-curve in the graph below.</p>"),
                          fluidRow(
                            column(8,
                               sliderInput(
                                 "df_slider", 
                                 NULL,
                                 min = 1, 
-                                max = 30,
+                                max = 25,
                                 value = 1),
                            ),
                            column(4,
@@ -237,8 +237,115 @@ ui <- dashboardPage(
                        )
                           
                 )
+              ),
+              
+              HTML("<br><br><br>"),
+              
+              ############ SECTION: Introducing the t-curve. ############
+              fluidRow(
                 
+                column(6,
+                       box(
+                         title = HTML("<u><b>T-Distribution and P-Values</b></u>"),
+                         status = "primary",
+                         width = "100%",
+                         solidHeader = FALSE,
+                         withMathJax(
+                           HTML(
+                             "<p>
+                                  Previously, it was mentioned that the parameter called “degrees of freedom” adjusts the ‘fatness’ of the curve’s tails. This can be easily 
+                                  verified in the app above when setting the slider to 1 and then 10. At 1 degree of freedom, the red t-curve has its tails well and truly above
+                                  the dashed normal curve. However, when looking at 10 degrees of freedom, the red t-curve’s tails have shrunk to be closer to that of the dashed 
+                                  normal curve.<br><br>
+                                  
+                                  There is a very logical reason for this! Recall from the ‘1-sample z-test’ exercise that when it comes to finding the p-value, we plot our test 
+                                  statistic and find the area under the curve covering the shaded region. If we have a p-value below our significance level (which is typically 
+                                  \\(\\alpha = 0.05\\)), we reject the null hypothesis.<br><br>
+                                  
+                                  As mentioned previously, if we do not have the population standard deviation, we need to account for the extra variability introduced by using
+                                  the sample standard deviation. Degrees of freedom allow us to do just that! The value of degrees of freedom is directly linked to sample size,
+                                  meaning larger degrees of freedom are associated with larger sample sizes. When degrees of freedom are equal to 1, this indicates that our sample
+                                  is tiny (likely contains only 2 points), meaning there is lots of variability/uncertainty and that is why the tails of the t-curve are so fat.
+                                  The result of this is that the area under the curve will be much larger, meaning that a more extreme test statistic is needed to reject the null
+                                  hypothesis.<br><br>
+                                  
+                                  On the other hand, when degrees of freedom are equal to a larger value (such as 25), the t-curve tails appear much more closely aligned with the
+                                  normal curve’s tails. This is because we are now taking a much larger sample, and there is less variability to account for.<br><br>
+                                  
+                                  The demo to the right allows you to compare the p-values from a normal and t-distribution. You can see that for low values for degrees of freedom,
+                                  the p-value is much larger than that of the normal distribution. However, as you increase degrees of freedom, the p-values become more similar.
+                              </p>"
+                           )
+                         )
+                       )
+                ),
+                column(6,
+                       box(
+                         title = "Demonstration",
+                         status = "primary",
+                         width = "100%",
+                         solidHeader = TRUE,
+                         
+                         HTML("<p>Comparison of the p-values for a two-sided alternate hypothesis test using a normal and t-curve.</p>"),
+                         
+                         fluidRow(
+                           column(4,
+                                  numericInput( 
+                                    "test_statistic_input", 
+                                    "Enter Test Statistic:", 
+                                    value = 1
+                                  )
+                           ),
+                           column(8,
+                                  sliderInput(
+                                    "df_slider_demo_2", 
+                                    "Change Degree of Freedom (T-Curve):",
+                                    min = 1, 
+                                    max = 50,
+                                    value = 1),
+                           )
+                         ),
+                         
+                         fluidRow(
+                           column(6,
+                              HTML("<h4><center><b>Normal Curve (z-tests)</b></center></h4>"),
+                              plotOutput("test_stat_normal_plot", width = "80%", heigh = "200px"),
+                              HTML("<br><br><br>"),
+                              uiOutput("p_value_normal_curve")
+                           ),
+                           column(6,
+                              HTML("<h4><center><b>T-Curve (t-tests)</b></center></h4>"),
+                              plotOutput("test_stat_t_plot", width = "80%", heigh = "200px"),
+                              HTML("<br><br><br>"),
+                              uiOutput("p_value_t_curve")
+                           )
+                         ),
+    
+                         height = "550px"
+                       )
+                )
+              ),
+              
+              HTML("<br><br><br>"),
+              
+              ############ SECTION: Conclusion ############
+              fluidRow(
+                column(12,
+                       box(
+                         title = HTML("<u><b>Conclusion</b></u>"),
+                         status = "primary",
+                         width = "100%",
+                         solidHeader = FALSE,
+                         HTML("<p>
+                            The purpose of this exercise was to develop a conceptual understanding of what the t-distribution is, and why we need it. We did this through discussing
+                            the 1-sample z-test, and specifically, how things change when we don't know the population standard deviation. I have left some things vague (such as 
+                            how do we know which value to set degrees of freedom to), but we will go into greater detail in further exercises.
+                        </p>")
+                       )
+                )
               )
+              
+              
               
               
               
@@ -275,6 +382,26 @@ server <- function(input, output, session) {
     }
     
     return(plot)
+  })
+  
+  output$test_stat_normal_plot = renderPlot({
+    return(curve_shaded_test_stat(dnorm, list(mean = 0, sd = 1), as.numeric(input$test_statistic_input), 1))
+  })
+  
+  output$test_stat_t_plot = renderPlot({
+    return(curve_shaded_test_stat(dt, list(df=input$df_slider_demo_2), as.numeric(input$test_statistic_input), 1))
+  })
+  
+  output$p_value_normal_curve = renderUI({
+    p_val = 2 * (1 - pnorm(abs(as.numeric(input$test_statistic_input))))
+    p_value = withMathJax(HTML("<p style='font-size: 16px; text-align: center;'>\\( p =", as.character(round(p_val,5)) ,"\\)</p>"))
+    return(p_value)
+  })
+  
+  output$p_value_t_curve = renderUI({
+    p_val = 2 * (1 - pt(abs(as.numeric(input$test_statistic_input)), df = input$df_slider_demo_2))
+    p_value = withMathJax(HTML("<p style='font-size: 16px; text-align: center;'>\\( p =", as.character(round(p_val,5)) ,"\\)</p>"))
+    return(p_value)
   })
   
   boxModelMainServer(id = "box_model")
