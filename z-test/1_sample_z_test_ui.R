@@ -21,7 +21,7 @@ oneSampleZTestUI <- function(id) {
     HTML("<br>"),
     
     ############ SECTION: Input Data ############
-    load_1_sample_data_UI(ns("loading_data")),
+    load_1_sample_data_UI(ns("loading_data"), test_name = "1-sample z-test"),
 
     HTML("<br><br><br>"),
 

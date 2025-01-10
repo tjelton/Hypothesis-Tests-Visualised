@@ -1,4 +1,4 @@
-load_1_sample_data_UI <- function(id) {
+load_1_sample_data_UI <- function(id, test_name = "1-sample z-test") {
   ns <- NS(id)
   tagList(
     
@@ -10,8 +10,8 @@ load_1_sample_data_UI <- function(id) {
                status = "primary",
                width = "100%",
                solidHeader = FALSE,
-               HTML("<p>In order to do a 1-sample z-test, we first need to proivde our ONE sample that we will be analysing. Below you can
-                        choose pre-uploaded data to analysis, or you can manually enter data.</p>"),
+               HTML(paste("<p>In order to do a ",  test_name, " we first need to proivde our ONE sample that we will be analysing. Below you can
+                        choose pre-uploaded data to analysis, or you can manually enter data.</p>"), sep = ""),
                HTML("<br>"),
                
                # User specifies whether they will use inbuilt data or manually specify data.
