@@ -192,7 +192,7 @@ ui <- dashboardPage(
                                       numericInput(
                                         "null_mu",
                                         NULL,
-                                        value = 0
+                                        value = 140
                                       ),
                                ),
                              ),
@@ -722,8 +722,8 @@ server <- function(input, output, session) {
                    <h5><u>How does Mr. Han go about doing this?</u></h5><br>
                    
                    Similar to before, we can use the box model to model the hypothesis test. This time, let’s first turn our attention to the test scores that Mr. Han’s students 
-                   achieved in the class. Let’s say that the 25 students had an average score of 155. As there were 25 students, we specify \\(n = 25 \\). The average score of 
-                   155 is called the observed value (OV). Also, using the scores, Mr. Han found that the sample standard deviation equals 7.1 (\\(s = 7.3\\)).<br><br>
+                   achieved in the class. Let’s say that the 25 students had an average score of 142.843 As there were 25 students, we specify \\(n = 25 \\). The average score of 
+                   142.843 is called the observed value (OV). Also, using the scores, Mr. Han found that the sample standard deviation equals 4.751 (\\(s = 4.751\\)).<br><br>
 
                    Using these values and \\(\\mu = 140\\) from the null hypothesis, we have all the information needed to create the box model, which is shown on the right.
                    </p>"))
@@ -740,8 +740,8 @@ server <- function(input, output, session) {
       withMathJax(
         HTML(paste("$$\\begin{align*} \\text{Test-Statistic (TS)} &= \\frac{\\text{OV} - \\text{EV}}{\\hat{\\text{SE}}}
                               \\\\ &= \\frac{\\text{OV} - \\text{EV}}{\\frac{s}{\\sqrt{n}}}
-                              \\\\ &= \\frac{155 - 140}{\\frac{7.3}{\\sqrt{25}}}
-                              \\\\ &= 0.738 \\text{ (3 decimal places)} \\end{align*}$$", sep = ""))
+                              \\\\ &= \\frac{142.843 - 140}{\\frac{4.751}{\\sqrt{25}}}
+                              \\\\ &= 2.992 \\text{ (3 decimal places)} \\end{align*}$$", sep = ""))
       ),
       HTML("<p><br>
             With the test statistic found, Mr. Han is ready to find the p-value. However, this represents a big difference between the ‘1-sample  
@@ -762,10 +762,10 @@ server <- function(input, output, session) {
           graph [layout = dot, rankdir = TB]
 
           node [shape = box, style = filled, fillcolor = \"#bdfeff\", fontsize = 12, width = 2.5]
-          box [label = '&mu; = 140; s = 7.3']
+          box [label = '&mu; = 140; s = 4.751']
 
           node [shape = oval,width = 1.5,fillcolor = \"#f9ffbd\", fontsize = 12]
-          sample [label = 'OV = 155']
+          sample [label = 'OV = 142.843']
 
           edge [minlen = 2]
             box->sample [label = '  n = 25', fontsize = 12, labeldistance = 5]

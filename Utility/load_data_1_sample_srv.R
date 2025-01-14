@@ -1,3 +1,8 @@
+# Generate data for the Mr Han's Math Class example guiding the 1-sample z and t-test exercises.
+set.seed(1)
+Han_math_numbers <- rnorm(25, mean = 142, sd = 5)
+Han_math_numbers = data.frame(Scores = Han_math_numbers)
+
 load_1_sample_data_Server <- function(id) {
   moduleServer(
     id,
@@ -31,7 +36,7 @@ load_1_sample_data_Server <- function(id) {
               selectInput( 
                 ns("data_set_pre_uploaded"), 
                 "Which data set would you like to analyse?", 
-                list("ChickWeight", "Orange", "PlantGrowth", "ToothGrowth", "chickwts", "iris") 
+                list("Mr. Han's Math Class", "iris", "Orange", "PlantGrowth", "ToothGrowth", "chickwts", "ChickWeight") 
               ),
               HTML("<p><i>Note: These are common data sets. If you want to learn more about them, feel free to look on Google!<i></p>")
             )
@@ -86,10 +91,18 @@ load_1_sample_data_Server <- function(id) {
           return()
         }
         
-        # Get numeric columns.
-        data = get(input$data_set_pre_uploaded)
+        # Get numeric columns
+        #   Mr. Han Math Class example
+        if (input$data_set_pre_uploaded == "Mr. Han's Math Class") {
+          data = Han_math_numbers
+          
+        #   Using inbuilt R data sets.  
+        } else {
+          data = get(input$data_set_pre_uploaded)
+        }
         numeric_cols <- names(data)[sapply(data, is.numeric)]
         
+
         # Select button for the identified numeric columns.
         return(
           tagList(
@@ -104,7 +117,14 @@ load_1_sample_data_Server <- function(id) {
       
       # Update the data store once the column has been selected.
       observeEvent(input$column_select_pre_uploaded, {
-        data_to_store = get(input$data_set_pre_uploaded)[[input$column_select_pre_uploaded]]
+        if (input$data_set_pre_uploaded == "Mr. Han's Math Class") {
+          data_to_store = Han_math_numbers[[input$column_select_pre_uploaded]]
+      
+        # Otherwise, use inbuilt R data sets.  
+        } else {
+          data_to_store = get(input$data_set_pre_uploaded)[[input$column_select_pre_uploaded]]
+          
+        }
         data(data_to_store)
       })
       
@@ -118,11 +138,23 @@ load_1_sample_data_Server <- function(id) {
         }
         
         # Get factor columns.
-        data = get(input$data_set_pre_uploaded)
+        if (input$data_set_pre_uploaded == "Mr. Han's Math Class") {
+          data = Han_math_numbers
+        
+        #   Otherwise, we are using a pre-built data set in R.
+        } else {
+          data = get(input$data_set_pre_uploaded)
+        }
+        
         factor_cols <- names(data)[sapply(data, is.factor)]
         
-        factor_cols = append("(None)", factor_cols)
+        # If no factor columns, return nothing.
+        if (length(factor_cols) == 0) {
+          return(NULL)
+        }
         
+        factor_cols = append("(None)", factor_cols)
+
         # Select button for the identified factor columns to optionally separate on.
         return(
           tagList(
@@ -176,7 +208,14 @@ load_1_sample_data_Server <- function(id) {
         re_run_flag()
         req(input$data_set_pre_uploaded)
         req(input$column_select_pre_uploaded)
-        data_to_store = get(input$data_set_pre_uploaded)[[input$column_select_pre_uploaded]]
+        
+        if (input$data_set_pre_uploaded == "Mr. Han's Math Class") {
+          data_to_store = Han_math_numbers[[input$column_select_pre_uploaded]]
+          
+        #   Otherwise, user has selected data prebuilt into R.
+        } else {
+          data_to_store = get(input$data_set_pre_uploaded)[[input$column_select_pre_uploaded]]
+        }
         data(data_to_store)
       })
       

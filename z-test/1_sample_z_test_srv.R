@@ -42,8 +42,8 @@ oneSampleZTestServer <- function(id) {
                     We also know that the population standard deviation (denoted by \\(\\mu \\)) is equal to 7.5. Hence, we place these values into the box.<br><br>
 
                     Next, we want to turn our attention to the test scores that Mr. Han’s students achieved in the class. Let’s say that the 25 students had an average score of
-                    155. As there were 25 students, we specify: \\(n = 25 \\)). The average score of 155 is referred to as the observed value (OV). With these details drawn, we have
-                    completed the box model representation.<br><br>
+                    142.843 As there were 25 students, we specify: \\(n = 25 \\). The average score of 155 142.843 referred to as the observed value (OV). With these details drawn, 
+                    we have completed the box model representation.<br><br>
                    </p>"))
           ),
           column(4,
@@ -57,8 +57,8 @@ oneSampleZTestServer <- function(id) {
         withMathJax(
           HTML(paste("$$\\begin{align*} \\text{Test-Statistic (TS)} &= \\frac{\\text{OV} - \\text{EV}}{\\text{SE}}
                               \\\\ &= \\frac{\\text{OV} - \\text{EV}}{\\frac{\\sigma}{\\sqrt{n}}}
-                              \\\\ &= \\frac{155 - 140}{\\frac{7.5}{\\sqrt{25}}}
-                              \\\\ &= 0.738 \\text{ (3 decimal places)} \\end{align*}$$", sep = ""))
+                              \\\\ &= \\frac{142.843 - 140}{\\frac{7.5}{\\sqrt{25}}}
+                              \\\\ &= 1.895 \\text{ (3 decimal places)} \\end{align*}$$", sep = ""))
         ),
         HTML("<p>
             With the test statistic found, Mr. Han is ready to find the p-value. Play around with the remainder of this exercise to help Mr. Han find the p-value, and test whether
@@ -78,7 +78,7 @@ oneSampleZTestServer <- function(id) {
           box [label = '&mu; = 140; &sigma; = 7.5']
 
           node [shape = oval,width = 1.5,fillcolor = \"#f9ffbd\", fontsize = 12]
-          sample [label = 'OV = 155']
+          sample [label = 'OV = 142.843']
 
           edge [minlen = 2]
             box->sample [label = '  n = 25', fontsize = 12, labeldistance = 5]

@@ -97,7 +97,7 @@ oneSampleZTestUI <- function(id) {
                                 numericInput(
                                   ns("null_mu"),
                                   NULL,
-                                  value = 0
+                                  value = 140
                                 ),
                          ),
                        ),
