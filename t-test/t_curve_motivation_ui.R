@@ -2,7 +2,7 @@ tCurveMotivationUI <- function(id) {
   ns <- NS(id)
   tagList(
     
-    HTML("<h1>Introducing the T-Distribution (Motivation)</h1><br>"),
+    HTML("<h1>Introducing the t-Distribution (Motivation)</h1><br>"),
     
     ############ SECTION: When we don't know the population sd! ############
     fluidRow(
