@@ -50,6 +50,12 @@ boxModelMainUI <- function(id) {
                    value = "1,0,0,0",
                    width = "100%"
                  ),
+                 fluidRow(
+                   column(8),
+                   column(4,
+                     actionButton(ns("submit_tickets"), "Set Tickets", class = "btn btn-success", style="color: #fff;", width = "100%")
+                   )
+                 ),
                  uiOutput(ns("tickets_text_error_message"))
                ),
                

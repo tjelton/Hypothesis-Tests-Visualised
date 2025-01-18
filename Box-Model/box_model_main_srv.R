@@ -20,7 +20,7 @@ boxModelMainServer <- function(id) {
     number_of_ticket_draws <- reactiveVal(25)
     
     # Process tickets text box strings.
-    observeEvent(input$box_tickets_text_entry, {
+    observeEvent(input$submit_tickets, {
       
       # Extract the values that are separated between the commas.
       characters <- strsplit(input$box_tickets_text_entry, "")[[1]]
