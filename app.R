@@ -9,6 +9,15 @@ source("t-test/t_curve_motivation_ui.R")
 source("t-test/t_curve_motivation_srv.R")
 source("t-test/1_sample_t_test_ui.R")
 source("t-test/1_sample_t_test_srv.R")
+source("t-test/1_sample_t_test_generic_modules/alternate_hypothesis_ui.R")
+source("t-test/1_sample_t_test_generic_modules/alternate_hypothesis_srv.R")
+source("t-test/1_sample_t_test_generic_modules/assumptions_ui.R")
+source("t-test/1_sample_t_test_generic_modules/test_statistic_ui.R")
+source("t-test/1_sample_t_test_generic_modules/test_statistic_srv.R")
+source("t-test/1_sample_t_test_generic_modules/p_value_ui.R")
+source("t-test/1_sample_t_test_generic_modules/p_value_srv.R")
+source("t-test/1_sample_t_test_generic_modules/conclusion_ui.R")
+source("t-test/1_sample_t_test_generic_modules/conclusion_srv.R")
 source("Utility/load_data_1_sample_srv.R")
 source("Utility/load_data_1_sample_ui.R")
 source("Utility/generic_plotting_functions.R")
@@ -154,5 +163,8 @@ server <- function(input, output, session) {
   
 }
 
+enableBookmarking(store = "url")
+
+
 # Run the application
-shinyApp(ui, server, enableBookmarking = "url")
+shinyApp(ui, server)

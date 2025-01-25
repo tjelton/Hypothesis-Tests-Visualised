@@ -106,183 +106,25 @@ oneSampleTTestUI <- function(id) {
       HTML("<br><br><br>"),
       
       ########### SECTION: The Alternate Hypothesis ############
-      fluidRow(
-        column(7,
-               box(
-                 title = HTML("<u><b>The Alternate Hypothesis</b></u>"),
-                 status = "primary",
-                 width = "100%",
-                 solidHeader = FALSE,
-                 HTML("<p>Specify what type of alternate hypothesis you will be using below:</p>"),
-                 HTML("<br>"),
-                 radioButtons(
-                   inputId = ns("alternate_hypothesis_choice"),
-                   label = NULL,
-                   choices = list(
-                     "Two Sided" = 1,
-                     "One Sided (greater than)" = 2,
-                     "One Sided (less than)" = 3
-                   )
-                 ),
-
-               )
-        ),
-        column(5,
-               box(
-                 solidHeader = TRUE,
-                 width = "100%",
-                 HTML("<p><b>Null Hypothesis</b></p>"),
-                 uiOutput(ns('null_hypothesis_output')),
-                 HTML("<p><b>Alternate Hypothesis</b></p>"),
-                 uiOutput(ns('alternate_hypothesis_output')),
-               )
-        )
-      ),
-
+      alternate_hypotheses_1_sample_t_test_UI(ns("alternate_hypothesis")),
       HTML("<br><br><br>"),
       
       ############ SECTION: Assumptions ############
-      fluidRow(
-        column(12,
-               box(
-                 title = HTML("<u><b>Assumptions</b></u>"),
-                 status = "primary",
-                 width = "100%",
-                 solidHeader = FALSE,
-                 HTML("<p>For the hypothesis test to be valid, we need to check the following assumptions:</p>"),
-
-                 # Assumption 1: Independent Samples
-                 box(
-                   title = "Assumption 1: Independent and Randomly Chosen Sample",
-                   width = "100%",
-                   collapsible = TRUE,
-                   collapsed = TRUE,
-                   status = "info",
-                   solidHeader = FALSE,
-                   HTML("<p>The first assumption is that our sample is <b>independent and randomly chosen</b>.</p>"),
-                   HTML("<p><span style='color: blue;'><b>How do we check?</b></span> <i>We check by investigating the experimental setup.</i><br><br>
-                      For example, consider we were investigating data for a proportion test involving human participants. We could read the accompanying scientific
-                      publication to understand the methodology they used to gather the people in the sample.</p>")
-                 ),
-
-                 # Assumption 2: Normality
-                 box(
-                   title = "Assumption 2: Normality",
-                   width = "100%",
-                   collapsible = TRUE,
-                   collapsed = TRUE,
-                   status = "info",
-                   solidHeader = FALSE,
-                   HTML("<p>The second assumption is that the sample means follow a normal distribution."),
-                   HTML("<p><span style='color: blue;'><b>How do we check?</b></span><br>
-                      <ul>
-                        <li>Recall that the central limit theorem tells us that if we take a sufficiently large number of draws from the box, then the sample
-                        means will approximately follow a normal distribution. If confused, please see the box model exercise.</li>
-                        <li>One way to gauge whether the central limit theorem holds or not is to see how large our sample is (this is indicated by the \"n\" in
-                        the box model above).</li>
-                        <li>Many textbooks will say that you can say that you can use the rule of thumb that the central limit theorem will apply if we have 30
-                        or more draws. BEWARE - this is not always true! If the distribution of the values is very skewed, you will need much more than 30 draws!</li>
-                        <li>You should use a combination of the size of \"n\" and a histogram and boxplot of the sample distributions to help you determine whether
-                        the central limit theorem means we can resonably approximate the sample means using a normal distribution.</li>
-                      </ul>
-                 </p>")
-                 )
-               )
-        )
-      ),
-
+      assumptions_1_sample_t_test_UI(ns("assumptions")),
       HTML("<br><br><br>"),
 
-      ############ SECTION: Test Statistics ############
-      fluidRow(
-        column(12,
-               box(
-                 title = HTML("<u><b>Test Statistic</b></u>"),
-                 status = "primary",
-                 width = "100%",
-                 solidHeader = FALSE,
-
-                 fluidRow(
-                   column(6,
-                          HTML("<p><b>Step 1) Calculate Expected Value (SE) and Standard Error (SE)</b></p>"),
-                          uiOutput(ns("ev_and_se_text"))
-                   ),
-                   column(6,
-                          HTML("<p><b>Step 2) Test Statistic Calculation</b></p>"),
-                          uiOutput(ns("test_statistic_calculation"))
-                   )
-                 ),
-               ),
-        ),
-      ),
-
+      ############ SECTION: Test Statistic ############
+      test_statistic_1_sample_t_test_UI(ns("test_stat")),
       HTML("<br><br><br>"),
       
       ############ SECTION: p-value ############
-      fluidRow(
-        column(6,
-               box(
-                 title = HTML("<u><b>p-value</b></u>"),
-                 status = "primary",
-                 width = "100%",
-                 solidHeader = FALSE,
-                 uiOutput(ns("p_value_prelude"))
-               )
-        ),
-        column(6,
-               plotOutput(ns("test_stat_t_plot"), width = "80%", heigh = "275px"),
-        )
-      ),
-      
+      p_value_1_sample_t_test_UI(ns("p_val")),
       HTML("<br><br><br><br><br>"),
       
       ############ SECTION:Conclusion ############
-      fluidRow(
-        column(12,
-               box(
-                 title = HTML("<u><b>Conclusion</b></u>"),
-                 status = "primary",
-                 width = "100%",
-                 solidHeader = FALSE,
-                 
-                 fluidRow(
-                   
-                   # Section to enter significance level.
-                   column(6,
-                          HTML("<p><b>Step 1) What is your significance level</b>?</p>"),
-                          
-                          # Space to enter significance value.
-                          fluidRow(
-                            column(1,
-                                   withMathJax(HTML("<p style='font-size: 16px; text-align: right;'>\\( \\alpha = \\)</p>"))
-                            ),
-                            column(3,
-                                   numericInput(
-                                     ns("alpha_value"),
-                                     NULL,
-                                     value = 0.05,
-                                     min = 0,
-                                     max = 1,
-                                     width = "100%"
-                                   ),
-                            ),
-                          ),
-                          uiOutput(ns("significance_level_warning")),
-                   ),
-                   
-                   # Section to provide final result.
-                   column(6,
-                          HTML("<p><b>Step 2) Final Conclusion</b></p>"),
-                          uiOutput(ns("final_conclusion_output"))
-                   )
-                 )
-               )
-        ),
-      )
-
+      conclusion_1_sample_t_test_UI(ns("conclusion"))
+      
     )
-   
 
-    
   )
 }
