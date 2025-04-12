@@ -281,9 +281,11 @@ load_data_paired_sample_Server <- function(id) {
           box(
             solidHeader = TRUE,
             width = "100%",
-            radioButtons(ns("data_to_plot"), NULL, c("Condition 1" = "Condition_1", 
-                                                 "Condition 2" = "Condition_2", 
-                                                 "Paired Difference" = "Paired_Difference"), inline=T)
+            radioButtons(ns("data_to_plot"), NULL, c(
+                                                 "Paired Difference" = "Paired_Difference",
+                                                 "Condition 1" = "Condition_1", 
+                                                 "Condition 2" = "Condition_2"
+                                                  ), inline=T)
           )
         )
       })
