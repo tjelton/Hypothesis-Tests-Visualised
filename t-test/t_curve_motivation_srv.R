@@ -4,29 +4,27 @@ tCurveMotivationServer <- function(id) {
     
     ns <- session$ns
     
-    output$changing_df_graph = renderPlot({
-
-      data <- data.frame(x = seq(-4, 4, length.out = 100))
-
-      plot = ggplot(data, aes(x)) +
-        stat_function(fun = dt, args = list(df = input$df_slider), color = "red", size = 0.5) +
-        theme_minimal() +
-        theme(
-          panel.grid = element_blank(),
-          axis.line = element_line(color = "black"),
-          axis.text.y = element_blank(),
-          axis.ticks.y = element_blank(),
-          axis.title.y = element_blank(),
-          axis.title.x = element_blank(),
-          axis.line.y = element_blank(),
-          panel.border = element_blank()
-        )
-
+    output$changing_df_graph <- renderPlot({
+      par(mar = c(4,0,0,0)) # no margins
+      
+      x <- seq(-4, 4, length.out = 100)
+      y_t <- dt(x, df = input$df_slider)
+      y_norm <- dnorm(x, mean = 0, sd = 1)
+      
+      # Determine y-axis limits so t curve fits fully
+      ylim <- range(y_t, y_norm)
+      
+      # Plot t-distribution curve in black solid line
+      plot(x, y_t, type = "l", col = "black", lwd = 1,
+           ylab = "", xlab = "", axes = FALSE, ylim = ylim)
+      
+      # Add x-axis with labels
+      axis(1, col = "black")
+      
+      # Add normal curve if requested - red dashed line
       if (input$display_normal_curve) {
-        plot = plot + stat_function(fun = dnorm, args = list(mean = 0, sd = 1), color = "black", size = 0.5, linetype = "dashed")
+        lines(x, y_norm, col = "red", lwd = 1, lty = "dashed")
       }
-
-      return(plot)
     })
     
     output$test_stat_normal_plot = renderPlot({

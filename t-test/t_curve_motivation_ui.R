@@ -2,75 +2,73 @@ tCurveMotivationUI <- function(id) {
   ns <- NS(id)
   tagList(
     
-    HTML("<h1>Introducing the t-Distribution (Motivation)</h1><br>"),
+    HTML("<h1>Introducing the t-Distribution (Motivation)</h1>"),
     
     ############ SECTION: When we don't know the population sd! ############
     fluidRow(
-      column(12,
-             box(
-               title = HTML("<u><b>When we don't know the population sd!</b></u>"),
-               status = "primary",
-               width = "100%",
-               solidHeader = FALSE,
-
-               withMathJax(
-                  HTML(
-                    "<p>
-                        When determining the standard error (SE) in the 1-sample z-test section, we assumed that the <b>population standard deviation (denoted by
-                        \\(\\sigma  \\)) is known</b>:
-                    </p>"
-                  ),
-                  HTML("$$\\begin{align*} \\text{SE} &= \\frac{\\color{red}{\\sigma}}{\\sqrt{n}} \\end{align*}$$"),
-                  HTML(
-                    "<p>
-                        However, in practice, the population standard deviation is usually unknown. Hence, we often use the <b>sample standard deviation (denoted by
-                        \\(s \\)) instead</b>:
-                    </p>"
-                  ),
-                  HTML("$$\\begin{align*} \\hat{\\text{SE}} &= \\frac{\\color{red}{s}}{\\sqrt{n}} \\end{align*}$$"),
-                  HTML("
-                    <p>
-                        One observation is that when we substitute the population standard deviation for the sample standard deviation, we now write \\(\\text{SE}\\)
-                        instead of \\(\\hat{\\text{SE}}  \\). The \\(\\hat{}\\) represents that this standard error is an estimate. We don’t have the true
-                        \\(\\text{SE}\\) anymore, as we are using the sample, which is a subset of the population.<br><br>
-
-                        As the sample size increases, the estimate standard error (\\(\\hat{\\text{SE}}\\)) will converge to the population standard error
-                        (\\(\\text{SE}\\)). Conceptually, this is because as the sample becomes larger, it is more representative of the population. Also, the above is
-                        only true if we are doing unbiased sampling!
-                    </p>
-                  ")
-                )
-             )
-      )
+        column(12,
+               tight_card(
+                   "When we don't know the population sd!",
+                   withMathJax(
+                     HTML("
+                        <p style='margin-top: 0.75rem; margin-bottom: 0.75rem; line-height: 1.5;'>
+                          When determining the standard error (SE) in the 1-sample z-test section, 
+                          we assumed that the <b>population standard deviation (denoted by \\(\\sigma\\)) is known</b>:
+                        </p>
+                      "),
+                     HTML("$$\\begin{align*} \\text{SE} &= \\frac{\\color{red}{\\sigma}}{\\sqrt{n}} \\end{align*}$$"),
+                     HTML("
+                        <p style='margin-top: 0.75rem; margin-bottom: 0.75rem; line-height: 1.5;'>
+                          However, in practice, the population standard deviation is usually unknown. 
+                          Hence, we often use the <b>sample standard deviation (denoted by \\(s\\)) instead</b>:
+                        </p>
+                      "),
+                     HTML("$$\\begin{align*} \\hat{\\text{SE}} &= \\frac{\\color{red}{s}}{\\sqrt{n}} \\end{align*}$$"),
+                     HTML("
+                        <p style='margin: 0; line-height: 1.5;'>
+                          One observation is that when we substitute the population standard deviation for the sample standard deviation, 
+                          we now write \\(\\text{SE}\\) instead of \\(\\hat{\\text{SE}}\\). 
+                          The \\(\\hat{}\\) represents that this standard error is an estimate. 
+                          We don’t have the true \\(\\text{SE}\\) anymore, as we are using the sample, 
+                          which is a subset of the population.<br><br>
+                  
+                          As the sample size increases, the estimated standard error (\\(\\hat{\\text{SE}}\\)) 
+                          will converge to the population standard error (\\(\\text{SE}\\)). 
+                          Conceptually, this is because as the sample becomes larger, 
+                          it is more representative of the population. 
+                          Also, the above is only true if we are doing unbiased sampling!
+                        </p>
+                      ")
+                   )
+               )
+        )
     ),
-
-    HTML("<br><br><br>"),
     
+
+    HTML("<br><br>"),
+
     ############ SECTION: Introducing the t-curve. ############
     fluidRow(
 
       column(6,
-             box(
-               title = HTML("<u><b>Introducing the t-curve</b></u>"),
-               status = "primary",
-               width = "100%",
-               solidHeader = FALSE,
-               withMathJax(
-                 HTML(
-                   "<p>
+             tight_card(
+                "Introducing the t-curve",
+                withMathJax(
+                  HTML(
+                    "<p>
                         Firstly, let’s remind ourselves of the test statistic (\\(\\text{TS}\\)) calculation for a 1-sample z-test:
                     </p>"
-                 ),
-                 HTML("$$\\begin{align*} \\text{Test Statistic (TS)} &= \\frac{\\text{OV} - \\text{EV}}{\\color{red}{\\text{SE}}} \\end{align*}$$"),
-                 HTML(
-                   "<p>
+                  ),
+                  HTML("$$\\begin{align*} \\text{Test Statistic (TS)} &= \\frac{\\text{OV} - \\text{EV}}{\\color{red}{\\text{SE}}} \\end{align*}$$"),
+                  HTML(
+                    "<p>
                         As a reminder, \\(\\text{OV}\\) stands for observed value and \\(\\text{EV}\\) stands for expected value. As mentioned in the above seection,
                         the \\(\\text{SE}\\) (indicated in red) requires that the population standard deviation is known. When this is not known, we can instead use
                         the estimate standard error (using the sample’s standard deviation):
                     </p>"
-                 ),
-                 HTML("$$\\begin{align*} \\text{Test Statistic (TS)} &= \\frac{\\text{OV} - \\text{EV}}{\\color{red}{\\hat{\\text{SE}}}} \\end{align*}$$"),
-                 HTML("
+                  ),
+                  HTML("$$\\begin{align*} \\text{Test Statistic (TS)} &= \\frac{\\text{OV} - \\text{EV}}{\\color{red}{\\hat{\\text{SE}}}} \\end{align*}$$"),
+                  HTML("
                     <p>
                        In both cases above, the test statistic formulas look the same. The only difference is that the latter one has an estimate for \\(\\text{SE}\\)
                        (i.e. \\(\\hat{\\text{SE}}\\)). Hence, we  claim that the second test statistic has extra variability because of the uncertainty surrounding
@@ -83,49 +81,39 @@ tCurveMotivationUI <- function(id) {
                        as the degrees of freedom value increases, the curve approaches the normal distribution.
                     </p>
                   ")
-               )
-             )
+                )
+             ),
       ),
       column(6,
-             box(
-               title = "Demonstration",
-               status = "primary",
-               width = "100%",
-               solidHeader = TRUE,
-
-               HTML("<p>The slider below changes the degrees of freedom of the red t-curve in the graph below.</p>"),
-               fluidRow(
-                 column(8,
-                    sliderInput(
-                      ns("df_slider"),
-                      NULL,
-                      min = 1,
-                      max = 25,
-                      value = 1),
-                 ),
-                 column(4,
-                    checkboxInput(ns("display_normal_curve"), "Display normal curve", TRUE),
-                 )
-               ),
-
-               plotOutput(ns("changing_df_graph"), width = "80%", height = "300px"),
-               height = "550px"
+             primary_card(
+                "Demonstration",
+                HTML("<p>The slider below changes the degrees of freedom of the red t-curve in the graph below.</p>"),
+                fluidRow(
+                  column(8,
+                         sliderInput(
+                           ns("df_slider"),
+                           NULL,
+                           min = 1,
+                           max = 25,
+                           value = 1),
+                  ),
+                  column(4,
+                         checkboxInput(ns("display_normal_curve"), "Display normal curve", TRUE),
+                  )
+                ),
+                plotOutput(ns("changing_df_graph"), width = "100%", height = "300px"),
              )
-
       )
     ),
 
     HTML("<br><br><br>"),
-    
+
     ############ SECTION: Introducing the t-curve. ############
     fluidRow(
 
       column(6,
-             box(
-               title = HTML("<u><b>T-Distribution and P-Values</b></u>"),
-               status = "primary",
-               width = "100%",
-               solidHeader = FALSE,
+             tight_card(
+               "T-Distribution and P-Values",
                withMathJax(
                  HTML(
                    "<p>
@@ -156,14 +144,9 @@ tCurveMotivationUI <- function(id) {
              )
       ),
       column(6,
-             box(
+             primary_card(
                title = "Demonstration",
-               status = "primary",
-               width = "100%",
-               solidHeader = TRUE,
-
                HTML("<p>Comparison of the p-values for a two-sided alternate hypothesis test using a normal and t-curve.</p>"),
-
                fluidRow(
                  column(4,
                         numericInput(
@@ -181,23 +164,18 @@ tCurveMotivationUI <- function(id) {
                           value = 1),
                  )
                ),
-
                fluidRow(
                  column(6,
-                    HTML("<h4><center><b>Normal Curve (z-tests)</b></center></h4>"),
-                    plotOutput(ns("test_stat_normal_plot"), width = "80%", heigh = "200px"),
-                    HTML("<br><br><br>"),
+                    HTML("<h5><center><b>Normal Curve (z-tests)</b></center></h5>"),
+                    plotOutput(ns("test_stat_normal_plot"), width = "100%", heigh = "250px"),
                     uiOutput(ns("p_value_normal_curve"))
                  ),
                  column(6,
-                    HTML("<h4><center><b>T-Curve (t-tests)</b></center></h4>"),
-                    plotOutput(ns("test_stat_t_plot"), width = "80%", heigh = "200px"),
-                    HTML("<br><br><br>"),
+                    HTML("<h5><center><b>T-Curve (t-tests)</b></center></h5>"),
+                    plotOutput(ns("test_stat_t_plot"), width = "100%", heigh = "250px"),
                     uiOutput(ns("p_value_t_curve"))
                  )
-               ),
-
-               height = "550px"
+               )
              )
       )
     ),
@@ -207,11 +185,8 @@ tCurveMotivationUI <- function(id) {
     ############ SECTION: Conclusion ############
     fluidRow(
       column(12,
-             box(
-               title = HTML("<u><b>Conclusion</b></u>"),
-               status = "primary",
-               width = "100%",
-               solidHeader = FALSE,
+             tight_card(
+               "Conclusion",
                HTML("<p>
                   The purpose of this exercise was to develop a conceptual understanding of what the t-distribution is, and why we need it. We did this through discussing
                   the 1-sample z-test, and specifically, how things change when we don't know the population standard deviation. I have left some things vague (such as
@@ -219,8 +194,8 @@ tCurveMotivationUI <- function(id) {
               </p>")
              )
       )
-    )
-
+    ),
     
+    HTML("<br><br><br>"),
   )
 }

@@ -18,80 +18,57 @@ curve_shaded_test_stat <- function(function_stat, stat_function_args, test_stat,
     upper_xlimit_plot = test_stat + 1
   }
   
-  data <- data.frame(x = seq(lower_xlimit_plot, upper_xlimit_plot, length.out = 100))
+  # Generate x and y values for the curve
+  x_vals <- seq(lower_xlimit_plot, upper_xlimit_plot, length.out = 1000)
+  y_vals <- do.call(function_stat, c(list(x_vals), stat_function_args))
   
-  # Define general ggplot.
-  base_plot = ggplot(data, aes(x)) +
-    # Plot the normal distribution curve
-    stat_function(fun = function_stat, args = stat_function_args, color = "black", size = 1) +
-    theme_minimal() +
-    theme(
-      panel.grid = element_blank(),
-      axis.line = element_line(color = "black"),
-      axis.text.y = element_blank(),
-      axis.ticks.y = element_blank(),
-      axis.title.y = element_blank(),
-      axis.title.x = element_blank(),
-      axis.line.y = element_blank(),
-      panel.border = element_blank()
-    )
-
-  # Create a data frame for shading based upon alternate hypothesis choice.
+  # Plot the curve
+  par(mar = c(4, 0.5, 0.5, 0.5))
+  plot(x_vals, y_vals, type = "l", lwd = 2, col = "black",
+       xlab = "", ylab = "", yaxt = "n", bty = "n", axes = TRUE)
+  axis(1)
+  
+  # Shade areas depending on hypothesis
+  
+  # Two-tailed test: shade both sides
   if (alternate_hypothesis_choice == 1) {
-    base_plot = base_plot + 
-      # Lower tail
-      geom_area(stat = "function", 
-                fun = function_stat,
-                args = stat_function_args,
-                fill = "red",
-                alpha = 0.5,
-                xlim = c(lower_xlimit_plot, -abs(test_stat))) +
-      # Add annotated line on test statistic
-      geom_vline(xintercept = -abs(test_stat), linetype = "dashed", color = "blue") +
-      annotate("text", x = -abs(test_stat) - 0.8, y = 0.3, 
-               label = as.character(round(-abs(test_stat), 2)), color = "blue", hjust = 0) +
-      
-      # Upper tail
-      geom_area(stat = "function", 
-                fun = function_stat,
-                args = stat_function_args,
-                fill = "red",
-                alpha = 0.5,
-                xlim = c(abs(test_stat), upper_xlimit_plot)) +
-      # Add annotated line on test statistic
-      geom_vline(xintercept = abs(test_stat), linetype = "dashed", color = "blue") +
-      annotate("text", x = abs(test_stat) + 0.25, y = 0.3, 
-               label = as.character(round(abs(test_stat), 2)), color = "blue", hjust = 0)
+    x_shade1 <- x_vals[x_vals <= -abs(test_stat)]
+    y_shade1 <- do.call(function_stat, c(list(x_shade1), stat_function_args))
+    polygon(c(x_shade1, rev(x_shade1)),
+            c(y_shade1, rep(0, length(y_shade1))),
+            col = rgb(1, 0, 0, 0.5), border = NA)
     
+    x_shade2 <- x_vals[x_vals >= abs(test_stat)]
+    y_shade2 <- do.call(function_stat, c(list(x_shade2), stat_function_args))
+    polygon(c(x_shade2, rev(x_shade2)),
+            c(y_shade2, rep(0, length(y_shade2))),
+            col = rgb(1, 0, 0, 0.5), border = NA)
+    
+    abline(v = c(-abs(test_stat), abs(test_stat)), col = "blue", lty = 2)
+    text(-abs(test_stat) - 0.8, 0.3, round(-abs(test_stat), 2), col = "blue", adj = 0)
+    text(abs(test_stat) + 0.25, 0.3, round(abs(test_stat), 2), col = "blue", adj = 0)
+    
+  # Right-tailed test
   } else if (alternate_hypothesis_choice == 2) {
-    base_plot = base_plot +
-      # Upper tail
-      geom_area(stat = "function", 
-                fun = function_stat,
-                args = stat_function_args,
-                fill = "red",
-                alpha = 0.5,
-                xlim = c(test_stat, upper_xlimit_plot)) +
-      # Add annotated line on test statistic
-      geom_vline(xintercept = test_stat, linetype = "dashed", color = "blue") +
-      annotate("text", x = test_stat + 0.25, y = 0.3, 
-               label = as.character(round(test_stat, 2)), color = "blue", hjust = 0)
+    x_shade <- x_vals[x_vals >= test_stat]
+    y_shade <- do.call(function_stat, c(list(x_shade), stat_function_args))
+    polygon(c(x_shade, rev(x_shade)),
+            c(y_shade, rep(0, length(y_shade))),
+            col = rgb(1, 0, 0, 0.5), border = NA)
     
+    abline(v = test_stat, col = "blue", lty = 2)
+    text(test_stat + 0.25, 0.3, round(test_stat, 2), col = "blue", adj = 0)
+    
+  # Left-tailed test
   } else if (alternate_hypothesis_choice == 3) {
-    base_plot = base_plot + 
-      # Lower tail
-      geom_area(stat = "function", 
-                fun = function_stat,
-                args = stat_function_args,
-                fill = "red",
-                alpha = 0.5,
-                xlim = c(lower_xlimit_plot, test_stat)) +
-      # Add annotated line on test statistic
-      geom_vline(xintercept = test_stat, linetype = "dashed", color = "blue") +
-      annotate("text", x = test_stat - 0.8, y = 0.3, 
-               label = as.character(round(test_stat, 2)), color = "blue", hjust = 0)
+    x_shade <- x_vals[x_vals <= test_stat]
+    y_shade <- do.call(function_stat, c(list(x_shade), stat_function_args))
+    polygon(c(x_shade, rev(x_shade)),
+            c(y_shade, rep(0, length(y_shade))),
+            col = rgb(1, 0, 0, 0.5), border = NA)
+    
+    abline(v = test_stat, col = "blue", lty = 2)
+    text(test_stat - 0.8, 0.3, round(test_stat, 2), col = "blue", adj = 0)
   }
-  
-  return(base_plot)
   
 }
