@@ -1,12 +1,18 @@
-tight_card <- function(title, ..., content_style = NULL,  header_colour = "#3179ae") {
+tight_card <- function(title, ..., content_style = NULL,  header_colour = NULL) {
+  
+  style_for_card = paste(
+    "width: 100%;",
+    "border-top: 4px solid ", header_colour, ";",
+    "padding: 0;",
+    "margin: 0;"
+  )
+  if (is.null(header_colour)) {
+    style_for_card = NULL
+  }
+  
   card(
     full_screen = FALSE,
-    style = paste(
-      "width: 100%;",
-      "border-top: 4px solid ", header_colour, ";",
-      "padding: 0;",
-      "margin: 0;"
-    ),
+    style = style_for_card,
     tags$div(
       style = "margin: 0; padding: 0;",
       # Title area
@@ -33,7 +39,7 @@ tight_card <- function(title, ..., content_style = NULL,  header_colour = "#3179
   )
 }
 
-primary_card <- function(title, ..., content_style = NULL, header_colour = "#3179ae") {
+primary_card <- function(title, ..., content_style = NULL, header_colour = "#FFFFFF") {
   card(
     full_screen = FALSE,
     style = "width: 100%; padding: 0; margin: 0;",

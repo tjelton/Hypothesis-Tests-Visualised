@@ -39,7 +39,8 @@ tCurveMotivationUI <- function(id) {
                           Also, the above is only true if we are doing unbiased sampling!
                         </p>
                       ")
-                   )
+                   ),
+                   header_colour = "#3179ae"
                )
         )
     ),
@@ -81,7 +82,8 @@ tCurveMotivationUI <- function(id) {
                        as the degrees of freedom value increases, the curve approaches the normal distribution.
                     </p>
                   ")
-                )
+                ),
+                header_colour = "#3179ae"
              ),
       ),
       column(6,
@@ -102,6 +104,7 @@ tCurveMotivationUI <- function(id) {
                   )
                 ),
                 plotOutput(ns("changing_df_graph"), width = "100%", height = "300px"),
+                header_colour = "#3179ae"
              )
       )
     ),
@@ -140,7 +143,8 @@ tCurveMotivationUI <- function(id) {
                         the p-value is much larger than that of the normal distribution. However, as you increase degrees of freedom, the p-values become more similar.
                     </p>"
                  )
-               )
+               ),
+               header_colour = "#3179ae"
              )
       ),
       column(6,
@@ -175,7 +179,8 @@ tCurveMotivationUI <- function(id) {
                     plotOutput(ns("test_stat_t_plot"), width = "100%", heigh = "250px"),
                     uiOutput(ns("p_value_t_curve"))
                  )
-               )
+               ),
+               header_colour = "#3179ae"
              )
       )
     ),
@@ -191,7 +196,8 @@ tCurveMotivationUI <- function(id) {
                   The purpose of this exercise was to develop a conceptual understanding of what the t-distribution is, and why we need it. We did this through discussing
                   the 1-sample z-test, and specifically, how things change when we don't know the population standard deviation. I have left some things vague (such as
                   how do we know which value to set degrees of freedom to), but we will go into greater detail in further exercises.
-              </p>")
+              </p>"),
+               header_colour = "#3179ae"
              )
       )
     ),
