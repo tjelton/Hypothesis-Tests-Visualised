@@ -1,7 +1,12 @@
-tight_card <- function(title, ..., content_style = NULL) {
+tight_card <- function(title, ..., content_style = NULL,  header_colour = "#3179ae") {
   card(
     full_screen = FALSE,
-    style = "width: 100%; border-top: 4px solid #3179ae; padding: 0; margin: 0;",
+    style = paste(
+      "width: 100%;",
+      "border-top: 4px solid ", header_colour, ";",
+      "padding: 0;",
+      "margin: 0;"
+    ),
     tags$div(
       style = "margin: 0; padding: 0;",
       # Title area
@@ -28,7 +33,7 @@ tight_card <- function(title, ..., content_style = NULL) {
   )
 }
 
-primary_card <- function(title, ..., content_style = NULL, header_color = "#3179ae") {
+primary_card <- function(title, ..., content_style = NULL, header_colour = "#3179ae") {
   card(
     full_screen = FALSE,
     style = "width: 100%; padding: 0; margin: 0;",
@@ -41,7 +46,7 @@ primary_card <- function(title, ..., content_style = NULL, header_color = "#3179
         style = "padding-left: 0.25rem; padding-right: 0.25rem;"
       ),
       style = paste(
-        "background-color:", header_color, ";",
+        "background-color:", header_colour, ";",
         "color: white;",
         "font-size: 1.25rem;",
         "padding-top: 0.8rem; padding-bottom: 0.8rem;",  # vertical padding only here
