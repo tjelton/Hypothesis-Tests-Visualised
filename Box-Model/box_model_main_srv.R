@@ -185,7 +185,8 @@ boxModelMainServer <- function(id) {
     # Histogram of mean and sum frequencies.
     output$histogram_frequencies = renderPlot({
       
-      num_values = as.character(length(empirical_data())) 
+      values <- empirical_data()
+      num_values = as.character(length(values))
       
       title_string = paste("Empiricial Distribution of Sample Sums (n = ", num_values, ")", sep = "")
       x_axis_string = "Sample Sum Value"
@@ -194,41 +195,41 @@ boxModelMainServer <- function(id) {
         x_axis_string = "Sample Mean Value"
       }
       
-      # Default empty plot for when no data has been simulated yet.
-      plot = ggplot()
-      
-      # If data has been generated, create a histogram
-      if (length(empirical_data()) > 0) {
-        bins_to_include = length(table(empirical_data()))
-        if (bins_to_include > 20) {
-          bins_to_include = 20
-        }
-        plot = ggplot(data.frame(values = empirical_data()), aes(x = values)) +
-          geom_histogram(aes(y = after_stat(count / sum(count))), bins = bins_to_include, fill = "lightgreen", color = "black") +
-          scale_y_continuous(labels = scales::percent) +
-          labs(x = x_axis_string, y = "Percentage Frequency", title = title_string) +
-          theme_minimal() +
-          theme(
-            panel.grid = element_blank(),
-            axis.line = element_line(color = "black")
-          )
+      # Main histogram
+      if (length(values) > 0) {
+        bins_to_include <- length(unique(values))
         
-        # Default empty plot for when no data has been simulated yet.
+        # If over 20 bins, just set to 20 (otherwise too many bins)
+        if (bins_to_include > 20) bins_to_include <- 20
+        
+        hist(
+          values,
+          breaks = bins_to_include,
+          freq = FALSE,
+          col = "lightgreen",
+          border = "black",
+          xlab = x_axis_string,
+          ylab = "Density",
+          main = title_string,
+        )
+  
+        
+      # Placeholder when no data exists
       } else {
-        plot = ggplot() +
-          xlim(0, 10) +  # Set x-axis limits
-          ylim(0, 100) +
-          labs(x = x_axis_string, y = "Percentage Frequency", title = title_string) +
-          theme_minimal() +
-          theme(
-            panel.grid = element_blank(),
-            axis.line = element_line(color = "black")
-          )
+        plot(
+          1, type = "n",
+          xlim = c(0, 10),
+          ylim = c(0, 0.25),
+          xlab = x_axis_string,
+          ylab = "Density",
+          main = title_string,
+          axes = FALSE
+        )
+        axis(1)
+        axis(2, at = seq(0, 0.25, by = 0.05), labels = seq(0, 0.25, by = 0.05))
       }
-      
-      return(plot)
     })
-    
+  
     # Histogram with normal curve to shown normal curve approximation.
     output$normal_curve_model = renderPlot({
       
@@ -251,22 +252,30 @@ boxModelMainServer <- function(id) {
         SE = popsd(ticket_numbers())/sqrt(number_of_ticket_draws())
       }
       
-      bins_to_include = length(table(data))
-      if (bins_to_include > 20) {
-        bins_to_include = 20
+      bins_to_include = length(table(data)) * 1.3
+      if (bins_to_include >= 50) {
+        bins_to_include = 50
       }
+
+      hist(
+        data$values,
+        breaks = bins_to_include,
+        freq = FALSE,
+        col = "lightgreen",
+        border = "black",
+        xlab = x_axis_string,
+        ylab = "Density",
+        main = title_string,
+      )
       
-      plot = ggplot(data.frame(values = data), aes(x = values)) +
-        geom_histogram(aes(y = after_stat(density)), bins = bins_to_include, fill = "lightgreen", color = "black") + 
-        labs(x = x_axis_string, y = "Density", title = title_string) +
-        theme_minimal() +
-        theme(
-          panel.grid = element_blank(),
-          axis.line = element_line(color = "black")
-        ) +
-        stat_function(fun = dnorm, args = list(mean = EV, sd = SE), color = "red", size = 1)
-      
-      return(plot)
+      curve(
+        dnorm(x, mean = EV, sd = SE),  # normal density with your mean (EV) and sd (SE)
+        from = min(data$values),        # start of curve range
+        to = max(data$values),          # end of curve range
+        add = TRUE,                     # overlay on existing plot
+        col = "red",
+        lwd = 2                        # line width
+      )
     })
     
     # Histogram with normal curve to shown normal curve approximation.
@@ -303,28 +312,33 @@ boxModelMainServer <- function(id) {
         lower_value = lower_xlimit_plot
       }
       
-      shade_data <- data.frame(x = seq(lower_xlimit_plot, upper_xlimit_plot, length.out = 100))
+      # Set tight margins: bottom, left, top, right
+      par(mar = c(3, 2, 1, 1), xaxs = "i", yaxs = "i")  # Fill space tightly
       
-      # Create the ggplot
-      ggplot(shade_data, aes(x)) +
-        # Plot the normal distribution curve
-        stat_function(fun = dnorm, args = list(mean = EV_val, sd = SE_val), color = "black", size = 1) +
-        # Shade the area between the lower and upper limits
-        geom_area(stat = "function", fun = dnorm, 
-                  args = list(mean = EV_val, sd = SE_val), 
-                  fill = "red", alpha = 0.5,
-                  xlim = c(lower_value, upper_value)) +
-        theme_minimal() +
-        theme(
-          panel.grid = element_blank(),
-          axis.line = element_line(color = "black"),
-          axis.text.y = element_blank(),
-          axis.ticks.y = element_blank(),
-          axis.title.y = element_blank(),
-          axis.title.x = element_blank(),
-          axis.line.y = element_blank(),
-          panel.border = element_blank()
-        )
+      # Generate x and y values for the normal curve
+      x_range <- seq(EV_val - 4 * SE_val, EV_val + 4 * SE_val, length.out = 1000)
+      y_values <- dnorm(x_range, mean = EV_val, sd = SE_val)
+      
+      # Tick positions and labels
+      x_ticks <- EV_val + SE_val * (-3:3)
+      x_labels <- format(round(x_ticks, 2), nsmall = 2)
+      
+      # Start empty plot
+      plot(x_range, y_values, type = "n",
+           axes = FALSE, xlab = "", ylab = "", main = "")
+      
+      # Shaded region
+      shade_x <- seq(lower_value, upper_value, length.out = 1000)
+      shade_y <- dnorm(shade_x, mean = EV_val, sd = SE_val)
+      
+      polygon(c(shade_x, rev(shade_x)),
+              c(rep(0, length(shade_y)), rev(shade_y)),
+              col = rgb(1, 0, 0, 0.5), border = NA)
+      
+      lines(x_range, y_values, col = "black", lwd = 2)
+      
+      # Custom x-axis
+      axis(1, at = x_ticks, labels = x_labels, cex.axis = 0.9)
     })
     
     ################################################################
