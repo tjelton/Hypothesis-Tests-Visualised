@@ -198,8 +198,11 @@ load_1_sample_data_Server <- function(id) {
           return()
         }
         data_to_store = get(input$data_set_pre_uploaded)
-        data_to_store = data_to_store %>%
-          filter(data_to_store[[input$factor_filtering_select_pre_uploaded]] == input$specific_category_select_pre_uploaded)
+        
+        # Filter the data.
+        data_to_store <- data_to_store[data_to_store[[input$factor_filtering_select_pre_uploaded]] == input$specific_category_select_pre_uploaded, ]
+        
+        # Extract the selected column.
         data(data_to_store[[input$column_select_pre_uploaded]])
       })
       
@@ -313,37 +316,37 @@ load_1_sample_data_Server <- function(id) {
           return()
         }
         
-        data_plotting = data.frame(data())
+        # Get the data
+        data_plotting <- data.frame(data())
         
-        # Boxplot of data
-        boxplot = data_plotting %>%
-          ggplot() +
-          aes(x = `data..`) +
-          geom_boxplot(fill = "blue") +
-          labs(title = "Boxplot", x = "Values") +
-          theme_minimal() + 
-          theme(
-            axis.ticks.y = element_blank(),
-            axis.text.y = element_blank()
-          )
+        # Extract the column (assuming only one column)
+        x <- data_plotting[[1]]
         
-        # Histogram of data
-        histogram = data_plotting %>%
-          ggplot() +
-          aes(x = `data..`) +
-          geom_histogram(bins = 30, fill = "blue", color = "black") +
-          labs(title = "Histogram", x = "Values", y = "Frequency") +
-          theme_minimal()
+        # Save original plotting settings
+        old_par <- par(no.readonly = TRUE)
         
-        # Place plots on top of each other using cowplot.
-        combined = plot_grid(
-          boxplot,
-          histogram,
-          ncol = 1,
-          rel_heights = c(1,2)
-        )
+        # Stack plots: 2 rows, 1 column
+        par(mfrow = c(2, 1))
         
-        return(combined)
+        # Boxplot (default vertical)
+        boxplot(x,
+                horizontal = TRUE,
+                col = "blue",
+                main = "Boxplot",
+                ylab = "Values")
+        
+        # Histogram
+        hist(x,
+             breaks = 30,
+             col = "blue",
+             border = "black",
+             main = "Histogram",
+             xlab = "Values",
+             ylab = "Frequency")
+        
+        # Restore settings
+        par(old_par)
+        
       })
       
       # Plot UI or warning message output.
@@ -355,11 +358,7 @@ load_1_sample_data_Server <- function(id) {
           string = "<span style='color: blue;'><p>In order to proceed, you must select some data to act as your sample.</p></span>"
           return(
             tagList(
-              box(
-                solidHeader = TRUE,
-                width = "100%",
-                HTML(string)
-              )
+              HTML(string)
             )
           )
         }
@@ -367,7 +366,7 @@ load_1_sample_data_Server <- function(id) {
         # If data has been set, display the plots.
         return(
           tagList(
-            plotOutput(ns("initial_data_plots"),  width = "80%")
+            plotOutput(ns("initial_data_plots"),  width = "100%")
           )
         )
       })

@@ -5,11 +5,8 @@ load_1_sample_data_UI <- function(id, test_name = "1-sample z-test") {
     ############ SECTION: Input Data ############
     fluidRow(
       column(7,
-             box(
-               title = HTML("<u><b>Input Sample Data</b></u>"),
-               status = "primary",
-               width = "100%",
-               solidHeader = FALSE,
+             tight_card(
+               "Input Sample Data",
                HTML(paste("<p>In order to do a ",  test_name, " we first need to proivde our ONE sample that we will be analysing. Below you can
                         choose pre-uploaded data to analysis, or you can manually enter data.</p>"), sep = ""),
                HTML("<br>"),
@@ -35,11 +32,15 @@ load_1_sample_data_UI <- function(id, test_name = "1-sample z-test") {
                
                # These will output only for the case that the "manually_specified" option is selected.
                uiOutput(ns("manual_entry_insufficient_unique_values")),
-               uiOutput(ns("manual_entry_missing_values_warning"))
+               uiOutput(ns("manual_entry_missing_values_warning")),
+               header_colour = "#3179ae"
              )
       ),
       column(5,
-             uiOutput(ns("data_upload_plot_section_output"))
+             tight_card(
+               NULL,
+               uiOutput(ns("data_upload_plot_section_output"))
+             )
       )
     ),
   
