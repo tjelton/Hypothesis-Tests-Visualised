@@ -5,16 +5,19 @@ p_value_1_sample_t_test_UI <- function(id) {
     ############ SECTION: Test p-value ############
     fluidRow(
       column(6,
-             box(
-               title = HTML("<u><b>p-value</b></u>"),
-               status = "primary",
-               width = "100%",
-               solidHeader = FALSE,
-               uiOutput(ns("p_value_prelude"))
+             tight_card(
+               "p-value",
+               uiOutput(ns("p_value_prelude")),
+               header_colour = "#3179ae"
              )
       ),
       column(6,
-             plotOutput(ns("test_stat_t_plot"), width = "80%", heigh = "275px"),
+             tight_card(
+               NULL,
+               HTML("<center>"),
+               plotOutput(ns("test_stat_t_plot"), width = "100%", heigh = "325px"),
+               HTML("</center>"),
+             )
       )
     )
   

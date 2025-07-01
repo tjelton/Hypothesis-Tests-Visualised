@@ -5,14 +5,10 @@ conclusion_1_sample_t_test_UI <- function(id) {
     ############ SECTION: Conclusion ############
     fluidRow(
       column(12,
-             box(
-               title = HTML("<u><b>Conclusion</b></u>"),
-               status = "primary",
-               width = "100%",
-               solidHeader = FALSE,
-
+             tight_card(
+               "Conclusion",
+               
                fluidRow(
-
                  # Section to enter significance level.
                  column(6,
                         HTML("<p><b>Step 1) What is your significance level</b>?</p>"),
@@ -41,7 +37,8 @@ conclusion_1_sample_t_test_UI <- function(id) {
                         HTML("<p><b>Step 2) Final Conclusion</b></p>"),
                         uiOutput(ns("final_conclusion_output"))
                  )
-               )
+               ),
+               header_colour = "#3179ae"
              )
       ),
     )

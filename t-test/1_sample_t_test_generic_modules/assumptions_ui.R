@@ -5,37 +5,27 @@ assumptions_1_sample_t_test_UI <- function(id) {
     ############ SECTION: Assumptions ############
     fluidRow(
       column(12,
-             box(
-               title = HTML("<u><b>Assumptions</b></u>"),
-               status = "primary",
-               width = "100%",
-               solidHeader = FALSE,
+             tight_card(
+               "Assumptions",
                HTML("<p>For the hypothesis test to be valid, we need to check the following assumptions:</p>"),
-
-               # Assumption 1: Independent Samples
-               box(
-                 title = "Assumption 1: Independent and Randomly Chosen Sample",
-                 width = "100%",
-                 collapsible = TRUE,
-                 collapsed = TRUE,
-                 status = "info",
-                 solidHeader = FALSE,
-                 HTML("<p>The first assumption is that our sample is <b>independent and randomly chosen</b>.</p>"),
-                 HTML("<p><span style='color: blue;'><b>How do we check?</b></span> <i>We check by investigating the experimental setup.</i><br><br>
+               
+               accordion(
+                 open = FALSE,
+                 
+                 # Assumption 1: Independent Samples
+                 accordion_panel(
+                   HTML("<b>Assumption 1: Independent and Randomly Chosen Sample</b>"),
+                   HTML("<p>The first assumption is that our sample is <b>independent and randomly chosen</b>.</p>"),
+                   HTML("<p><span style='color: blue;'><b>How do we check?</b></span> <i>We check by investigating the experimental setup.</i><br><br>
                     For example, consider we were investigating data for a proportion test involving human participants. We could read the accompanying scientific
                     publication to understand the methodology they used to gather the people in the sample.</p>")
-               ),
-
-               # Assumption 2: Normality
-               box(
-                 title = "Assumption 2: Normality",
-                 width = "100%",
-                 collapsible = TRUE,
-                 collapsed = TRUE,
-                 status = "info",
-                 solidHeader = FALSE,
-                 HTML("<p>The second assumption is that the sample means follow a normal distribution."),
-                 HTML("<p><span style='color: blue;'><b>How do we check?</b></span><br>
+                 ),
+                 
+                 # Assumption 2: Normality
+                 accordion_panel(
+                   HTML("<b>Assumption 2: Normality</b>"),
+                   HTML("<p>The second assumption is that the sample means follow a normal distribution."),
+                   HTML("<p><span style='color: blue;'><b>How do we check?</b></span><br>
                     <ul>
                       <li>Recall that the central limit theorem tells us that if we take a sufficiently large number of draws from the box, then the sample
                       means will approximately follow a normal distribution. If confused, please see the box model exercise.</li>
@@ -46,8 +36,10 @@ assumptions_1_sample_t_test_UI <- function(id) {
                       <li>You should use a combination of the size of \"n\" and a histogram and boxplot of the sample distributions to help you determine whether
                       the central limit theorem means we can resonably approximate the sample means using a normal distribution.</li>
                     </ul>
-               </p>")
-               )
+                    </p>")
+                 ),
+               ),
+               header_colour = "#3179ae"
              )
       )
     ),

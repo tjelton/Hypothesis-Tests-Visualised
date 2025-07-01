@@ -5,11 +5,8 @@ alternate_hypotheses_1_sample_t_test_UI <- function(id) {
     ############ SECTION: The Alternate Hypothesis ############
     fluidRow(
       column(7,
-             box(
-               title = HTML("<u><b>The Alternate Hypothesis</b></u>"),
-               status = "primary",
-               width = "100%",
-               solidHeader = FALSE,
+             tight_card(
+               "The Alternate Hypothesis",
                HTML("<p>Specify what type of alternate hypothesis you will be using below:</p>"),
                HTML("<br>"),
                radioButtons(
@@ -21,13 +18,12 @@ alternate_hypotheses_1_sample_t_test_UI <- function(id) {
                    "One Sided (less than)" = 3
                  )
                ),
-
+               header_colour = "#3179ae"
              )
       ),
       column(5,
-             box(
-               solidHeader = TRUE,
-               width = "100%",
+             tight_card(
+               NULL,
                HTML("<p><b>Null Hypothesis</b></p>"),
                uiOutput(ns('null_hypothesis_output')),
                HTML("<p><b>Alternate Hypothesis</b></p>"),
