@@ -412,18 +412,10 @@ proportionTestMainServer <- function(id) {
       proportion_of_1s = prop_temp / gcd_value
       proportion_of_0s = (100 - prop_temp) / gcd_value
       
-      is_float_1s = is.numeric(proportion_of_1s) && floor(proportion_of_1s) != proportion_of_1s
-      is_float_0s = is.numeric(proportion_of_0s) && floor(proportion_of_0s) != proportion_of_0s
-      
       # Case where there are too many digits. Write using percentages.
-      if ((proportion_of_1s + proportion_of_0s) > 10) {
-        is_float_1s = FALSE
-      }
-      
-      # When the simplified proportions are floats, it is too hard to write down as integer. Write as percentages.
-      if (is_float_1s || is_float_0s) {
+      if (gcd_value < 5) { # A value smaller than 5 can be chosen. But, much smaller values will lead to too many values in the box.
         prop_temp_complement = 100 - prop_temp
-        tickets_string = paste("1 x ", as.character(round(proportion_of_1s, digits = 2)), "%, 0 x ", as.character(round(proportion_of_0s, digits = 2)), "%", sep = "")
+        tickets_string = paste("1 x ", as.character(round(prop_temp, digits = 2)), "%, 0 x ", as.character(round(prop_temp_complement, digits = 2)), "%", sep = "")
         
       } else {
         
@@ -468,51 +460,43 @@ proportionTestMainServer <- function(id) {
     })
     
     # Histogram with normal curve to shown normal curve approximation.
-    output$empirical_draws_hist = renderPlot({
+    output$empirical_draws_hist <- renderPlot({
       
-      # Label titles.
-      x_axis_string = "Sample Sum Value"
-      title_string = "Empirical Distribution of 10000 Sample Sums with\nOverlaid Normal Curve"
+      x_axis_string <- "Sample Sum Value"
+      title_string <- "Empirical Distribution of 10000 Sample Sums with\nOverlaid Normal Curve"
       if (input$box_sum_or_mean == 2) {
-        title_string = "Empirical Distribution of 10000 Sample Means with\nOverlaid Normal Curve"
-        x_axis_string = "Sample Mean Value"
+        title_string <- "Empirical Distribution of 10000 Sample Means with\nOverlaid Normal Curve"
+        x_axis_string <- "Sample Mean Value"
       }
       
-      # Get data
-      data = 0
-      if (input$box_sum_or_mean == 1) {
-        data = replicate(10000, sum(sample(c(1,0), sample_size(), replace = TRUE, prob = c(null_prop(), 1-null_prop()))))
-      } else if (input$box_sum_or_mean == 2) {
-        data = replicate(10000, mean(sample(c(1,0), sample_size(), replace = TRUE, prob = c(null_prop(), 1-null_prop()))))
+      # Generate data based on whether we're summing or taking mean
+      data <- if (input$box_sum_or_mean == 1) {
+        replicate(10000, sum(sample(c(1, 0), sample_size(), replace = TRUE, prob = c(null_prop(), 1 - null_prop()))))
+      } else {
+        replicate(10000, mean(sample(c(1, 0), sample_size(), replace = TRUE, prob = c(null_prop(), 1 - null_prop()))))
       }
       
-      # Normal curve parameters.
-      mean_ = null_prop()
-      sd_ = sqrt(null_prop() * (1-null_prop()))
-      EV = sample_size() * mean_
-      SE = sqrt(sample_size()) *sd_
-      if (input$box_sum_or_mean == 2) { 
-        EV = mean_
-        SE = sd_/sqrt(sample_size())
-      }
+      # Compute normal curve parameters
+      mean_ <- null_prop()
+      sd_ <- sqrt(null_prop() * (1 - null_prop()))
+      EV <- if (input$box_sum_or_mean == 1) sample_size() * mean_ else mean_
+      SE <- if (input$box_sum_or_mean == 1) sqrt(sample_size()) * sd_ else sd_ / sqrt(sample_size())
       
-      bins_to_include = length(table(data))
-      if (bins_to_include > 20) {
-        bins_to_include = 20
-      }
+      # Choose number of bins
+      bins_to_include <- min(length(table(data)), 20)
+      breaks_seq <- seq(min(data), max(data), length.out = bins_to_include + 1)
       
-      plot = ggplot(data.frame(values = data), aes(x = values)) +
-        geom_histogram(aes(y = after_stat(density)), bins = bins_to_include, fill = "lightgreen", color = "black") + 
-        labs(x = x_axis_string, y = "Density", title = title_string) +
-        theme_minimal() +
-        theme(
-          panel.grid = element_blank(),
-          axis.line = element_line(color = "black")
-        ) +
-        stat_function(fun = dnorm, args = list(mean = EV, sd = SE), color = "red", size = 1)
+      # Plot histogram with density
+      hist_out <- hist(data, breaks = breaks_seq, freq = FALSE,
+                       col = "lightgreen", border = "black",
+                       xlab = x_axis_string, main = title_string)
       
-      return(plot)
+      # Overlay normal density curve
+      x_vals <- seq(min(data), max(data), length.out = 300)
+      y_vals <- dnorm(x_vals, mean = EV, sd = SE)
+      lines(x_vals, y_vals, col = "red", lwd = 2)
     })
+    
     
     # Histogram with normal curve to shown normal curve approximation.
     output$test_stat_normal_plot = renderPlot({
