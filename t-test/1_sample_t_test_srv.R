@@ -151,9 +151,9 @@ oneSampleTTestServer <- function(id) {
     
     null_mean_string = reactive({as.character(round(input$null_mu, digits = 3))})
     alt_hypothesis_session <- alternate_hypotheses_1_sample_t_test_Server(id = "alternate_hypothesis", null_mean_string)
-    
+
     test_stat_session <- test_statistic_1_sample_t_test_Server(id = "test_stat", sample_data, null_mean_string)
-   
+
     p_value_session <- p_value_1_sample_t_test_Server(id = "p_val", test_stat_session$test_stat, sample_data, alt_hypothesis_session$alternate_hypothesis_choice)
 
     conclusion_1_sample_t_test_Server(id = "conclusion", p_value_session$p_val)
