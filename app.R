@@ -30,7 +30,7 @@ ui <- page_navbar(
   
   nav_menu("Z-Tests",
            
-           nav_panel("1-Sample Z-Test", 
+           nav_panel("1-Sample Z-Test",
                      oneSampleZTestUI("1_sample_z_test"),
            ),
            nav_panel("Proportion (Z-test)", 
@@ -44,7 +44,7 @@ ui <- page_navbar(
            ),
            nav_panel("1-Sample T-Test",
                oneSampleTTestUI("1_sample_t_test")
-           ), 
+           ),
            nav_panel("Paired T-Test", "This is another sub-tab.")
   ),
   
