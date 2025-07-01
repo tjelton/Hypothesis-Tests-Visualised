@@ -77,3 +77,24 @@ primary_card <- function(title, ..., content_style = NULL, header_colour = "#FFF
     )
   )
 }
+
+popsd <- function(x) {
+  # Remove NA values
+  x <- na.omit(x)
+  
+  # Return NA if input is empty
+  n <- length(x)
+  if (n == 0) return(NA_real_)  
+  
+  mean_x <- mean(x)
+  sqrt(sum((x - mean_x)^2) / n)
+}
+
+gcd <- function(a, b) {
+  while (b != 0) {
+    temp <- b
+    b <- a %% b
+    a <- temp
+  }
+  return(abs(a))
+}
