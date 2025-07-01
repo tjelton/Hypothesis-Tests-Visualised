@@ -1,18 +1,19 @@
-source("t-test/t_curve_motivation_ui.R")
-source("t-test/t_curve_motivation_srv.R")
-source("Utility/helper_functions.R")
-source("Utility/generic_plotting_functions.R")
-
-library(shiny)
-library(bslib)
-library(DiagrammeR)
-
+source("libraries.R")
+source("linking_source_files.R")
 
 ui <- page_navbar(
   title = "Hypothesis Tests Visualised",
   theme = bs_theme(version = 5, bootswatch = "lumen"),  # You can switch to "lumen", "materia", "sketchy", "united", "yeti" etc.
   
-  nav(
+  # Make the modal wider.
+    tags$style(HTML("
+        .modal-dialog {
+          max-width: 1100px !important;
+          width: 100% !important;
+        }
+      ")),
+  
+  nav_panel(
     title = "Home",
     fluidPage(
       h2("Home Page"),
@@ -20,18 +21,31 @@ ui <- page_navbar(
     )
   ),
   
-  nav_menu("T-Tests",
+  nav_menu("Fundamentals",
            
-           nav("T-Curve Motivation", 
+           nav_panel("The Box Model", 
+                boxModelMainUI("box_model"),
+           ),
+  ),
+  
+  nav_menu("Z-Tests",
+           
+           nav_panel("1-Sample Z-Test", 
+                     oneSampleZTestUI("1_sample_z_test"),
+           ),
+           nav_panel("Proportion (Z-test)", 
+                     proportionTestMainUI("proportion_z_test"),
+           ),
+  ),
+  
+  nav_menu("T-Tests",
+           nav_panel("T-Curve Motivation", 
                tCurveMotivationUI("t_curve_motivation")
            ),
-           
-           
-           nav("1-Sample T-Test", "This is the details tab."),
-           
-           
-           
-           nav("Paired T-Test", "This is another sub-tab.")
+           nav_panel("1-Sample T-Test",
+               oneSampleTTestUI("1_sample_t_test")
+           ), 
+           nav_panel("Paired T-Test", "This is another sub-tab.")
   ),
   
 )
@@ -39,10 +53,12 @@ ui <- page_navbar(
 
 server <- function(input, output, session) {
   
-  
+  boxModelMainServer(id = "box_model")
+  oneSampleZTestServer(id = "1_sample_z_test")
+  proportionTestMainServer(id = "proportion_z_test")
   tCurveMotivationServer(id = "t_curve_motivation")
+  oneSampleTTestServer(id = "1_sample_t_test")
   
-
 }
 
 shinyApp(ui, server)
