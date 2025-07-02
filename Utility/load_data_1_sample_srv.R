@@ -59,7 +59,8 @@ load_1_sample_data_Server <- function(id) {
               textAreaInput( 
                 ns("manual_data_upload_textbox"), 
                 NULL, 
-                value = ""
+                value = "",
+                width = "100%"
               ),
               
               # Upload action button. Wrapped in a fluid row to make it right-aligned.
