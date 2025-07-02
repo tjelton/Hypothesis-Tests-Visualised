@@ -5,11 +5,8 @@ load_data_paired_sample_UI <- function(id, test_name = "1-sample z-test") {
     ############ SECTION: Input Data ############
     fluidRow(
       column(7,
-             box(
-               title = HTML("<u><b>Input Sample Data</b></u>"),
-               status = "primary",
-               width = "100%",
-               solidHeader = FALSE,
+             tight_card(
+               "Input Sample Data",
                HTML(paste("<p>Information placed here about choosing data...</p>"), sep = ""),
                HTML("<br>"),
                
@@ -33,12 +30,16 @@ load_data_paired_sample_UI <- function(id, test_name = "1-sample z-test") {
                
                # # These will output only for the case that the "manually_specified" option is selected.
                uiOutput(ns("manual_entry_unequal_samples")),
-               uiOutput(ns("manual_entry_insufficient_unique_values"))
+               uiOutput(ns("manual_entry_insufficient_unique_values")),
+               header_colour = "#3179ae"
              )
       ),
       column(5,
-             uiOutput(ns("radio_buttons_data_to_plot")),
-             uiOutput(ns("data_upload_plot_section_output"))
+             tight_card(
+               NULL,
+               uiOutput(ns("radio_buttons_data_to_plot")),
+               uiOutput(ns("data_upload_plot_section_output"))
+             )
       )
     )
     

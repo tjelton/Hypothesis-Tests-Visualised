@@ -1,3 +1,52 @@
+# Originally, we were using the PairedData package to use real paired datasets. However, this is not compatabile with shiny live...
+# Now, we will use sleep (which is paired data included in base R, and synthetic data).
+
+# Sleep paired dataset that is inbuilt into R.
+SleepStudy <- reshape(sleep,
+                      timevar = "group",
+                      idvar = "ID",
+                      direction = "wide")
+names(SleepStudy)[names(SleepStudy) == "extra.1"] <- "group 1"
+names(SleepStudy)[names(SleepStudy) == "extra.2"] <- "group 2"
+
+# ChatGPT generated synthetic datasets
+set.seed(1)
+
+# BloodPressureStudy: before/after treatment with two drugs
+BloodPressureStudy <- data.frame(
+  PatientID = 1:30,
+  Before_Treatment = round(rnorm(30, 140, 15), 1),
+  After_DrugA = round(rnorm(30, 135, 14), 1),
+  After_DrugB = round(rnorm(30, 133, 13), 1)
+)
+
+# CognitiveScores: paired cognitive test scores at baseline and 6 months
+CognitiveScores <- data.frame(
+  SubjectID = 101:130,
+  Baseline_Memory = round(rnorm(30, 75, 8), 0),
+  SixMonths_Memory = round(rnorm(30, 80, 7), 0),
+  Baseline_Attention = round(rnorm(30, 70, 10), 0),
+  SixMonths_Attention = round(rnorm(30, 72, 9), 0)
+)
+
+# FitnessTestResults: paired measurements before and after 8 weeks training
+FitnessTestResults <- data.frame(
+  AthleteID = 201:240,
+  VO2Max_Before = round(rnorm(40, 45, 5), 1),
+  VO2Max_After = round(rnorm(40, 49, 5), 1),
+  SprintTime_Before = round(rnorm(40, 12.0, 0.8), 2),
+  SprintTime_After = round(rnorm(40, 11.5, 0.7), 2)
+)
+
+# DietImpactStudy: paired weight and cholesterol before and after diet
+DietImpactStudy <- data.frame(
+  ParticipantID = 301:325,
+  Weight_Before = round(rnorm(25, 85, 12), 1),      # kg
+  Weight_After = round(rnorm(25, 80, 11), 1),       # kg
+  Cholesterol_Before = round(rnorm(25, 200, 25), 0), # mg/dL
+  Cholesterol_After = round(rnorm(25, 185, 20), 0)   # mg/dL
+)
+
 load_data_paired_sample_Server <- function(id) {
   moduleServer(
     id,
@@ -33,14 +82,13 @@ load_data_paired_sample_Server <- function(id) {
           
           return(
             tagList(
-              HTML("<br>"),
               selectInput( 
                 ns("data_set_pre_uploaded"), 
-                "Which data set would you like to analyse?", 
-                list("Blink", "BloodLead", "GDO", "GrapeFruit", "HorseBeginners", "Iron", "Meat", "PrisonStress") 
+                HTML("<p><b>Which data set would you like to analyse?</b></p>"),
+                list("SleepStudy","BloodPressureStudy","CognitiveScores","FitnessTestResults","DietImpactStudy")
               ),
-              HTML("<p><i>Warning: Some of these data sets are not truly paired. However, they are still included here to have more data for experimentation.</i></p>"),
-              HTML("<p>Now we need to select what data we want to be in condition 1, and what to be in condition 2. The paired difference will be condition 2 - condition 1.</p>")
+              HTML("<p><i>Warning: Other than the 'SleepStudy' data set, the other data sets are synthetic (made up) data.</i></p>"),
+              HTML("<p>Now we need to select what data we want to be in condition 1, and what to be in condition 2. The paired difference will be condition 2 - condition 1.</p><br>")
             )
           )
         }
@@ -56,22 +104,24 @@ load_data_paired_sample_Server <- function(id) {
               <li>Each value must be on it's own line, or comma seperated.</li>
               <li>As this is paired data, there must be the same number of values in each textbox.</li>
               <li>Don't forget to press 'Upload' once you are finished!</li>
-            </ul></p>"),
+            </ul></p><br>"),
               
               # Textbox -> condition 1 data entry.
-              HTML("<b>Condition 1:</b>"),
+              HTML("<p><b>Condition 1:</b></p>"),
               textAreaInput( 
                 ns("manual_data_upload_textbox_condition_1"), 
                 NULL, 
-                value = ""
+                value = "",
+                width = "100%"
               ),
               
               # Textbox -> condition 2 data entry.
-              HTML("<b>Condition 2:</b>"),
+              HTML("<p><b>Condition 2:</b></p>"),
               textAreaInput( 
                 ns("manual_data_upload_textbox_condition_2"), 
                 NULL, 
-                value = ""
+                value = "",
+                width = "100%"
               ),
               
               # Upload action button. Wrapped in a fluid row to make it right-aligned.
@@ -113,7 +163,7 @@ load_data_paired_sample_Server <- function(id) {
               column(6,
                      selectInput(
                        ns("condition_1_pre_uploaded"),
-                       "Condition 1",
+                       HTML("<p><b>Condition 1:</b></p>"),
                        numeric_cols,
                        selected = numeric_cols[1]
                      )
@@ -121,12 +171,13 @@ load_data_paired_sample_Server <- function(id) {
               column(6,
                      selectInput(
                        ns("condition_2_pre_uploaded"),
-                       "Condition 2",
+                       HTML("<p><b>Condition 2:</b></p>"),
                        numeric_cols,
                        selected = numeric_cols[2]
                      )
               )
-            )
+            ),
+            HTML("<br><br>")
           )
         )
       })
@@ -278,15 +329,11 @@ load_data_paired_sample_Server <- function(id) {
         }
         
         return(
-          box(
-            solidHeader = TRUE,
-            width = "100%",
             radioButtons(ns("data_to_plot"), NULL, c(
                                                  "Paired Difference" = "Paired_Difference",
                                                  "Condition 1" = "Condition_1", 
                                                  "Condition 2" = "Condition_2"
                                                   ), inline=T)
-          )
         )
       })
       
@@ -299,11 +346,7 @@ load_data_paired_sample_Server <- function(id) {
           string = "<span style='color: blue;'><p>In order to proceed, you must select some data to act as your sample.</p></span>"
           return(
             tagList(
-              box(
-                solidHeader = TRUE,
-                width = "100%",
                 HTML(string)
-              )
             )
           )
         }
@@ -311,7 +354,7 @@ load_data_paired_sample_Server <- function(id) {
         # If data has been set, display the plots.
         return(
           tagList(
-            plotOutput(ns("initial_data_plots"),  width = "80%")
+            plotOutput(ns("initial_data_plots"),  width = "100%")
           )
         )
       })
@@ -335,35 +378,33 @@ load_data_paired_sample_Server <- function(id) {
         
         data_plotting = data.frame(data_plotting)
         
-        # Boxplot of data
-        boxplot = data_plotting %>%
-          ggplot() +
-          aes(x = data_plotting) +
-          geom_boxplot(fill = "blue") +
-          labs(title = "Boxplot", x = "Values") +
-          theme_minimal() + 
-          theme(
-            axis.ticks.y = element_blank(),
-            axis.text.y = element_blank()
-          )
+        # Extract the column (assuming only one column)
+        x <- data_plotting[[1]]
         
-        # Histogram of data
-        histogram = data_plotting %>%
-          ggplot() +
-          aes(x = data_plotting) +
-          geom_histogram(bins = 30, fill = "blue", color = "black") +
-          labs(title = "Histogram", x = "Values", y = "Frequency") +
-          theme_minimal()
+        # Save original plotting settings
+        old_par <- par(no.readonly = TRUE)
         
-        # Place plots on top of each other using cowplot.
-        combined = plot_grid(
-          boxplot,
-          histogram,
-          ncol = 1,
-          rel_heights = c(1,2)
-        )
+        # Stack plots: 2 rows, 1 column
+        par(mfrow = c(2, 1))
         
-        return(combined)
+        # Boxplot (default vertical)
+        boxplot(x,
+                horizontal = TRUE,
+                col = "blue",
+                main = "Boxplot",
+                ylab = "Values")
+        
+        # Histogram
+        hist(x,
+             breaks = 30,
+             col = "blue",
+             border = "black",
+             main = "Histogram",
+             xlab = "Values",
+             ylab = "Frequency")
+        
+        # Restore settings
+        par(old_par)
         
       })
       
