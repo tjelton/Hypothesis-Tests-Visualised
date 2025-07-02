@@ -1,6 +1,7 @@
 # Requirements:
 #     - null_mean_string: the string representation of the null value.
-alternate_hypotheses_1_sample_t_test_Server <- function(id, null_mean_string) {
+#     - whether mu should have a subscript (NULL is that it should not have one)
+alternate_hypotheses_1_sample_t_test_Server <- function(id, null_mean_string, mu_subscript = NULL) {
   moduleServer(
     id,
     function(input, output, session) {
@@ -8,7 +9,12 @@ alternate_hypotheses_1_sample_t_test_Server <- function(id, null_mean_string) {
       
       # Null hypothesis (rendered) output.
       output$null_hypothesis_output <- renderUI({
+        
         hypothesis = paste("<p style='font-size: 16px;'>\\( H_0: \\) \\( \\mu", "=", null_mean_string(), "\\)</p>")
+        if (!is.null(mu_subscript)) {
+          hypothesis = paste("<p style='font-size: 16px;'>\\( H_0: \\) \\( \\mu_", mu_subscript , " = ", null_mean_string(), "\\)</p>", sep ="")
+        }
+        
         return (
           tagList(
             HTML("<center>"),
@@ -21,14 +27,20 @@ alternate_hypotheses_1_sample_t_test_Server <- function(id, null_mean_string) {
       # Alternate hypothesis (rendered) output.
       output$alternate_hypothesis_output <- renderUI({
         
-        # Specify alternate hypothesis in reference to whether the user chooses to do a one-sided or two-sided test.
-        hypothesis = paste("<p style='font-size: 16px;'>\\( H_1: \\) \\(\\mu", "\\neq", null_mean_string(), "\\)</p>")
-        if (input$alternate_hypothesis_choice == 2) {
-          hypothesis = paste("<p style='font-size: 16px;'>\\( H_1: \\) \\(\\mu", ">", null_mean_string(), "\\)</p>")
-        } else if (input$alternate_hypothesis_choice == 3) {
-          hypothesis = paste("<p style='font-size: 16px;'>\\( H_1: \\) \\(\\mu", "<", null_mean_string(), "\\)</p>")
-          
+        hypothesis = paste("<p style='font-size: 16px;'>\\( H_1: \\) \\(\\mu")
+        if (!is.null(mu_subscript)) {
+          hypothesis = paste(hypothesis, "_d", sep = "")
         }
+      
+        # Specify alternate hypothesis in reference to whether the user chooses to do a one-sided or two-sided test.
+        if (input$alternate_hypothesis_choice == 1) {
+          hypothesis = paste(hypothesis, "\\neq", null_mean_string(), "\\)</p>")
+        } else if (input$alternate_hypothesis_choice == 2) {
+          hypothesis = paste(hypothesis, ">", null_mean_string(), "\\)</p>")
+        } else if (input$alternate_hypothesis_choice == 3) {
+          hypothesis = paste(hypothesis, "<", null_mean_string(), "\\)</p>")
+        }
+          
         return (
           tagList(
             HTML("<center>"),
