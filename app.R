@@ -45,8 +45,10 @@ ui <- page_navbar(
            nav_panel("1-Sample T-Test",
                oneSampleTTestUI("1_sample_t_test")
            ),
-           nav_panel("Paired T-Test", "This is another sub-tab.")
-  ),
+           nav_panel("Paired T-Test",
+               pairedTTestUI("paired_t_test") 
+           )
+  )
   
 )
 
@@ -58,6 +60,8 @@ server <- function(input, output, session) {
   proportionTestMainServer(id = "proportion_z_test")
   tCurveMotivationServer(id = "t_curve_motivation")
   oneSampleTTestServer(id = "1_sample_t_test")
+  pairedTTestServer(id = "paired_t_test")
+  
   
 }
 
