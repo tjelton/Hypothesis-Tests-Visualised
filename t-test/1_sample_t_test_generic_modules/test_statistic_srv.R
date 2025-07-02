@@ -1,7 +1,8 @@
 # Requirements:
 #     - sample_data: the data frame containing the datat that is being analysed.
 #     - null_mean_string: the string representation of the null value.
-test_statistic_1_sample_t_test_Server <- function(id, sample_data, null_mean_string) {
+#     - whether mu should have a subscript (NULL is that it should not have one)
+test_statistic_1_sample_t_test_Server <- function(id, sample_data, null_mean_string, mu_subscript = NULL) {
   moduleServer(
     id,
     function(input, output, session) {
@@ -23,15 +24,21 @@ test_statistic_1_sample_t_test_Server <- function(id, sample_data, null_mean_str
 
         EV_string(as.character(round(EV, 5)))
         SE_string(as.character(round(SE, 5)))
+        
+        EV_calculation_string = "$$\\begin{align*} \\text{EV} &= \\mu"
+        if (!is.null(mu_subscript)) {
+          EV_calculation_string = paste(EV_calculation_string, "_", mu_subscript, paste = "")
+        }
+        EV_calculation_string = paste(EV_calculation_string, "\\\\ &=", EV_string(), "\\end{align*}$$", sep = "")
 
         expected_value = withMathJax(
           HTML("<p>Expected Value:</p>"),
-          HTML(paste("$$\\begin{align*} \\text{EV} &= \\mu \\\\ &=", EV_string(), "\\end{align*}$$", sep = ""))
+          HTML(EV_calculation_string)
         )
 
         standard_error = withMathJax(
           HTML("<p>Standard Error:</p>"),
-          HTML(paste("$$\\begin{align*} \\text{SE} &= \\frac{\\sigma}{\\sqrt{n}} \\\\ &= \\frac{", round(sd_, 5) , "}{\\sqrt{",
+          HTML(paste("$$\\begin{align*} \\text{SE} &= \\frac{s}{\\sqrt{n}} \\\\ &= \\frac{", round(sd_, 5) , "}{\\sqrt{",
                      as.character(sample_size), "}}\\\\ &= ", SE_string(), "\\end{align*}$$", sep = "")),
           HTML("(Note that we use the sample standard deviation [\\(s \\)] rather than the population standard deviation [\\(\\sigma \\)])")
         )
