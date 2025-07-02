@@ -6,15 +6,14 @@ SleepStudy <- reshape(sleep,
                       timevar = "group",
                       idvar = "ID",
                       direction = "wide")
-names(SleepStudy)[names(SleepStudy) == "extra.1"] <- "group 1"
-names(SleepStudy)[names(SleepStudy) == "extra.2"] <- "group 2"
+names(SleepStudy)[names(SleepStudy) == "extra.1"] <- "condition 1"
+names(SleepStudy)[names(SleepStudy) == "extra.2"] <- "condition 2"
 
 # ChatGPT generated synthetic datasets
 set.seed(1)
 
 # BloodPressureStudy: before/after treatment with two drugs
 BloodPressureStudy <- data.frame(
-  PatientID = 1:30,
   Before_Treatment = round(rnorm(30, 140, 15), 1),
   After_DrugA = round(rnorm(30, 135, 14), 1),
   After_DrugB = round(rnorm(30, 133, 13), 1)
@@ -22,7 +21,6 @@ BloodPressureStudy <- data.frame(
 
 # CognitiveScores: paired cognitive test scores at baseline and 6 months
 CognitiveScores <- data.frame(
-  SubjectID = 101:130,
   Baseline_Memory = round(rnorm(30, 75, 8), 0),
   SixMonths_Memory = round(rnorm(30, 80, 7), 0),
   Baseline_Attention = round(rnorm(30, 70, 10), 0),
@@ -31,7 +29,6 @@ CognitiveScores <- data.frame(
 
 # FitnessTestResults: paired measurements before and after 8 weeks training
 FitnessTestResults <- data.frame(
-  AthleteID = 201:240,
   VO2Max_Before = round(rnorm(40, 45, 5), 1),
   VO2Max_After = round(rnorm(40, 49, 5), 1),
   SprintTime_Before = round(rnorm(40, 12.0, 0.8), 2),
@@ -40,7 +37,6 @@ FitnessTestResults <- data.frame(
 
 # DietImpactStudy: paired weight and cholesterol before and after diet
 DietImpactStudy <- data.frame(
-  ParticipantID = 301:325,
   Weight_Before = round(rnorm(25, 85, 12), 1),      # kg
   Weight_After = round(rnorm(25, 80, 11), 1),       # kg
   Cholesterol_Before = round(rnorm(25, 200, 25), 0), # mg/dL
@@ -85,7 +81,7 @@ load_data_paired_sample_Server <- function(id) {
               selectInput( 
                 ns("data_set_pre_uploaded"), 
                 HTML("<p><b>Which data set would you like to analyse?</b></p>"),
-                list("SleepStudy","BloodPressureStudy","CognitiveScores","FitnessTestResults","DietImpactStudy")
+                list("BloodPressureStudy", "SleepStudy", "CognitiveScores","FitnessTestResults","DietImpactStudy")
               ),
               HTML("<p><i>Warning: Other than the 'SleepStudy' data set, the other data sets are synthetic (made up) data.</i></p>"),
               HTML("<p>Now we need to select what data we want to be in condition 1, and what to be in condition 2. The paired difference will be condition 2 - condition 1.</p><br>")

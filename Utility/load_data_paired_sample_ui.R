@@ -1,4 +1,4 @@
-load_data_paired_sample_UI <- function(id, test_name = "1-sample z-test") {
+load_data_paired_sample_UI <- function(id, test_name = "1-sample t-test") {
   ns <- NS(id)
   tagList(
     
@@ -7,7 +7,9 @@ load_data_paired_sample_UI <- function(id, test_name = "1-sample z-test") {
       column(7,
              tight_card(
                "Input Sample Data",
-               HTML(paste("<p>Information placed here about choosing data...</p>"), sep = ""),
+               HTML("<p>In a paired t-test, we are dealing with paired data. This is where each element in our study has a measurment recorded under two different
+               conditions. We can then find the difference between the paired data, to reduce the values into a single data sample. But before doing this, we first 
+               have to choose a data set to analyse.</p>"),
                HTML("<br>"),
                
                # User specifies whether they will use inbuilt data or manually specify data.
