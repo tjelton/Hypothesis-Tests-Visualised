@@ -381,6 +381,11 @@ load_data_paired_sample_Server <- function(id) {
         # Extract the column (assuming only one column)
         x <- data_plotting[[1]]
         
+        # Check that the data is actually loaded in.
+        if (length(x) == 0) {
+          return()
+        }
+        
         # Save original plotting settings
         old_par <- par(no.readonly = TRUE)
         
