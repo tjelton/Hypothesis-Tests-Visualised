@@ -10,11 +10,11 @@ pairedTTestUI <- function(id) {
       ),
       column(4,
              tags$style(HTML(paste0("
-                          [id='learning_text'] {
-                            font-size: 20px;
-                            padding: 10px 20px;
-                          }
-                          "))),
+              [id='", ns("learning_text"), "'] {
+                font-size: 20px;
+                padding: 10px 20px;
+              }
+              "))),
              actionButton(ns("learning_text"), "What is a paired t-test?", class = "btn btn-primary", style="color: #fff;", width = "100%")
       ),
     ),
