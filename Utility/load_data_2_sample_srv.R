@@ -1,3 +1,19 @@
+# GPT generate syntehtic blood_pressure data.
+set.seed(1)  # For reproducibility
+
+# Number of samples per group
+n <- 50
+
+# Create data
+blood_pressure <- data.frame(
+  drug = rep(c("Drug_A", "Drug_B"), each = n),
+  blood_pressure = c(
+    rnorm(n, mean = 120, sd = 10),  # Drug_A values
+    rnorm(n, mean = 115, sd = 10)   # Drug_B values
+  )
+)
+
+
 load_data_2_sample_Server <- function(id) {
   moduleServer(
     id,
@@ -32,7 +48,7 @@ load_data_2_sample_Server <- function(id) {
               selectInput( 
                 ns("data_set_pre_uploaded"), 
                 HTML("<p>Which <b>data set</b> would you like to analyse?</p>"),
-                list("iris", "InsectSprays", "CO2", "ToothGrowth", "PlantGrowth")
+                list("blood_pressure", "iris", "InsectSprays", "CO2", "ToothGrowth", "PlantGrowth")
               ),
             )
           )
