@@ -442,6 +442,153 @@ server <- function(input, output, session) {
   
   ################################################################
   
+  ############################ Modal Intro ############################# 
+  observeEvent(input$learning_text, {
+    showModal(modalDialog(
+      title = "The 2-sample t-test",
+      withMathJax(HTML("<p>
+           Let’s consider that we have two different types of medicine: Drug A and Drug B. We are interested in determining whether there is a difference in the average 
+           blood pressure when people take these medicines.
+           <br><br>
+           
+           To investigate this, we collect two samples of people. We assign the first sample to try Drug A, and the second sample to try Drug B. This setup leads us to a
+           2-sample t-test, a statistical method used to assess whether there is a significant difference between the population means of two independent groups, based on 
+           their sample data.
+           <br><br>
+           
+           A key difference between this experimental design and the paired t-test is that in the 2-sample case, participants are only ever assigned to one group 
+           (either Drug A or Drug B). In a paired t-test, the same individuals would be assigned to both conditions, allowing us to examine the within-person differences.
+           <br><br>
+           
+           We let the average blood pressure for the people in sample one after taking Drug A be represented by \\(\\mu_1\\) (the 1 because it is sample 1), and the average
+           for the second sample (those who took Drug B) be represented by \\(\\mu_2\\).
+           <br><br>
+           
+           The null hypothesis for a 2-sample t-test is that there is no significant difference between the population means of the two samples. This can be written as:
+           
+           <center><p style='font-size: 16px'>\\( H_{0} : \\mu_1 = \\mu_2 \\)</p></center>
+           
+           or equivalenty:
+           
+           <center><p style='font-size: 16px'>\\( H_{0} : \\mu_1 - \\mu_2 = 0 \\)</p></center>
+           
+           If we are interested in testing whether there is a difference between the medicines (i.e., we don't care about the direction of the difference), we are using a 
+           2-sided alternative hypothesis. We would hence write the alternate hypothesis as:
+           <br><br>
+
+           <center><p style='font-size: 16px'>\\( H_{0} : \\mu_1 \\neq \\mu_2 \\)</p></center>
+           
+           or equivalenty:
+           
+           <center><p style='font-size: 16px'>\\( H_{0} : \\mu_1 - \\mu_2 \\neq 0 \\)</p></center>
+           
+           Now that we have set up our hypotherses, let's discuss how you can find the test-statistic for this test.
+      </p>")),
+      fluidRow(
+        column(8,
+               withMathJax(HTML("<p>
+                   <h5><u>Investigating the difference in 2 blood pressure medications:</u></h5><br>
+                   
+                   So far, we have only looked at hypothesis tests that involve a single sample (1-sample z-test, proportion test, 1-sample t-test, paired t-test).
+                   The way that we conceptualised these tests was through the box model, which worked well because we only had a single sample.
+                   <br><br>
+                   
+                   However, now we are looking at the 2-sample t-test, which means that we have 2 samples. Not to worry - we will use 2-box models, one to 
+                   represent each sample.
+                   <br><br>
+                   
+                   Let's start with the box model for sample 1. We will start with the basics. \\(n_1\\) is equal to 50, because we measured the blood pressure of 50 people 
+                   in our Drug A sample. From these 50 people, we calculated the average of their blood pressures, yielding our observed value \\(OV_1\\) of 121.004. 
+                   \\(s_1\\) is the sample standard deviation. This is because we are using a t-test, and in a t-test, we approximate the population standard deviation
+                   using the sample standard deviation. 
+                   <br><br>
+                   
+                   You may still be wondering what \\(\\mu_1 = \\mu_2\\) stands for. This is based on the fact that in a 2-sample t-test, our null hypothesis is that the 
+                   mean of sample 1 equals the mean of sample 2. Hence, \\(\\mu_1 = \\mu_2\\).
+                   <br><br>
+
+                   When considering the box model for sample 2, it is the same idea, except using the values that we measured among the people assigend to the sample 2 group. 
+                   Note that here, \\(n_2\\) is also equal to 50. However, for a 2-sample t-test, there is no requirment that \\(n_1 = n_2\\)! Similarly, we write 
+                   \\(\\mu_2 = \\mu_1\\), as under our null hypothesis, we assume the mean of sample 2 is equal to the mean of sample 1.
+                   </p>"))
+        ),
+        column(4,
+               HTML("<center>"),
+               HTML("<br>"),
+               HTML("<h5><b>Sample 1</b></h5>"),
+               grVizOutput("box_model_modal_sample_1", width = "60%", height = "40%"),
+               HTML("<br>"),
+               HTML("<h5><b>Sample 2</b></h5>"),
+               grVizOutput("box_model_modal_sample_2", width = "60%", height = "40%"),
+               HTML("</center>")
+        )
+      ),
+      fluidRow(
+        column(12,
+               HTML("<br><p>
+               <b><span style='color: blue;'>Now it's off to you! </span></b>Together, we worked through the null and alternate hypotheses, and explored the box models for 
+               each sample. Now you need to go through and check the assumptions for a 2-sample t-test, find the test statistic, and finally calculate the p-value. To continue
+               with the blood pressure example, in the \"Input Sample Data\" section, select \"Pre-uploaded Data\" and then select the \"blood-press\" data set.
+               </p>")
+        )
+      ),
+      easyClose = TRUE,
+      footer = modalButton("Close"),
+    ))
+  })
+  
+  output$box_model_modal_sample_1 <- renderGrViz({
+    
+    data = blood_pressure$blood_pressure[blood_pressure$drug == "Drug_A"]
+    
+    # Compose label text with Unicode subscripts and rounded stats
+    pop_details <- paste0("μ₁ = μ₂ ; s₁ = ", round(sd(data), 3))
+    
+    # Build the Graphviz diagram string
+    diagram <- paste0(
+      "digraph diagram {
+      graph [layout = dot, rankdir = TB]
+      
+      node [shape = box, style = filled, fillcolor = \"#bdfeff\", fontsize = 12]
+      box [label = \"", pop_details, "\"]
+      
+      node [shape = oval, width = 1.5, fillcolor = \"#f9ffbd\", fontsize = 12]
+      sample [label = \"OV₁ = ", round(mean(data, na.rm = TRUE), 3), "\"]
+      
+      edge [minlen = 2]
+      box -> sample [label = \"  n₁ = ", length(data), "\", fontsize = 12, labeldistance = 5]
+    }"
+    )
+    grViz(diagram)
+  })
+  
+  output$box_model_modal_sample_2 <- renderGrViz({
+    
+    data = blood_pressure$blood_pressure[blood_pressure$drug == "Drug_B"]
+    
+    # Compose label text with Unicode subscripts and rounded stats
+    pop_details <- paste0("μ₁ = μ₂ ; s₁ = ", round(sd(data), 3))
+    
+    # Build the Graphviz diagram string
+    diagram <- paste0(
+      "digraph diagram {
+      graph [layout = dot, rankdir = TB]
+      
+      node [shape = box, style = filled, fillcolor = \"#bdfeff\", fontsize = 12]
+      box [label = \"", pop_details, "\"]
+      
+      node [shape = oval, width = 1.5, fillcolor = \"#f9ffbd\", fontsize = 12]
+      sample [label = \"OV₁ = ", round(mean(data, na.rm = TRUE), 3), "\"]
+      
+      edge [minlen = 2]
+      box -> sample [label = \"  n₁ = ", length(data), "\", fontsize = 12, labeldistance = 5]
+    }"
+    )
+    grViz(diagram)
+  })
+  
+  
+  
   output$box_model_sample_1 <- renderGrViz({
     
     # Compose label text with Unicode subscripts and rounded stats
