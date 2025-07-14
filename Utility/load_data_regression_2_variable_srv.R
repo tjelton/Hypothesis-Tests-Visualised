@@ -107,8 +107,6 @@ load_data_regression_2_variable_Server <- function(id) {
       output$numeric_column_seleciton_pre_uploaded_data <- renderUI({
         req(input$data_set_pre_uploaded)
         
-        print("RUN 110")
-        
         # Only display if the pre_uploaded radio button option is selected.
         if (input$data_upload_choice != "pre_uploaded") {
           return()
