@@ -1,3 +1,15 @@
+# ChatGPT synthetic study dataset.
+set.seed(1)
+n <- 25
+Minutes_Studied <- round(runif(n, min = 0, max = 600), 0)  # now includes 0
+Test_Score <- round(50 + 0.075 * Minutes_Studied + rnorm(n, mean = 0, sd = 5), 1)
+
+# Combine into a data frame
+study_data <- data.frame(
+  Minutes_Studied = Minutes_Studied,
+  Test_Score = Test_Score
+)
+
 load_data_regression_2_variable_Server <- function(id) {
   moduleServer(
     id,
@@ -33,7 +45,7 @@ load_data_regression_2_variable_Server <- function(id) {
               selectInput( 
                 ns("data_set_pre_uploaded"), 
                 "Which data set would you like to analyse?", 
-                list("iris", "mtcars", "trees", "airquality", "pressure") 
+                list("study_data", "iris", "mtcars", "trees", "airquality", "pressure") 
               ),
               HTML("<p><i>Note: These are common data sets. If you want to learn more about them, feel free to look on Google!<i></p>")
             )
