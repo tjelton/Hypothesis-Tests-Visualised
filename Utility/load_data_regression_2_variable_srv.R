@@ -107,6 +107,8 @@ load_data_regression_2_variable_Server <- function(id) {
       output$numeric_column_seleciton_pre_uploaded_data <- renderUI({
         req(input$data_set_pre_uploaded)
         
+        print("RUN 110")
+        
         # Only display if the pre_uploaded radio button option is selected.
         if (input$data_upload_choice != "pre_uploaded") {
           return()
@@ -115,6 +117,11 @@ load_data_regression_2_variable_Server <- function(id) {
         # Get numeric columns
         data = get(input$data_set_pre_uploaded)
         numeric_cols <- names(data)[sapply(data, is.numeric)]
+        
+        data_to_store = get(input$data_set_pre_uploaded)[[numeric_cols[1]]]
+        data_x_axis(data_to_store)
+        data_to_store = get(input$data_set_pre_uploaded)[[numeric_cols[2]]]
+        data_y_axis(data_to_store)
         
         # Select button for the identified numeric columns.
         return(
@@ -231,14 +238,7 @@ load_data_regression_2_variable_Server <- function(id) {
         re_run_flag()
         req(input$data_set_pre_uploaded)
         req(input$column_select_pre_uploaded)
-        
-        if (input$data_set_pre_uploaded == "Mr. Han's Math Class") {
-          data_to_store = Han_math_numbers[[input$column_select_pre_uploaded]]
-          
-          #   Otherwise, user has selected data prebuilt into R.
-        } else {
-          data_to_store = get(input$data_set_pre_uploaded)[[input$column_select_pre_uploaded]]
-        }
+        data_to_store = get(input$data_set_pre_uploaded)[[input$column_select_pre_uploaded]]
         data(data_to_store)
       })
       
@@ -299,7 +299,6 @@ load_data_regression_2_variable_Server <- function(id) {
         data_y_axis(numeric_y_axis)
       })
       
-      
       # Error message for when not enogh unique values.
       output$manual_entry_unequal_samples <- renderUI({
         req(input$data_upload_choice)
@@ -323,7 +322,7 @@ load_data_regression_2_variable_Server <- function(id) {
         }
       })
       
-      # Error message for when not enogh unique values.
+      # Error message for when not enough unique values.
       output$manual_entry_insufficient_unique_values <- renderUI({
         req(input$data_upload_choice)
         
@@ -344,8 +343,6 @@ load_data_regression_2_variable_Server <- function(id) {
           return()
         }
       })
-      
-      
       
       # Plot of data
       output$initial_data_plots = renderPlot({
