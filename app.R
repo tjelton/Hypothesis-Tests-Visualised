@@ -23,6 +23,188 @@ ui <- page_navbar(
   
   nav_menu("Fundamentals",
            
+           nav_panel("Box Model - Part 1", 
+                     
+                     HTML("<h1>The Box Model Part 1 - What is the Box Model?</h1>"),
+                     
+                     fluidRow(
+                       column(8,
+                              tight_card(
+                                "What is the 'box model'?",
+                                
+                                HTML("<p>
+                                The box model, popularised by Freedman, Pisani, and Purves (1978), is a conceptual tool used in statistics to <i>represent chance
+                                processes involving random draws</i>. The 'box' contains <i>tickets</i>, each labeled with a <i>possible outcome of a single trial</i>. By 
+                                imagining drawing tickets at random (with or without replacement), the model helps us simulate and understand the behavior of random processes.
+                                <br><br>
+                                
+                                This might still seem quite abstract, so in this page, we will break down the box model through the lens of flipping a coin. We
+                                know that if you flip one coin, that is, we did <i>one trial</i> of flipping a coin, the coin would either land on a 'head' or a 'tail'
+                                (see the box part in the model to the left). Hence, inside of the box, we would place <i>two tickets, a 'head' ticket, and a 'tail' ticket</i>. 
+                                You can think of the box as the <i>population of all possible outcomes of a single trial</i> (in this case, the trial is flipping a coin).
+                                <br><br>
+                                
+                                <i>A sample is where we do more than one trial</i>. For example, if we were flipping a coin, you would flip it multiple times — say, 5 flips — and 
+                                record the outcome each time. In terms of the box model, this is like drawing 5 tickets at random from the box (with replacement), where each 
+                                ticket represents either a head or a tail. <i>Each draw simulates one trial of the process</i>, and the <i>full set of draws forms a sample</i>.
+                                <br><br>
+
+                                Why use the box model? As we will seen soon, it helps us reason about random variation, expected values, and the role of chance in statistics.
+                                In particular, when looking at different hypothesis tests in other pages, where possible, they will be motivated through the lens of the box model. The goal with
+                                this is to develop your conceptual understanding about the hypothesis tests. However, it is still possible to engage with many of the contents
+                                in this web app, without understanding the box model!</p>"),
+                                header_colour = "#3179ae"
+                              ),
+                       ),
+                       column(4,
+                              tight_card(
+                                NULL,
+                                HTML("<center>"),
+                                grVizOutput("example_coin_flip_1", width = "85%", height = "80%"),
+                                HTML("</center>")
+                              )
+                       )
+                     ),
+                     
+                     HTML("<br><br><br>"),
+                     
+                     fluidRow(
+                       
+                       column(5,
+                              tight_card(
+                                "Simulating Box-Model Draws",
+                                HTML("<p>For the example that we are using in this section, consider that our sample involes flipping a coin 5 times, and recording
+                                     the number of heads and tails we observe. We could think of our sample as 1 experiment with 5 trials, that is 5 flips of a coin.
+                                     <br><br>
+                                     
+                                     For example, in one experiment, we might find that after 5 coin flips, we say 3 heads and 2 tails (HHHTT). Perhaps in the next experiment, 
+                                     we got really lucky and had 5 heads (HHHHH).
+                                     <br><br>
+                                     
+                                     Instead of thinking about this as coin flips, instead consider that we had a cardboard box with two tickets in it, a 'H' ticket, and a
+                                     'T' ticket. Then, the experiment is drawing a ticket from the box, recording whether we saw a 'H' or 'T', placing the ticket back into 
+                                     the box, and then repeating the process until we have drawn from the box 5 times (assuming we are doing 5 trials).
+                                     This is what we mean by the box model representing a chance process. Each experiment is itself the result of random draws from the box.
+                                     <br><br>
+                                     
+                                     <span style='color: blue;'><b>Your turn!</b></span> In the section to the right, you can simulate taking different samples from the box model that we just
+                                     described.</p>"),
+                                header_colour = "#3179ae"
+                              ),
+                       ),
+                       column(7,
+                              primary_card(
+                                "Demonstration",
+                                HTML("<p><b><i>Press 'Simulate' to do 1 experiment of the box-model below.</i></b></p>"),
+                                fluidRow(
+                                  column(6,
+                                         HTML("<center>"),
+                                         HTML("<br>"),
+                                         grVizOutput("example_coin_flip_2", width = "70%", height = "80%"),
+                                         HTML("<br><br>"),
+                                         actionButton(
+                                           inputId = "simulate_coin_flip_1", label = HTML('<i class="fa fa-plus"></i>Simulate'),
+                                           class = "btn btn-success", style="color: #fff;", width = "50%"
+                                         ),
+                                         HTML("<br><br><br>"),
+                                         HTML("</center>"),
+                                         
+                                  ),
+                                  column(6,
+                                         grVizOutput("simulated_coin_flip_samples")
+                                  )
+                                ),
+                                header_colour = "#3179ae"
+                              )
+                       )
+                     ),
+                     
+                     HTML("<br><br><br>"),
+                     
+                     fluidRow(
+                       
+                       column(5,
+                              tight_card(
+                                "Representing the Problem Numerically",
+                                HTML("<p>Using the same box model from before, let's consider that after our experiment, we observed the sample:</p>"),
+                                fluidRow(
+                                  column(3),
+                                  column(6, grVizOutput("single_sample_words", height = "80%")),
+                                  column(3)
+                                ),
+                                HTML("<p>
+                                     An issue that we will run into is that 'H' and 'T' are not numbers. Ideally, we would like to summarise our sample using a single
+                                     number, without having to specify the number of heads and tails individually.
+                                     <br><br>
+                                     
+                                     Because of this, let’s instead change the tickets of our box to the numbers '1' and '0'. We can say that the number '1' represents
+                                     drawing a head, and the number '0' represents drawing a tail. Under the same example as before, that means we drew 2 x '1' tickets
+                                     and 3 x '0' tickets:
+                                     </p>"),
+                                fluidRow(
+                                  column(3),
+                                  column(6, grVizOutput("single_sample_numbers", height = "80%")),
+                                  column(3)
+                                ),
+                                HTML("<p>
+                                     Now that the tickets are numeric, we can model the sample using the sum or the mean:
+                                     <ul>
+                                       <li>Sum: 2 x 1 tickets + 3 x 0 tickets = 2 + 0 = 2</li>
+                                       <li>Mean: (2 x 1 tickets + 3 x 0 tickets)/5 = (2 + 0)/5 = 0.4</li>
+                                     </ul>
+                                     In practice, it doesn’t matter whether we model the sample using the sum or mean, as long as we are consistent throughout.
+                                     <br><br>
+                                     
+                                     <span style='color: blue;'><b>Your turn!</b></span> In the section to the right, you can simulate taking different samples from the 
+                                     box model with numeric tickets. You can choose whether you summarise the samples using the sum or the mean. 
+                                     </p>"),
+                                header_colour = "#3179ae"
+                              ),
+                       ),
+                       column(7,
+                              primary_card(
+                                "Demonstration",
+                                fluidRow(
+                                  column(8,
+                                         HTML("<p><b><i>Press 'Simulate' to do 1 experiment of the box-model below.</i></b></p>"),
+                                  ),
+                                  column(4,
+                                         radioButtons( 
+                                           inputId = "demonstration_sum_or_mean", 
+                                           label = "Model using sum or mean:", 
+                                           choices = c("Sum", "Mean")
+                                         ),
+                                  )
+                                ),
+
+                                
+                                fluidRow(
+                                  column(6,
+                                         HTML("<center>"),
+                                         HTML("<br>"),
+                                         grVizOutput("coin_flip_numeric_box_model", width = "70%", height = "80%"),
+                                         HTML("<br><br>"),
+                                         actionButton(
+                                           inputId = "simulate_coin_flip_2", label = HTML('<i class="fa fa-plus"></i>Simulate'),
+                                           class = "btn btn-success", style="color: #fff;", width = "50%"
+                                         ),
+                                         HTML("<br><br><br>"),
+                                         HTML("</center>"),
+                                         
+                                  ),
+                                  column(6,
+                                         grVizOutput("simulated_coin_flip_samples_numbers")
+                                  )
+                                ),
+                                header_colour = "#3179ae"
+                              )
+                       )
+                     ),
+                     
+                     HTML("<br><br><br>"),
+                     
+           ),
+           
            nav_panel("The Box Model", 
                      boxModelMainUI("box_model"),
            ),
@@ -59,6 +241,277 @@ ui <- page_navbar(
 
 
 server <- function(input, output, session) {
+  
+  # Heads and tails box model (with words).
+  make_coin_flip_plot <- function() {
+    string <- "
+    digraph diagram {
+      graph [layout = dot, rankdir = TB]
+  
+      node [shape = box, style = filled, fillcolor = \"#bdfeff\", fontsize = 12, width = 2.5]
+      box [label = 'Head (H), Tail (T)']
+  
+      node [shape = oval,width = 1.5,fillcolor = \"#f9ffbd\", fontsize = 12]
+      sample [label = 'Sample']
+  
+      edge [minlen = 2]
+        box->sample [label = '  n = 5', fontsize = 12, labeldistance = 5]
+    }"
+    grViz(string)
+  }
+  
+  output$example_coin_flip_1 <- renderGrViz({
+    make_coin_flip_plot()
+  })
+  
+  output$example_coin_flip_2 <- renderGrViz({
+    make_coin_flip_plot()
+  })
+  
+  ###################### Simulated Coin Flip Samples (With Words) ###################### 
+  
+  coin_flip_word_labels = reactiveVal(c())
+  count_coin_flip_simulation = reactiveVal(0)
+  observeEvent(input$simulate_coin_flip_1, {
+    # For the first 10, we just add a new coin flip.
+    if (count_coin_flip_simulation() < 10) {
+      count_coin_flip_simulation(count_coin_flip_simulation() + 1)
+      coin_flip_word_labels(c(coin_flip_word_labels(), paste0(sample(c("H", "T"), size = 5, replace = TRUE), collapse = " ")))
+    # For subsequent, we replaced samples that have already been displayed.
+    } else {
+      count_coin_flip_simulation(count_coin_flip_simulation() + 1)
+      current_flip_int = count_coin_flip_simulation()
+      current_flip_int = current_flip_int %% 10
+      if (current_flip_int == 0) { # Because 10 %% 10 = 0
+        current_flip_int = 10
+      }
+      coin_flip_word_labels_new = coin_flip_word_labels()
+      coin_flip_word_labels_new[current_flip_int] = paste0(sample(c("H", "T"), size = 5, replace = TRUE), collapse = " ")
+      coin_flip_word_labels(coin_flip_word_labels_new)
+    }
+  })
+  
+  # Display the samples. Arranged in yellow circles in 5 row by 2 column arrangment.
+  output$simulated_coin_flip_samples <- renderGrViz({
+    
+    if (count_coin_flip_simulation() == 0) {
+      return(NULL)
+    }
+    
+    n <- min(count_coin_flip_simulation(), 10)
+    
+    labels <- coin_flip_word_labels()
+
+    num_rows <- ceiling(n / 2)
+    
+    table_rows <- ""
+    for (i in 1:num_rows) {
+      left_label <- labels[(i - 1) * 2 + 1]
+      right_index <- (i - 1) * 2 + 2
+      right_label <- if (right_index <= n) labels[right_index] else NULL
+      
+      # Left cell (always present)
+      left_cell <- sprintf(
+          "<TD FIXEDSIZE='TRUE' WIDTH='120' HEIGHT='40' BGCOLOR='#f9ffbd' STYLE='rounded' BORDER='1' COLOR='black' CELLPADDING='4' ALIGN='CENTER' VALIGN='MIDDLE'>
+       <FONT POINT-SIZE='12'>%s</FONT>
+     </TD>", left_label)
+      
+      right_cell <- if (!is.null(right_label)) {
+        sprintf(
+            "<TD FIXEDSIZE='TRUE' WIDTH='120' HEIGHT='40' BGCOLOR='#f9ffbd' STYLE='rounded' BORDER='1' COLOR='black' CELLPADDING='4' ALIGN='CENTER' VALIGN='MIDDLE'>
+         <FONT POINT-SIZE='12'>%s</FONT>
+       </TD>", right_label)
+      } else {
+        "<TD FIXEDSIZE='TRUE' WIDTH='120' HEIGHT='40' CELLPADDING='4'></TD>"
+      }
+      
+      row <- sprintf("<TR>%s%s</TR>", left_cell, right_cell)
+      table_rows <- paste0(table_rows, row, "\n")
+    }
+    
+    graph_string <- sprintf("
+      digraph diagram {
+        node [shape=plaintext]
+        graph [layout=dot]
+
+        tbl [label=<
+          <TABLE BORDER='0' CELLBORDER='0' CELLSPACING='10'>
+            %s
+          </TABLE>
+        >]
+      }
+    ", table_rows)
+    
+    grViz(graph_string)
+  })
+  
+  ###################### Sample Single Word Examples ###################### 
+
+  output$single_sample_words <- renderGrViz({
+    grViz("
+    digraph diagram {
+      node [shape=plaintext]
+      graph [margin=0, rankdir=LR]
+
+      tbl [label=<
+        <TABLE BORDER='0' CELLBORDER='0' CELLSPACING='0'>
+          <TR>
+            <TD FIXEDSIZE='TRUE' WIDTH='120' HEIGHT='40' 
+                BGCOLOR='#f9ffbd' STYLE='rounded' BORDER='1' COLOR='black' 
+                CELLPADDING='4' ALIGN='CENTER' VALIGN='MIDDLE'>
+              <FONT POINT-SIZE='12'>H T T H T</FONT>
+            </TD>
+          </TR>
+        </TABLE>
+      >]
+    }
+  ")
+  })
+  
+  output$single_sample_numbers <- renderGrViz({
+    grViz("
+    digraph diagram {
+      node [shape=plaintext]
+      graph [margin=0, rankdir=LR]
+
+      tbl [label=<
+        <TABLE BORDER='0' CELLBORDER='0' CELLSPACING='0'>
+          <TR>
+            <TD FIXEDSIZE='TRUE' WIDTH='120' HEIGHT='40' 
+                BGCOLOR='#f9ffbd' STYLE='rounded' BORDER='1' COLOR='black' 
+                CELLPADDING='4' ALIGN='CENTER' VALIGN='MIDDLE'>
+              <FONT POINT-SIZE='12'>1 0 0 1 0</FONT>
+            </TD>
+          </TR>
+        </TABLE>
+      >]
+    }
+  ")
+  })
+  
+  ###################### Simulated Coin Flip Samples (Sums and Means) ###################### 
+  
+  output$coin_flip_numeric_box_model <- renderGrViz({
+    string <- paste("
+    digraph diagram {
+      graph [layout = dot, rankdir = TB]
+  
+      node [shape = box, style = filled, fillcolor = \"#bdfeff\", fontsize = 12, width = 2.5]
+      box [label = '1, 0']
+  
+      node [shape = oval,width = 1.5,fillcolor = \"#f9ffbd\", fontsize = 12]
+      sample [label = 'Sample ", input$demonstration_sum_or_mean, "']
+  
+      edge [minlen = 2]
+        box->sample [label = '  n = 5', fontsize = 12, labeldistance = 5]
+    }", sep = "")
+    grViz(string)
+  })
+  
+  # When the radio button is changed, re-set counter and simulated values.
+  observeEvent(input$demonstration_sum_or_mean, {
+    coin_flip_number_labels(c())
+    count_coin_flip_simulation_2(0)
+  })
+  
+  # Simulate the coin flips, calculating the sum or mean depending on the user choices.
+  coin_flip_number_labels = reactiveVal(c())
+  count_coin_flip_simulation_2 = reactiveVal(0)
+  observeEvent(input$simulate_coin_flip_2, {
+    # For the first 10, we just add a new coin flip.
+    if (count_coin_flip_simulation_2() < 10) {
+      count_coin_flip_simulation_2(count_coin_flip_simulation_2() + 1)
+      sample_draw = sample(c(1, 0), size = 5, replace = TRUE)
+      # Find the sum or mean of the sample.
+      sample_summary = sum(sample_draw)
+      if (input$demonstration_sum_or_mean == "Mean") {
+        sample_summary = mean(sample_draw)
+      }
+      result_str <- paste0(
+        sample_summary, " (", 
+        paste(sample_draw, collapse = " "), 
+        ")"
+      )
+      coin_flip_number_labels(c(coin_flip_number_labels(), result_str))
+    # For subsequent, we replaced samples that have already been displayed.
+    } else {
+      count_coin_flip_simulation_2(count_coin_flip_simulation_2() + 1)
+      current_flip_int = count_coin_flip_simulation_2()
+      current_flip_int = current_flip_int %% 10
+      if (current_flip_int == 0) { # Because 10 %% 10 = 0
+        current_flip_int = 10
+      }
+      sample_draw = sample(c(1, 0), size = 5, replace = TRUE)
+      # Find the sum or mean of the sample.
+      sample_summary = sum(sample_draw)
+      if (input$demonstration_sum_or_mean == "Mean") {
+        sample_summary = mean(sample_draw)
+      }
+      result_str <- paste0(
+        sample_summary, " (", 
+        paste(sample_draw, collapse = " "), 
+        ")"
+      )
+      coin_flip_number_labels_new = coin_flip_number_labels()
+      coin_flip_number_labels_new[current_flip_int] = result_str
+      coin_flip_number_labels(coin_flip_number_labels_new)
+    }
+  })
+  
+  # Display the samples. Arranged in yellow circles in 5 row by 2 column arrangment.
+  output$simulated_coin_flip_samples_numbers <- renderGrViz({
+    
+    if (count_coin_flip_simulation_2() == 0) {
+      return(NULL)
+    }
+    
+    n <- min(count_coin_flip_simulation_2(), 10)
+    
+    labels <- coin_flip_number_labels()
+    
+    num_rows <- ceiling(n / 2)
+    
+    table_rows <- ""
+    for (i in 1:num_rows) {
+      left_label <- labels[(i - 1) * 2 + 1]
+      right_index <- (i - 1) * 2 + 2
+      right_label <- if (right_index <= n) labels[right_index] else NULL
+      
+      # Left cell (always present)
+      left_cell <- sprintf(
+        "<TD FIXEDSIZE='TRUE' WIDTH='120' HEIGHT='40' BGCOLOR='#f9ffbd' STYLE='rounded' BORDER='1' COLOR='black' CELLPADDING='4' ALIGN='CENTER' VALIGN='MIDDLE'>
+       <FONT POINT-SIZE='12'>%s</FONT>
+     </TD>", left_label)
+      
+      right_cell <- if (!is.null(right_label)) {
+        sprintf(
+          "<TD FIXEDSIZE='TRUE' WIDTH='120' HEIGHT='40' BGCOLOR='#f9ffbd' STYLE='rounded' BORDER='1' COLOR='black' CELLPADDING='4' ALIGN='CENTER' VALIGN='MIDDLE'>
+         <FONT POINT-SIZE='12'>%s</FONT>
+       </TD>", right_label)
+      } else {
+        "<TD FIXEDSIZE='TRUE' WIDTH='120' HEIGHT='40' CELLPADDING='4'></TD>"
+      }
+      
+      row <- sprintf("<TR>%s%s</TR>", left_cell, right_cell)
+      table_rows <- paste0(table_rows, row, "\n")
+    }
+    
+    graph_string <- sprintf("
+      digraph diagram {
+        node [shape=plaintext]
+        graph [layout=dot]
+
+        tbl [label=<
+          <TABLE BORDER='0' CELLBORDER='0' CELLSPACING='10'>
+            %s
+          </TABLE>
+        >]
+      }
+    ", table_rows)
+    
+    grViz(graph_string)
+  })
+  
   
   boxModelMainServer(id = "box_model")
   oneSampleZTestServer(id = "1_sample_z_test")
