@@ -98,3 +98,14 @@ gcd <- function(a, b) {
   }
   return(abs(a))
 }
+
+# We assume that if mean_or_sample_as_int = 1 then we are talking about sum, and mean_or_sample_as_int = 2 is mean.
+simulate_box <- function(mean_or_sample_as_int, n, box) {
+  value = sample(box, n, replace = TRUE)
+  if (mean_or_sample_as_int == 2) {
+    value = mean(value)
+  } else {
+    value = sum(value)
+  }
+  return(value)
+}
