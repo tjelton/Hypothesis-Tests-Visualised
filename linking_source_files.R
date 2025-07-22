@@ -1,5 +1,7 @@
 source("Fundamentals/box_model_part_1_ui.R")
 source("Fundamentals/box_model_part_1_srv.R")
+source("Fundamentals/box_model_part_2_ui.R")
+source("Fundamentals/box_model_part_2_srv.R")
 source("Box-Model/box_model_main_srv.R")
 source("Box-Model/box_model_main_ui.R")
 source("z-test/proportion_test_srv.R")
