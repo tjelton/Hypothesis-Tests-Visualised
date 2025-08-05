@@ -38,8 +38,8 @@ ui <- page_navbar(
                      boxModelPart2UI("box_model_part_2")
            ),
            
-           nav_panel("The Box Model", 
-                     boxModelMainUI("box_model"),
+           nav_panel("Box Model - Part 3", 
+                     boxModelPart3UI("box_model_part_3"),
            ),
   ),
   
@@ -77,7 +77,7 @@ server <- function(input, output, session) {
 
   boxModelPart1Server(id = "box_model_part_1")
   boxModelPart2Server(id = "box_model_part_2")
-  boxModelMainServer(id = "box_model")
+  boxModelPart3Server(id = "box_model_part_3")
   oneSampleZTestServer(id = "1_sample_z_test")
   proportionTestMainServer(id = "proportion_z_test")
   tCurveMotivationServer(id = "t_curve_motivation")
