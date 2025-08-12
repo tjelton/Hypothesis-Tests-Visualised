@@ -19,8 +19,8 @@ boxModelPart2UI <- function(id) {
                  "$$\\frac{10 \\times 1 + 15 \\times 0}{25} = \\frac{10}{25} = 0.4$$"
                )),
                HTML("<p>
-                     But this example is just one experiment. We could repeat the experiment, and this time get 14 '1' tickets and 11 '0' tickets, giving a 
-                     mean of 0.56. Maybe next time we get 8 '1' ticekts and 17 '0' tickets, giving a mean of 0.32.
+                     But this example is just one experiment. We could repeat the experiment. Maybe the next time you do the experiment you get 14 '1' tickets and 11 '0' 
+                     tickets, giving a mean of 0.56. Another time you could get 8 '1' ticekts and 17 '0' tickets, giving a mean of 0.32.
                      <br></p>"),
                HTML("<p><b>Task 1:</b> To the right, repeat the experiments over and over again. Every time you do a
                                      new experiment, its sample mean will be added to the histogram of the means observed so far. What shape do we see when considering
@@ -180,38 +180,36 @@ boxModelPart2UI <- function(id) {
              tight_card(
                "Introducing the Central Limit Theorem (CLT)",
                HTML("<p>
-                    <span style='color: blue;'><b>What is the the central limit theorem?</b></span> The Central Limit Theorem (CLT) states that if you take <b>many 
+                    <span style='color: blue;'><b>What is the central limit theorem?</b></span> The Central Limit Theorem (CLT) states that if you take <b>many 
                     random samples</b> of the same size from any population, the <b>distribution of the sample means (or sums) will tend to look like a normal 
                     distribution</b> as the sample size gets larger — even if the original population is not normally distributed.
                     <br><br>
                     
-                    When thinking about this though the lens of the box model, the box represents our population. So, when applying the central limit theorem to the
-                    box model, we can say that if we take a sufficiently large number of draws from a box, then the sample sums (or means) will follow a normal 
-                    distribution.
+                    When considering this through the lens of the box model, the box represents our population. So, when applying the central limit theorem to the box model,
+                    we can say that if we take a sufficiently large number of draws from a box, then the sample sums (or means) will follow a normal distribution.
                     <br><br>
                     
-                    The key words here are <b>sufficiently larger</b>. This means that our number of draws (n) must be a relatively high number. How high? This depends
+                    The key words here are <b>sufficiently larger</b>. This means that our number of draws (n) must be relatively high. How high? This depends
                     on the tickets in the box.
                     <br><br>
                     
-                    For example, before we had two box models with the tickets '1', '0', '0', '0', with the only difference being that one box model had samples formed
-                    from 25 draws from the box (i.e. n = 25), with the other formed from 5 draws from the box (i.e. n = 5). From the demonstration, we saw that when
-                    we kept repeating the experiment of drawing from the box 25 times and taking the mean, the distribution of the means appeared normally distributed.
-                    Hence, 25 draws from the box <b>was sufficiently</b> large enough for the sample means to be normally distributed. However, when we kept repeating 
-                    the experiment of drawing from the box 5 times and taking the mean, the distribution wan not normally distributed. Hence, 5 draws from the box
-                    <b>was not sufficiently</b> large enough for the sample means to be normally distributed. In this example, we could have also calculated the sample
-                    sums instead. We would have seen the same looking sample distributions for the n = 25 and n = 5 box models.
+                    For example, before we had two box models with the tickets '1', '0', '0', '0', with the only difference being that one box model had samples formed from
+                    25 draws from the box (i.e. n = 25), with the other formed from 5 draws from the box (i.e. n = 5). From the demonstration, we observed that when we 
+                    repeatedly drew from the box 25 times and calculated the mean, the distribution of the means appeared to be normally distributed. Hence, 25 draws from 
+                    the box <b>was sufficiently</b> large for the sample means to be normally distributed. However, when we repeated the experiment of drawing from the box 5 times 
+                    and taking the mean, the distribution was not normally distributed. Hence, five draws from the box <b>was not sufficiently</b> large for the sample means to
+                    be normally distributed. In this example, we could have also calculated the sample sums instead. We would have seen the same-looking sample distributions
+                    for the n = 25 and n = 5 box models..
                     <br><br>
                     
-                    You may be wondering if there is some set number of draws (i.e. some threshold value for n) that you can use to say that the CLT always applies. 
-                    Some people may say that if you have greater than 35 draws, then the CLT will hold, but this is not always the case. You should always look at your
-                    underlying data. If the tickets in the box model are symmetric, and are already almost normally distributed, then you will not need very many draws
-                    for the CLT to apply. However, if the box were very skewed (imagine a box with one '1' ticket and ninety '0' tickets), they you will likely
-                    need many more than 35 draws for the CLT to apply.
+                    You may be wondering if there is some set number of draws (i.e. some threshold value for n) that you can use to say that the CLT always applies. Some people
+                    may say that if you have greater than 35 draws, then the CLT will hold, but this is not always the case. You should always look at your underlying data. If
+                    the tickets in the box model are symmetric and already nearly normally distributed, then you will not need many draws for the CLT to apply. However, if the
+                    box were very skewed (imagine a box with one '1' ticket and ninety '0' tickets), you would likely need many more than 35 draws for the CLT to apply.
                     <br><br>
                     
-                    In the activity below, you have the opporunity to specify your own box (as well as trial some boxes that we specified), to investigate how many
-                    draws are needed for the sample means (or sums) to be normally distributed.
+                    In the activity below, you have the opportunity to specify your own box (as well as trial some boxes that we specified), to investigate how many draws are 
+                    needed for the sample means (or sums) to be normally distributed.
                     </p>"),
                header_colour = "#3179ae"
              )
@@ -226,20 +224,20 @@ boxModelPart2UI <- function(id) {
              tight_card(
                "Different Number of Draws",
                HTML("<p>
-                     In this demonstration, you will be changing the contents of the box (that is, the tickets in the box). From this box, we will find
-                     samples of size n = 5, 25, 50 and 100. For each of these sample sizes, you will generate 100,000 samples by pressing the 'Sample' button 
-                     below (it may take a few seconds for the samples to be created). You will then look at the different histograms for each sample size to
-                     roughly gauge at what point our sample size was large enough for the central limit theorem to apply.
+                     In this demonstration, you will be changing the contents of the box (that is, the tickets in the box). From this box, we will draw samples of size n = 5, 
+                     25, 50 and 100. For each of these sample sizes, you will generate 100,000 samples by pressing the 'Sample' button below (it may take a few seconds for the 
+                     samples to be created). You will then look at the different histograms for each sample size to gauge at what point our sample size was large enough for the
+                     central limit theorem to apply.
                      <br><br>
                      
-                     You are free to set your own tickets to place in the box, but we recommend you use the practice boxes first, as there is some text
-                     which describes what we see to help guide you.
+                     You are free to set your own tickets to place in the box, but we recommend using the practice boxes first, as they include text that describes what we see
+                     to help guide you.
                      <br><br>
                      
-                     <i>Note: Due to how the bin widths are chosen in this exercise, sometimes the distribution of the means and the sums do not match up.
-                     For example, for the example 1 box, it appears that the CLT applies for the sample sums for n = 25, but not for the mean when n = 25.
-                     You should not read into this. The sample sum histograms do seem to better represent the data. In real life, you would play around with
-                     the histogram bin widths until you feel they appropriately represent the data.</i>
+                     <i>Note: Due to how the bin widths are chosen in this exercise, sometimes the distribution of the means and the sums do not match up. For example, for the 
+                     example 1 box, it appears that the CLT applies for the sample sums for n = 25, but not for the mean when n = 25. You should not read into this. The sample
+                     sum histograms do seem to better represent the data. In real life, you would experiment with the histogram bin widths until you feel they accurately 
+                     represent the data.</i>
                      <br><br>
 
                      <b>Current box:</b>

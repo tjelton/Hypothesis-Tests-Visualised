@@ -16,45 +16,45 @@ boxModelPart3UI <- function(id) {
             tight_card(
               "Modelling Using a Normal Distribution",
               HTML("<p>
-                    In part 2, we learnt that the central limit theorem tells us that if we take a sufficiently large number of draws from a box, then the sample means (or sums) 
-                    will follow a normal distribution. We also showed how you can verify whether the number of draws is sufficinetly large by repeatedly forming samples, taking 
-                    the mean (or sum) of each, and observing whether the samples are normally distributed.
+                    In part 2, we learnt that the central limit theorem tells us that if we take a sufficiently large number of draws from a box, then the sample means (or sums)
+                    will follow a normal distribution. We also demonstrated how to verify whether the number of draws is sufficiently large by repeatedly forming samples,
+                    calculating the mean (or sum) of each, and observing whether the samples are normally distributed.
                     <br><br>
                     
                     Why do we care about whether the samples are normally distributed? If they are, we can start to answer probability-based questions.
                     <br><br>
                     
-                    For example, consider we were interested in the probability of flipping 60 or more heads from 100 coins. To do this, we first construct a box model
-                    with the ticket '1' which reperesents landing on a head, and the ticket '0' which represents landing on a tail. As we are flipping 100 coins, that is like
-                    drawing from the box 100 times. We will represent this sample using the sum (this box model is picture to the right).
+                    For example, consider we were interested in the probability of flipping 60 or more heads from 100 coins. To do this, we first construct a box model with the
+                    ticket '1', which represents landing on a head, and the ticket '0', which represents landing on a tail. As we flip 100 coins, that is equivalent to drawing 
+                    100 times from the box. We will represent this sample using the sum (this box model is pictured to the right).
                     <br><br>
                     
-                    Here is a very brief overview of how you can use the normal distribution to answer probability questions. The first step is to actually specify the normal
-                    distribution which we are using to model the box model to the right. We do this by calculating the expected value (which acts as the mean for the normal
-                    distribution) and standard error (which acts as the standard deviation for the normal distribution). Then, to actually find probabilities we are interested in
-                    we use the normal distribution we just specified and find areas under the curve (the area gives the probability). For example, if we did want to find the 
-                    probability that you flip 60 or more heads from 100 coins, we calculate the area under the curve above 60 (values to the right of 60 indicate more that
-                    60 heads). We find that this area is 0.02275, meaning the chance of flipping 60 or more heads from 100 coins is 2.275%.
+                    Here is a very brief overview of how you can use the normal distribution to answer probability questions. The first step is to actually specify the normal 
+                    distribution that we are using to model the box model to the right. We do this by calculating the expected value (which acts as the mean for the normal
+                    distribution) and standard error (which acts as the standard deviation for the normal distribution). Then, to actually find the probabilities we are 
+                    interested in, we use the normal distribution we just specified and calculate areas under the curve (the area represents the probability). For example,
+                    if we wanted to find the probability that you flip 60 or more heads from 100 coins, we would calculate the area under the curve above 60 (values to the right
+                    of 60 indicate more than 60 heads). We find that this area is 0.02275, meaning the chance of flipping 60 or more heads from 100 coins is 2.275%.
                     <br><br>
                     
-                    This is the end of this quick introduction. It might all see a bit vague at the moment, but the steps below go into much more depth! The best way to learn 
-                    more about this is to play around and experiment below with the 'Box Model Playground'. To help you learn, read below for suggested tasks.
-                   </p>"),
+                    This concludes the brief introduction. It may all seem vague at the moment, but the steps below go into much more depth! The best way to learn more about 
+                    this is to experiment with the 'Box Model Playground' below. To help you learn, read below for suggested tasks.
+                    </p>"),
               accordion(
                 open = FALSE,
                 accordion_panel(
                   HTML("<p><b>Suggested Exercise 1: Observing 70 Heads</b></p>"),
                   HTML("<p>
-                       The first suggested exercise is to recreate the scenario above, but with a slight change. What is the probability if you flipped 100 coins that you observe
-                       70 or more heads.
+                       The first suggested exercise is to recreate the scenario above, but with a slight change. What is the probability that if you flipped 100 coins, you would
+                       observe 70 or more heads?
                        <br><br>
                        
                        To do this:
                        <ul>
-                          <li>In the 'Box Parameters' mini-section, set the tickets and number of draws to match the box model to the right. Ensure that we are taking the sum
-                          for the samples (you could take the mean if you want though, but you will have to change later steps).</li>
+                          <li>In the 'Box Parameters' mini-section, set the tickets and number of draws to match the box model to the right. Ensure that we take the sum for the
+                          samples (you could also take the mean, if you prefer, but you will need to adjust later steps).</li>
                           <li>Verify that n = 100 is a sufficient number of draws for the central limit theorem to apply for this box model.</li>
-                          <li>Find the probability of observing a sum of 70 or more. To do this, set the lower boundary to 70, and upper boundary to ∞.</li>
+                          <li>Find the probability of observing a sum of 70 or more. To do this, set the lower boundary to 70, and the upper boundary to ∞.</li>
                        </ul>
 
                        The answer is 3e-05, which means 0.00003 (0.003%).
@@ -66,10 +66,9 @@ boxModelPart3UI <- function(id) {
                 accordion_panel(
                   HTML("<p><b>Suggested Exercise 2: Rolling a Dice (Part 1)</b></p>"),
                   HTML("<p>
-                       You have one ice cream left in your house, and you and your brother desperately want it. Your brother turns to you and says \"Let's play a little game.
-                       I want you to roll a 6-sided dice 50 times. Every time you roll it, write down the face that the die landed on, and at the end, add up the 50 numbers
-                       you recorded from the 50 rolls. If the sum is greater than 150, then you can have the ice cream, and otherwise, I get to eat it.\" You agree to his little
-                       game.
+                       You have one ice cream left at home, and you and your brother desperately want it. Your brother turns to you and says, \"Let's play a little game. I want 
+                       you to roll a 6-sided die 50 times. Every time you roll it, write down the face that the die landed on, and at the end, add up the 50 numbers you recorded
+                       rom the 50 rolls. If the sum is greater than 150, then you can have the ice cream, and otherwise, I get to eat it.\" You agree to his little game.
                        <br><br>
                        
                        To do this:
@@ -77,7 +76,7 @@ boxModelPart3UI <- function(id) {
                           <li>In the 'Box Parameters' mini-section, set the tickets to be the numbers 1 through 6, and the number of draws to be 50. Ensure that we are taking 
                           the sum for the samples (your brother asked you for the sum after all).</li>
                           <li>Verify that n = 50 is a sufficient number of draws for the central limit theorem to apply for this box model.
-                          <li>Find the probability of observing a sum of 150 or more. To do this, set the lower boundary to 150, and upper boundary to ∞.</li>
+                          <li>Find the probability of observing a sum of 150 or more. To do this, set the lower boundary to 150, and the upper boundary to ∞.</li>
                        </ul>
 
                        We won't give you the <b>EXACT</b> answer this time, but it should be above 90%. 
@@ -90,9 +89,9 @@ boxModelPart3UI <- function(id) {
                 accordion_panel(
                   HTML("<p><b>Suggested Exercise 2: Rolling a Dice (Part 2)</b></p>"),
                   HTML("<p>
-                         Next week, you and your brother are in the same predicment. One ice cream left - who gets it? Your brother proposes a new game. You roll a 6-sided dice
-                         50 times, and take the sums like last time. If the sum is between 145 and 175 (inclusive), you get the ice cream. Otherwise, your brother gets it. What
-                         is the probability that you get the ice cream?
+                         Next week, you and your brother are in the same predicament. One ice cream left - who gets it? Your brother proposes a new game. You roll a 6-sided 
+                         die 50 times and take the sums, just as you did last time. If the sum is between 145 and 175 (inclusive), you get the ice cream. Otherwise, your 
+                         brother gets it. What is the probability that you get the ice cream?
                          </p>")
                 )
               ),
@@ -132,11 +131,10 @@ boxModelPart3UI <- function(id) {
                  # Step 1: Enter tickets.
                  accordion_panel(
                    HTML("<b>Step 1) Tickets</b>"),
-                   "Step 1) Tickets",
                    HTML("<p>First, we need to specify the tickets that we will be adding to the box.</p>"),
                    HTML("<p>In the text box below, enter the tickets that you wish to place into the box. Only <i>numbers</i> can be
-                               added, and <i>each ticket should be seperated by a comma</i>. For example, if you want to have 1x1 ticket
-                               and 1x0 tickets in the box, enter <i>1,0</i>."),
+                               added, and <i>each ticket should be seperated by a comma</i>. For example, if you want to have one '1' ticket
+                               and one '0' tickets in the box, enter <i>1,0</i>."),
                    textAreaInput(
                      ns("box_tickets_text_entry"),
                      NULL,
@@ -168,7 +166,7 @@ boxModelPart3UI <- function(id) {
                  # Step 3: Model Using Sum or Mean
                  accordion_panel(
                    HTML("<b>Step 3) Model Using Sum or Mean</b>"),
-                   HTML("<p>Third, we need to specify whether we will be modelling the sample using the mean or sum of the draws:<br><br></p>"),
+                   HTML("<p>Third, we need to specify whether we will be representing the sample using the mean or sum of the draws:<br><br></p>"),
                    radioButtons(
                      ns("box_sum_or_mean"),
                      label = NULL,

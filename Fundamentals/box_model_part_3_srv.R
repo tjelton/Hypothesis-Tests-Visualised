@@ -376,7 +376,7 @@ boxModelPart3Server <- function(id) {
       }
       
       string = paste("<p>Does the data in the histogram above look normally distributed? Ensure that you have repeated the process of
-                     drawing from the box, and finding the sample ", sample, "many times. If it does not, scroll back above and update the
+                     drawing from the box, and finding the sample ", sample, " many times. If it does not, scroll back above and update the
                      number of draws in step 2. If it does, continue below!</p>", sep = "")
       
       return(HTML(string))
@@ -390,8 +390,8 @@ boxModelPart3Server <- function(id) {
       }
       
       instructions = HTML(paste("<p>Now that we have confirmed that we are taking a sufficient number of draws for the sample ", sample, "s to follow a
-                     normal distribution, we now want to specify this general normal curve. We will set the mean to
-                     be equal to the the <b>sample ", sample, "'s</b> expected value, and the standard deviation equal to its standard error:</p>", sep = ""))
+                     normal distribution, we want to specify this general normal curve. We will set the mean to
+                     be equal to the <b>sample ", sample, "'s</b> expected value, and the standard deviation equal to its standard error:</p>", sep = ""))
       
       # EV and SE text (changes based upon whether the sample sum or mean is being used).
       expected_value = ""
@@ -459,7 +459,7 @@ boxModelPart3Server <- function(id) {
       }
       
       instructions = paste("<p>Now that we are modelling the sample ", sample , "s using a normal curve with mean ", EV_string(), " and standard deviation ",
-                           SE_string(), " we can start to ask probability based questions like, <br>",
+                           SE_string(), ", we can start to ask probability based questions like, <br>",
                            "<ul>
                               <li>What is the chance that we see a value greater than", withMathJax("\\(x\\)"), "?</li>",
                            "<li>What is the chance that we see a value between", withMathJax("\\(y\\)"), " and ", withMathJax("\\(z\\)"), "?</li>",

@@ -8,28 +8,27 @@ boxModelPart1UI <- function(id) {
       column(8,
              tight_card(
                "What is the 'box model'?",
-               
                HTML("<p>
-                      The box model, popularised by Freedman, Pisani, and Purves (1978), is a conceptual tool used in statistics to <i>represent chance
-                      processes involving random draws</i>. The 'box' contains <i>tickets</i>, each labeled with a <i>possible outcome of a single trial</i>. By 
-                      imagining drawing tickets at random (with or without replacement), the model helps us simulate and understand the behavior of random processes.
+                      The box model, popularised by Freedman, Pisani, and Purves (1978), is a conceptual tool used in statistics to represent chance processes involving 
+                      random draws. The 'box' contains tickets, each labelled with a possible outcome of a single trial. By imagining drawing tickets at random (with or
+                      without replacement), the model helps us simulate and understand the behaviour of random processes.
                       <br><br>
                       
-                      This might still seem quite abstract, so in this page, we will break down the box model through the lens of flipping a coin. We
-                      know that if you flip one coin, that is, we did <i>one trial</i> of flipping a coin, the coin would either land on a 'head' or a 'tail'
-                      (see the box part in the model to the right). Hence, inside of the box, we would place <i>two tickets, a 'head' ticket, and a 'tail' ticket</i>. 
-                      You can think of the box as the <i>population of all possible outcomes of a single trial</i> (in this case, the trial is flipping a coin).
+                      This may seem quite abstract, so in this page, we will break down the box model through the lens of flipping a coin. We know that if you flip one coin, 
+                      that is, we perform one trial of flipping a coin, the coin will land on either a 'head' or a 'tail' (see the box part in the model to the right). Hence, 
+                      inside the box, we would place two tickets, a 'head' ticket, and a 'tail' ticket. You can think of the box as the population of all possible outcomes of
+                      a single trial (in this case, the trial is flipping a coin).
                       <br><br>
                       
-                      <i>A sample is where we do more than one trial</i>. For example, if we were flipping a coin, you would flip it multiple times — say, 5 flips — and 
-                      record the outcome each time. In terms of the box model, this is like drawing 5 tickets at random from the box (with replacement), where each 
-                      ticket represents either a head or a tail.
+                      <i>A sample is where we do more than one trial.</i> For example, if we were flipping a coin, you would flip it multiple times — say, 5 flips — and record
+                      the outcome each time. In terms of the box model, this is like drawing 5 tickets at random from the box (with replacement), where each ticket represents 
+                      either a head or a tail.
                       <br><br>
 
-                      Why use the box model? As we will seen soon, it helps us reason about random variation, expected values, and the role of chance in statistics.
-                      In particular, when looking at different hypothesis tests in other pages of this site, where possible, they will be motivated through the lens of the box model. The goal with
-                      this is to develop your conceptual understanding about the hypothesis tests we study. However, it is still possible to engage with most of the content
-                      in this web app without understanding the box model!</p>"),
+                      Why use the box model? As we will see soon, it helps us reason about random variation, expected values, and the role of chance in statistics. In particular,
+                      examining different hypothesis tests on other pages of this site, where possible, they will be motivated through the lens of the box model. The goal with 
+                      this is to develop your conceptual understanding of the hypothesis tests we study. However, it is still possible to engage with most of the content in this
+                      web app without understanding/studying the box model!</p>"),
                header_colour = "#3179ae"
              ),
       ),
@@ -50,22 +49,22 @@ boxModelPart1UI <- function(id) {
       column(5,
              tight_card(
                "Simulating Box-Model Draws",
-               HTML("<p>For the example that we are using in this section, consider that our sample involes flipping a coin 5 times, and recording
-                                     the number of heads and tails we observe. We could think of our sample as 1 experiment with 5 trials, that is 5 flips of a coin.
-                                     <br><br>
+               HTML("<p>For the example we are using in this section, consider that our sample involves flipping a coin 5 times and recording the number of heads and tails
+                        observed. We could think of our sample as 1 experiment with 5 trials, that is, 5 flips of a coin.
+                        <br><br>
                                      
-                                     For example, in one experiment, we might find that after 5 coin flips, we see 3 heads and 2 tails (HHHTT). Perhaps in the next experiment, 
-                                     we got really lucky and had 5 heads (HHHHH).
-                                     <br><br>
-                                     
-                                     Instead of thinking about this as coin flips, another way of thinking about this is that wen have a cardboard box with two tickets in it, a 'H' ticket, and a
-                                     'T' ticket. Then, the experiment is drawing a ticket from the box, recording whether we saw a 'H' or 'T', placing the ticket back into 
-                                     the box, and then repeating the process until we have drawn from the box 5 times (assuming we are doing 5 trials).
-                                     This is what we mean by the box model representing a chance process. Each experiment is itself the result of random draws from the box.
-                                     <br><br>
-                                     
-                                     <span style='color: blue;'><b>Your turn!</b></span> In the section to the right, you can simulate taking different samples from the box model that we just
-                                     described.</p>"),
+                        For example, in one experiment, we might find that after 5 coin flips, we see 3 heads and 2 tails (HHHTT). Perhaps in the next experiment, we got
+                        really lucky and had 5 heads (HHHHH).
+                        <br><br>
+                         
+                        Instead of thinking about this as coin flips, another way of thinking about this is that we have a cardboard box with two tickets in it, a 'H' ticket, 
+                        and a 'T' ticket. Then, the experiment is drawing a ticket from the box, recording whether we saw a 'H' or 'T', placing the ticket back into the box, 
+                        and then repeating the process until we have drawn from the box 5 times (assuming we are doing 5 trials). This is what we mean by the box model 
+                        representing a chance process. Each experiment is itself the result of random draws from the box.  
+                        <br><br>
+                        
+                        <span style='color: blue;'><b>Your turn!</b></span> In the section to the right, you can simulate taking different samples from the box model that we just
+                        described.</p>"),
                header_colour = "#3179ae"
              ),
       ),
@@ -114,9 +113,8 @@ boxModelPart1UI <- function(id) {
                      number, without having to specify the number of heads and tails individually.
                      <br><br>
                      
-                     Because of this, let’s instead change the tickets of our box to the numbers '1' and '0'. We can say that the number '1' represents
-                     drawing a head, and the number '0' represents drawing a tail. Under the same example as before, that means we drew 2 x '1' tickets
-                     and 3 x '0' tickets:
+                     Because of this, let’s change the tickets in our box to the numbers '1' and '0'. We can say that the number '1' represents drawing a head, and the
+                     number '0' represents drawing a tail. Under the same example as before, that means we drew 2 x '1' tickets and 3 x '0' tickets:
                      </p>"),
                fluidRow(
                  column(3),
@@ -190,12 +188,12 @@ boxModelPart1UI <- function(id) {
                      The example box model that we have been using so far was flipping a coin 5 times, but you can create any box model that you want!
                      <br><br>
                      
-                     For example, we might be interested in modelling the number of times a die lands on the '1' face after 20 rolls of a dice. If interested in that example,
+                     For example, we might be interested in modelling the number of times a die lands on the '1' face after 20 rolls of a die. If interested in that example,
                      you would have one '1' ticket in the box, and five '0' tickets (to account for the other five sides on the die).
                      <br><br>
                      
-                     Below you can experiment with making your own box model, and then generating samples from it. This time, we will not show you the actual tickets that were drawn
-                     for each sample, rather the mean or sum of the tickets (depending on whether you are modelling the sample using the mean or sum).
+                     Below you can experiment with making your own box model and then generating samples from it. This time, we will not show you the actual tickets that were 
+                     drawn for each sample, but rather the mean or sum of the tickets (depending on whether you are modelling the sample using the mean or sum).
                      </p>"),
                
                accordion(

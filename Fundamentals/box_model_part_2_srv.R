@@ -410,29 +410,29 @@ boxModelPart2Server <- function(id) {
       if (input$custom_box_model_example_choice == 1) {
         return(
           HTML("<p><span style='color: red;'>What do we see after pressing simulate? </span>When looking from the perspective of sample sums, we see that at a sample size of n = 25, the distribution
-             of sample means appear normally distributed. Hence, for this box, values of n greater than or equal to 25 are sufficient. Is is relatively unsurprising that we need
+             of sample means appears normally distributed. Hence, for this box, values of n greater than or equal to 25 are sufficient. It is relatively unsurprising that we need
              such a small sample size here. The box is very symmetric (there is an even balance between the '0' and '1' tickets).</p>")
         )
       } else if (input$custom_box_model_example_choice == 2) {
         return(
           HTML("<p><span style='color: red;'>What do we see after pressing simulate? </span>When looking from the perspective of sample sums, we see that at a sample size of n = 25, the distribution
-             of sample means appear very close to being normally distributed. Hence, for this box, values of n greater than or equal to 25 are sufficient.</p>")
+             of sample means appears very close to being normally distributed. Hence, for this box, values of n greater than or equal to 25 are sufficient.</p>")
         )
       } else if (input$custom_box_model_example_choice == 3) {
         return(
           HTML("<p><span style='color: red;'>What do we see after pressing simulate? </span>When looking from the perspective of sample sums, we see that at a sample size of n = 50, the distribution
-             of sample means appear very close to being normally distributed. We need a larger sample size for this box, as there is a large imbalance between the '0' and 
+             of sample means appears very close to being normally distributed. We need a larger sample size for this box, as there is a large imbalance between the '0' and 
              '1' tickets.</p>")
         )
       } else if (input$custom_box_model_example_choice == 4) {
         return(
           HTML("<p><span style='color: red;'>What do we see after pressing simulate? </span>When looking from the perspective of sample sums, we see that at a sample size of n = 5, the distribution
-             of sample means appear very close to being normally distributed. A small sample size for this box is sufficient as the tickets are nearly symmetric.</p>")
+             of sample means appears very close to being normally distributed. A small sample size for this box is sufficient, as the tickets are nearly symmetric.</p>")
         )
       } else if (input$custom_box_model_example_choice == 5) {
         return(
           HTML("<p><span style='color: red;'>What do we see after pressing simulate? </span>Even at n = 100, the sample sums or means do not appear to be normally distributed. This is because the
-             tickes are incredibly assymetric. This is a classic example where assuming that if n is large  that the CLT must apply (such as n greater than 35 or 50) can be 
+             tickets are incredibly asymmetric This is a classic example where assuming that if n is large, the CLT must apply (such as n greater than 35 or 50) can be 
              misleading.</p>")
         )
       }
