@@ -23,7 +23,7 @@ confidenceIntervalUI <- function(id) {
                       <br><br>
                       
                       This might seem a bit vague, so it is best explained through an example. Let’s consider that we have sample data, and we want to estimate the 
-                      population mean. This is a realistic scenario. In real life, the population mean is usually unknown, and we want to use the sample to gague what
+                      population mean. This is a realistic scenario. In real life, the population mean is usually unknown, and we want to use the sample to gauge what
                       the population mean is likely to be. If we were to calculate a 95% confidence interval using our sample, we would end up with a range of values.
                       This interval is our estimate for where the true population mean might lie, based on the data we've collected.
                       <br><br>
@@ -68,7 +68,7 @@ confidenceIntervalUI <- function(id) {
                          <li>If the confidence interval contains the true population mean of 100, the line is green, and red otherwise.</li>
                      </ul>
 
-                     What we should see is that around 95% of the confidence intervals contain are green, meaning they contain the true population mean. 
+                     What we should see is that around 95% of the confidence intervals are green, meaning they contain the true population mean. 
                      There will be some variability however, especially as we are only looking at 100 intervals here. Press simulate a few times to see how 
                      the intervals change as new data is encountered.
                      <br><br>
@@ -157,7 +157,7 @@ confidenceIntervalUI <- function(id) {
                          people, we are now quite close to the entire population (we have accounted for 90% of the data).
                          <br><br>
                          
-                         In the case where we interviewed 90% of the population, there is less uncertainty about what the population mean is and hence
+                         In the case where we interviewed 90% of the population, there is less uncertainty about what the population mean is, and hence
                          we would expect the confidence interval to be smaller than in the case where we only interviewed 10% of the population.
                          <br><br>
                          
@@ -182,8 +182,8 @@ confidenceIntervalUI <- function(id) {
                       <li>How does the size of the confidence intervals change when <b>adjusting the sample size</b>?</li>
                      </ul>
                      <br>
-                     <i>Note: Here, each confidence interval is taking from sampling from the specified normal distribution. This is for learning purposes only.
-                     In reality, you would not know the true population mean or sample standard deviation (otherwise, what would be the point of contructing an
+                     <i>Note: Here, each confidence interval is taken from sampling from the specified normal distribution. This is for learning purposes only.
+                     In reality, you would not know the true population mean or sample standard deviation (otherwise, what would be the point of constructing an
                      interval in the first place).</i>U
                      </p>"),
                header_colour = "#3179ae"
