@@ -38,7 +38,7 @@ load_1_sample_data_Server <- function(id) {
                 "Which data set would you like to analyse?", 
                 list("Mr. Han's Math Class", "iris", "Orange", "PlantGrowth", "ToothGrowth", "chickwts", "ChickWeight") 
               ),
-              HTML("<p><i>Note: These are common data sets. If you want to learn more about them, feel free to look on Google!<i></p>")
+              #HTML("<p><i>Note: These are common data sets. If you want to learn more about them, feel free to look on Google!<i></p>")
             )
           )
         }
@@ -50,7 +50,7 @@ load_1_sample_data_Server <- function(id) {
               HTML("<br>"),
               HTML("<p><b>Enter data into the text box below.</b>
             <ul>
-              <li>All values must be numeric, and numbers should contain no spaces or any characters other than a '.' for a decimal place.</li>
+              <li>All values must be numeric, and numbers should contain no spaces or any characters other than a . for a decimal place.</li>
               <li>Each value must be on it's own line, or comma seperated.</li>
               <li>Don't forget to press 'Upload' once you are finished!</li>
             </ul></p>"),
