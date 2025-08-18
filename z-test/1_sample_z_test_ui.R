@@ -170,21 +170,35 @@ conditionalPanel(
                    accordion_panel(
                      HTML("<b>Assumption 2: Normality</b>"),
                      HTML("<p>The second assumption is that the sample means follow a normal distribution."),
-                     HTML("<p><span style='color: blue;'><b>How do we check?</b></span><br>
+                     HTML("<p><span style='color: blue;'><b>How do we check?</b></span>
+                           <br><br>
+                     
+                           <b>Idea 1: Large n</b><br>
+                           Recall that the central limit theorem tells us that if we take a sufficiently large number of draws from the box, then the sample
+                           means will approximately follow a normal distribution. If confused, please do the exerice at Fundamentals > Box Model Part 2.
                             <ul>
                               <li>Recall that the central limit theorem tells us that if we take a sufficiently large number of draws from the box, then the sample
-                              means will approximately follow a normal distribution. If confused, please see the box model exercise.</li>
+                              means will approximately follow a normal distribution. If confused, please do the exerice at Fundamentals > Box Model Part 2.</li>
                               <li>One way to gauge whether the central limit theorem holds or not is to see how large our sample is (this is indicated by the \"n\" in
                               the box model above).</li>
                               <li>Many textbooks will say that you can say that you can use the rule of thumb that the central limit theorem will apply if we have 30
                               or more draws. BEWARE - this is not always true! If the distribution of the values is very skewed, you will need much more than 30 draws!</li>
-                              <li>You should use a combination of the size of \"n\" and a histogram and boxplot of the sample distributions to help you determine whether
-                              the central limit theorem means we can resonably approximate the sample means using a normal distribution.</li>
                             </ul>
-                       </p>")
+                            
+                            <br>
+                            <b>Idea 2: QQ-plot, Boxplot and Histogram</b><br>
+                            We learnt that if our data has some specific properties, then required a smaller value for n for the CLT to apply. In particular...
+                            <ul>
+                              <li>(QQ-plot) If the sample closely follows the QQ line, it suggests the data is normally distribued. Data that is normally distributed
+                              requires far less point for the CLT to apply.</li>
+                              <li>(Boxplot and Histogram) If the data is symmetric, less points are required for the CLT. These plots can also be used to indicate whether the 
+                              data appears to be normally distributed.</li>
+                            </ul>
+                       </p>"),
+                     uiOutput(ns("assumption_2_plots"))
                    ),
                    
-                   # Assumption 3: Normal Approximation
+                   # Assumption 3: Known Population Standard Deviation
                    accordion_panel(
                      HTML("<b>Assumption 3: Known Population Standard Deviation</b>"),
                      HTML("<p>As mentioned previously in \"The NULL Hypothesis - Setting up the Box\" section, it is assumed that the population standard deviation is known.</p>")
@@ -241,11 +255,11 @@ conditionalPanel(
 
       HTML("<br><br><br>"),
 
-      ############ SECTION:Conclusion ############
+      ############ SECTION: Conclusion ############
       fluidRow(
         column(12,
                tight_card(
-                 "Conclusion",
+                 "Conclusion (p-value) - Do we Reject or Accept the Null Hypothesis",
                  fluidRow(
 
                    # Section to enter significance level.
@@ -282,7 +296,49 @@ conditionalPanel(
         ),
       ),
   
-    HTML("<br><br><br><br><br><br><br>"),
+      HTML("<br><br><br>"),
+  
+      ############ SECTION: Confidence Interval ############
+      fluidRow(
+        column(12,
+               tight_card(
+                 "Confidence Interval",
+                 HTML("<p>A confidence interval in a 1-sample z-test shows the range of population means that are plausible at the chosen confidence level, and if the
+                      hypothesized mean falls outside this range, the null hypothesis is rejected.</p>"),
+                 fluidRow(
+                   column(6,
+                          HTML("<p><b>Step 1) What is your confidence level</b>?</p>"),
+                          
+                          # Space to enter significance value.
+                          fluidRow(
+                            column(1,
+                                   withMathJax(HTML("<p style='font-size: 16px; text-align: right;'>\\( \\alpha = \\)</p>"))
+                            ),
+                            column(3,
+                                   numericInput(
+                                     ns("confidence_level"),
+                                     NULL,
+                                     value = 0.95,
+                                     min = 0,
+                                     max = 1,
+                                     width = "100%"
+                                   ),
+                            ),
+                          ),
+                          uiOutput(ns("confidence_level_warning")),
+                   ),
+                   column(6,
+                            HTML("<p><b>Step 2) Final Conclusion</b></p>"),
+                            uiOutput(ns("confidence_level_output")),
+                   )
+                 ),
+                 header_colour = "#3179ae"
+               )
+        ),
+      ),
+    
+    
+      HTML("<br><br><br><br><br><br><br>"),
   
   
   )

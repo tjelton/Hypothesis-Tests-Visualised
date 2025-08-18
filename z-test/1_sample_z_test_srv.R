@@ -42,7 +42,7 @@ oneSampleZTestServer <- function(id) {
                     We also know that the population standard deviation (denoted by \\(\\mu \\)) is equal to 7.5. Hence, we place these values into the box.<br><br>
 
                     Next, we want to turn our attention to the test scores that Mr. Han’s students achieved in the class. Let’s say that the 25 students had an average score of
-                    142.843 As there were 25 students, we specify: \\(n = 25 \\). The average score of 155 142.843 referred to as the observed value (OV). With these details drawn, 
+                    142.843. As there were 25 students, we specify: \\(n = 25 \\). The average score of 142.843 is referred to as the observed value (OV). With these details drawn, 
                     we have completed the box model representation.<br><br>
                    </p>"))
           ),
@@ -62,7 +62,7 @@ oneSampleZTestServer <- function(id) {
         ),
         HTML("<p>
             With the test statistic found, Mr. Han is ready to find the p-value. Play around with the remainder of this exercise to help Mr. Han find the p-value, and test whether
-            null hypothesis is supported or rejected.
+            the null hypothesis is supported or rejected.
              </p>"),
         easyClose = TRUE,
         footer = modalButton("Close"),
@@ -89,10 +89,10 @@ oneSampleZTestServer <- function(id) {
     ############################ Uploading Data Mechanism ############################# 
     
     sample_data_session <- load_1_sample_data_Server(id = "loading_data")
-
+    
     # Store the sample data.
     sample_data <- reactiveVal(NULL)
-
+    
     # Variable that is true when the data has been specified, meaning the rest of the exercise can commence
     # This variable can be accessed by the ui conditional panel.
     output$render_rest_of_exercise <- reactive({
@@ -113,7 +113,7 @@ oneSampleZTestServer <- function(id) {
         min = 0
       )
     })
-
+    
     # Button logic to set the pop sd to the sample sd.
     observeEvent(input$set_pop_sd_to_sample, {
       req(input$population_standard_deviation_numeric)
@@ -124,7 +124,7 @@ oneSampleZTestServer <- function(id) {
         value = sample_sd
       )
     })
-
+    
     # Override the sd value to be equal to the sample sd if it is less than or equal to 0.
     observeEvent(input$population_standard_deviation_numeric, {
       if (is.na(input$population_standard_deviation_numeric) || input$population_standard_deviation_numeric <= 0) {
@@ -136,30 +136,30 @@ oneSampleZTestServer <- function(id) {
         )
       }
     })
-
+    
     # Box model plot
     output$box_model <- renderGrViz({
       
       if (is.null(input$null_mu) || is.null(input$population_standard_deviation_numeric)) {
         return()
       }
-
+      
       # String with mu and sigma.
       pop_details = paste("&mu; = ", as.character(round(input$null_mu, digits = 3)), "; &sigma; = ", as.character(round(input$population_standard_deviation_numeric, digits = 3)))
-
+      
       # Set up graph and box
       diagram = "digraph diagram { graph [layout = dot, rankdir = TB] node [shape = box, style = filled, fillcolor = \"#bdfeff\", fontsize = 12, width = 2.5] box [label = '"
       diagram = paste(diagram, pop_details, "']", sep = "")
-
+      
       # Set up sample circle.
       diagram = paste(diagram, " node [shape = oval,width = 1.5,fillcolor = \"#f9ffbd\", fontsize = 12] sample [label = '", "OV = ",
                       as.character(round(mean(sample_data(), na.rm = TRUE), digits = 3)), "']", sep = "")
-
+      
       # Create edge between box and circle.
       # Annotate edge with n value.
       n = length(sample_data())
       diagram = paste(diagram, " edge [minlen = 2] box->sample [label = '  n = ", n, "', fontsize = 12, labeldistance = 5]}", sep = "")
-
+      
       return (grViz(diagram))
     })
     
@@ -174,19 +174,19 @@ oneSampleZTestServer <- function(id) {
         )
       )
     })
-
+    
     # Alternate hypothesis (rendered) output.
     output$alternate_hypothesis_output <- renderUI({
-
+      
       null_mean_string = as.character(round(input$null_mu, digits = 3))
-
+      
       # Specify alternate hypothesis in reference to whether the user chooses to do a one-sided or two-sided test.
       hypothesis = paste("<p style='font-size: 16px;'>\\( H_1: \\) \\(\\mu", "\\neq", null_mean_string, "\\)</p>")
       if (input$alternate_hypothesis_choice == 2) {
         hypothesis = paste("<p style='font-size: 16px;'>\\( H_1: \\) \\(\\mu", ">", null_mean_string, "\\)</p>")
       } else if (input$alternate_hypothesis_choice == 3) {
         hypothesis = paste("<p style='font-size: 16px;'>\\( H_1: \\) \\(\\mu", "<", null_mean_string, "\\)</p>")
-
+        
       }
       return (
         tagList(
@@ -197,53 +197,81 @@ oneSampleZTestServer <- function(id) {
       )
     })
     
+    output$assumption_2_plots <- renderUI({
+      
+      qq_plot <- renderPlot({
+        qqnorm(sample_data())
+        qqline(sample_data(), col = "red")
+      })
+      
+      box_plot <- renderPlot({
+        boxplot(sample_data(), main = "Boxplot of Sample Data")
+      })
+      
+      hist_plot <- renderPlot({
+        hist(sample_data(),
+             main = "Histogram of Sample Data",
+             xlab = "",
+             breaks = 30)
+      })
+      
+      return(
+        fluidRow(
+          column(4, qq_plot),
+          column(4, box_plot),
+          column(4, hist_plot)
+        )
+      )
+    })
+    
+    
     EV_string = reactiveVal("")
     SE_string = reactiveVal("")
-
+    
     # Expected value and standard error output.
     output$ev_and_se_text <- renderUI({
-
+      
       sample_size = length(sample_data())
-
+      
       # Find EV and SE.
       mean_ = input$null_mu
       sd_ = input$population_standard_deviation_numeric
       EV = mean_
       SE = sd_ / sqrt(sample_size)
-
+      
       EV_string(as.character(round(EV, 5)))
       SE_string(as.character(round(SE, 5)))
-
+      
       expected_value = withMathJax(
         HTML("<p>Expected Value:</p>"),
         HTML(paste("$$\\begin{align*} \\text{EV} &= \\mu \\\\ &=", EV_string(), "\\end{align*}$$", sep = ""))
       )
-
+      
       standard_error = withMathJax(
         HTML("<p>Standard Error:</p>"),
         HTML(paste("$$\\begin{align*} \\text{SE} &= \\frac{\\sigma}{\\sqrt{n}} \\\\ &= \\frac{", round(sd_, 5) , "}{\\sqrt{",
                    as.character(sample_size), "}}\\\\ &= ", SE_string(), "\\end{align*}$$", sep = ""))
       )
-
+      
       return(
         tagList(
           expected_value, standard_error
         )
       )
     })
-
+    
     test_stat = reactiveVal("")
-
+    
     # Test statistic output.
     output$test_statistic_calculation <- renderUI({
-
+      
       observed_val = mean(sample_data(), na.rm = TRUE)
-
+      
       # Calculate test statistic.
       temp = (observed_val - as.numeric(EV_string()))/as.numeric(SE_string())
       temp = as.character(round(temp, 4))
       test_stat(temp)
-
+      
       t_stat = withMathJax(
         HTML(paste("$$\\begin{align*} \\text{TS} &= \\frac{\\text{OV} - \\text{EV}}{\\text{SE}} \\\\ &= \\frac{", as.character(round(observed_val,5)), " - ",
                    EV_string(), "}{", SE_string(), "} \\\\ &= ", test_stat(), "\\end{align*}$$", sep = ""))
@@ -256,15 +284,15 @@ oneSampleZTestServer <- function(id) {
         )
       )
     })
-
+    
     p_val = reactiveVal(0)
-
+    
     # P-value text output and calculation.
     output$p_value_prelude <- renderUI({
-
+      
       # General prelude text about what the p-value is.
       first_string = HTML(paste("<p>The p-value is the probability of observing a test-statistic <b>more extreme that our test statistic of ", test_stat(), ".</b></p>", sep = ""))
-
+      
       # Specifically how to find the p-value (based upon alternate hypothesis).
       second_string = "<p>The test statistics fall on a standard normal curve. "
       if (input$alternate_hypothesis_choice == 1) {
@@ -280,7 +308,7 @@ oneSampleZTestServer <- function(id) {
                               ".</p></b>", sep = "")
       }
       second_string = HTML(second_string)
-
+      
       # Calculate p-value.
       p_val_local = 0
       if (input$alternate_hypothesis_choice == 1) {
@@ -291,10 +319,10 @@ oneSampleZTestServer <- function(id) {
         p_val_local = pnorm(as.numeric(test_stat()))
       }
       p_val(p_val_local)
-
+      
       # String to output the p-value.
       p_value = withMathJax(HTML("<p style='font-size: 16px; text-align: center;'>\\( p =", as.character(round(p_val_local,5)) ,"\\)</p>"))
-
+      
       return(
         tagList(
           first_string,
@@ -302,9 +330,9 @@ oneSampleZTestServer <- function(id) {
           p_value
         )
       )
-
+      
     })
-
+    
     # Histogram with normal curve to shown normal curve approximation.
     output$test_stat_normal_plot = renderPlot({
       return(curve_shaded_test_stat(dnorm, list(mean = 0, sd = 1), as.numeric(test_stat()), input$alternate_hypothesis_choice))
@@ -354,9 +382,98 @@ oneSampleZTestServer <- function(id) {
         )
       )
     })
-  
     
-
+    # Process confidence level text input.
+    confidence_level = reactiveVal(0.95)
+    alpha_warning_confidence_lvel = reactiveVal(FALSE)
+    observeEvent(input$confidence_level, {
+      if (is.na(input$confidence_level) || input$confidence_level <= 0 || input$confidence_level >= 1) {
+        confidence_level(0.95)
+        alpha_warning_confidence_lvel(TRUE)
+      } else {
+        confidence_level(input$confidence_level)
+        alpha_warning_confidence_lvel(FALSE)
+      }
+    })
+    
+    # Error message for when the value for alpha is invalid.
+    output$confidence_level_warning <- renderUI({
+      if (alpha_warning_confidence_lvel()) {
+        return(
+          HTML("<span style='color: red;'><p>Error: The value for confidence level must be between 0 and 1.</p></span>")
+        )
+      }
+    })
+    
+    # Confidence interval output
+    output$confidence_level_output = renderUI({
+      
+      xbar = as.numeric(EV_string())
+      se = as.numeric(SE_string())
+      conf_level = as.numeric(confidence_level())
+      alpha = 1 - conf_level
+      mu0 = as.numeric(input$null_mu)
+      
+      z_val = qnorm(1 - alpha/2)
+      
+      formula_line = substitution_line = answer_line = NULL
+      conclusion_line = NULL
+      
+      # Compute CI and generate lines based on hypothesis type
+      if (input$alternate_hypothesis_choice == 1) {
+        # Two sided
+        lower = xbar - z_val * se
+        upper = xbar + z_val * se
+        
+        formula_line = "$$CI = \\bar{x} \\pm z_{\\alpha/2} \\cdot SE$$"
+        substitution_line = paste0("$$CI = ", round(xbar,4), " \\pm ", round(z_val,4), " \\times ", round(se,4), "$$")
+        answer_line = paste0("$$CI = (", round(lower,4), ", ", round(upper,4), ")$$")
+        
+        # Check null
+        if (mu0 < lower || mu0 > upper) {
+          conclusion_text = "As the null hypothesis value is outside the confidence interval, we <b>reject the null hypothesis</b>."
+        } else {
+          conclusion_text = "As the null hypothesis value is inside the confidence interval, we <b>fail to reject the null hypothesis</b>."
+        }
+        
+      } else if (input$alternate_hypothesis_choice == 2) {
+        # One sided (greater than)
+        z_val = qnorm(1 - alpha)
+        lower = xbar - z_val * se
+        formula_line = "$$CI = (\\bar{x} - z_{\\alpha} \\cdot SE, \\infty)$$"
+        substitution_line = paste0("$$CI = (", round(xbar,4), " - ", round(z_val,4), " \\times ", round(se,4), ", \\infty)$$")
+        answer_line = paste0("$$CI = (", round(lower,4), ", \\infty)$$")
+        
+        if (mu0 < lower) {
+          conclusion_text = "As the null hypothesis value is below the confidence interval, we <b>reject the null hypothesis</b>."
+        } else {
+          conclusion_text = "As the null hypothesis value is inside the confidence interval, we <b>fail to reject the null hypothesis</b>."
+        }
+        
+      } else if (input$alternate_hypothesis_choice == 3) {
+        # One sided (less than)
+        z_val = qnorm(1 - alpha)
+        upper = xbar + z_val * se
+        formula_line = "$$CI = (-\\infty, \\bar{x} + z_{\\alpha} \\cdot SE)$$"
+        substitution_line = paste0("$$CI = (-\\infty, ", round(xbar,4), " + ", round(z_val,4), " \\times ", round(se,4), ")$$")
+        answer_line = paste0("$$CI = (-\\infty, ", round(upper,4), ")$$")
+        
+        if (mu0 > upper) {
+          conclusion_text = "As the null hypothesis value is above the confidence interval, we <b>reject the null hypothesis</b>."
+        } else {
+          conclusion_text = "As the null hypothesis value is inside the confidence interval, we <b>fail to reject the null hypothesis</b>."
+        }
+      }
+      
+      # Build UI
+      tagList(
+        withMathJax(HTML(formula_line)),
+        withMathJax(HTML(substitution_line)),
+        withMathJax(HTML(answer_line)),
+        HTML(paste0("<span style='color: blue;'><p>", conclusion_text, "</p></span>"))
+      )
+    })
+    
   })
-    
+  
 }
