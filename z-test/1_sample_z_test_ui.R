@@ -259,7 +259,8 @@ conditionalPanel(
       fluidRow(
         column(12,
                tight_card(
-                 "Conclusion (p-value) - Do we Reject or Accept the Null Hypothesis",
+                 "Conclusion (p-value)",
+                 HTML("<p>One way to tell whether we accept or reject the null hypothesis is to observe whether our p-value is below or above the significance level.</p>"),
                  fluidRow(
 
                    # Section to enter significance level.
@@ -302,9 +303,15 @@ conditionalPanel(
       fluidRow(
         column(12,
                tight_card(
-                 "Confidence Interval",
-                 HTML("<p>A confidence interval in a 1-sample z-test shows the range of population means that are plausible at the chosen confidence level, and if the
-                      hypothesized mean falls outside this range, the null hypothesis is rejected.</p>"),
+                 "Conclusion (Confidence Interval)",
+                 HTML("<p>
+                      A confidence interval in a 1-sample z-test shows the range of population means that are plausible at the chosen confidence level, and if the
+                      hypothesized mean falls outside this range, the null hypothesis is rejected.
+                      <br><br>
+                      
+                      We can also use a confidence interval to tell us whether we should accept or reject the null hypothesis. If the expected value DOES NOT lie within the 
+                      confidence interval, then we reject the null hypothesis.
+                      </p>"),
                  fluidRow(
                    column(6,
                           HTML("<p><b>Step 1) What is your confidence level</b>?</p>"),
