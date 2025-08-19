@@ -93,12 +93,14 @@ proportionTestMainServer <- function(id) {
       string_2 = paste("<p><span style='color: blue;'><b>How do we check?</b></span><br>
                      <ul>
                         <li>Recall that the central limit theorem tells us that if we take a sufficiently large number of draws from the box,
-                             then the sample ", sample, "s will approximately follow a normal distribution. <i>If confused, please see the box model exercise</i></li>
+                             then the sample ", sample, "s will approximately follow a normal distribution. <i>If confused, please see the box model exercise</i>.</li>
                         <li>One way we can easily tell if the central limit theorem applies is to sample taking many draws from the box, and seeing whether the
-                            values appear normally distributed</li>
+                            values appear normally distributed.</li>
                         <li>The plot to the left shows the distribution of 10000 simulated samples.</li>
+                        <li>Additionally, if the distribution of tickets is symmetric and/or normally distributed, you will need to take fewer draws from the box for the sample",
+                        sample, "s to be normally distributed (i.e., a smaller n is needed for the central limit theorem to apply).</li>
                       <ul>
-                      </p>")
+                      </p>", sep = "")
       return(
         tagList(
           HTML(string_1),
@@ -180,7 +182,7 @@ proportionTestMainServer <- function(id) {
                      as.character(sample_size()), "}}\\\\ &= ", SE_string(), "\\end{align*}$$", sep = ""))
         )
         
-      # Sum
+        # Sum
       } else {
         expected_value = withMathJax(
           HTML("<p>Expected Value:</p>"),
@@ -315,6 +317,120 @@ proportionTestMainServer <- function(id) {
       )
     })
     
+    # Process confidence level text input.
+    confidence_level = reactiveVal(0.95)
+    alpha_warning_confidence_lvel = reactiveVal(FALSE)
+    observeEvent(input$confidence_level, {
+      if (is.na(input$confidence_level) || input$confidence_level <= 0 || input$confidence_level >= 1) {
+        confidence_level(0.95)
+        alpha_warning_confidence_lvel(TRUE)
+      } else {
+        confidence_level(input$confidence_level)
+        alpha_warning_confidence_lvel(FALSE)
+      }
+    })
+    
+    # Error message for when the value for alpha is invalid.
+    output$confidence_level_warning <- renderUI({
+      if (alpha_warning_confidence_lvel()) {
+        return(
+          HTML("<span style='color: red;'><p>Error: The value for confidence level must be between 0 and 1.</p></span>")
+        )
+      }
+    })
+    
+    output$confidence_level_output = renderUI({
+      p_hat = as.numeric(input$observed_value)
+      n = as.numeric(input$number_of_draws)
+      conf_level = as.numeric(confidence_level())
+      alpha = 1 - conf_level
+      p0 = as.numeric(input$null_porportion)
+      
+      formula_line = substitution_line = answer_line = NULL
+      conclusion_text = NULL
+      
+      wilson_ci = function(p_hat, n, z_val) {
+        denom = 1 + z_val^2 / n
+        margin = z_val * sqrt(p_hat*(1 - p_hat)/n + z_val^2/(4*n^2))
+        lower = (p_hat + z_val^2/(2*n) - margin) / denom
+        upper = (p_hat + z_val^2/(2*n) + margin) / denom
+        return(list(lower=lower, upper=upper))
+      }
+      
+      if (input$alternate_hypothesis_choice == 1) {
+        z_val = qnorm(1 - alpha/2)
+        ci_vals = wilson_ci(p_hat, n, z_val)
+        lower = ci_vals$lower
+        upper = ci_vals$upper
+        
+        formula_line = "$$CI = \\left( \\frac{\\widehat{p} + z^2/(2n) - z \\sqrt{\\widehat{p}(1-\\widehat{p})/n + z^2/(4n^2)}}{1 + z^2/n}, \\frac{\\widehat{p} + z^2/(2n) + z \\sqrt{\\widehat{p}(1-\\widehat{p})/n + z^2/(4n^2)}}{1 + z^2/n} \\right)$$"
+        
+        substitution_line = paste0(
+          "$$CI = \\left( \\frac{", round(p_hat,4), " + ", round(qnorm(1 - alpha/2),4)^2, "/(2*", n, ") - ",
+          round(qnorm(1 - alpha/2),4), " \\times \\sqrt{(", round(p_hat,4), "*(1-", round(p_hat,4), ")/", n, ") + (", round(qnorm(1 - alpha/2),4)^2, "/(4*", n, "^2))}}{1 + ", round(qnorm(1 - alpha/2),4)^2, "/", n, "}, ",
+          "\\frac{", round(p_hat,4), " + ", round(qnorm(1 - alpha/2),4)^2, "/(2*", n, ") + ", round(qnorm(1 - alpha/2),4), " \\times \\sqrt{(", round(p_hat,4), "*(1-", round(p_hat,4), ")/", n, ") + (", round(qnorm(1 - alpha/2),4)^2, "/(4*", n, "^2))}}{1 + ", round(qnorm(1 - alpha/2),4)^2, "/", n, "} \\right)$$"
+        )
+        
+        answer_line = paste0("$$CI = (", round(lower,4), ", ", round(upper,4), ")$$")
+        
+        if (p0 < lower || p0 > upper) {
+          conclusion_text = "As the null proportion is outside the confidence interval, we <b>reject the null hypothesis</b>."
+        } else {
+          conclusion_text = "As the null proportion is inside the confidence interval, we <b>fail to reject the null hypothesis</b>."
+        }
+        
+      } else if (input$alternate_hypothesis_choice == 2) {
+        z_val = qnorm(1 - alpha)
+        ci_vals = wilson_ci(p_hat, n, z_val)
+        lower = ci_vals$lower
+        
+        formula_line = "$$CI = \\left( \\frac{\\widehat{p} + z^2/(2n) - z \\sqrt{\\widehat{p}(1-\\widehat{p})/n + z^2/(4n^2)}}{1 + z^2/n}, \\infty \\right)$$"
+        
+        substitution_line = paste0(
+          "$$CI = \\left( \\frac{", round(p_hat,4), " + ", round(z_val,4)^2, "/(2*", n, ") - ", round(z_val,4),
+          " \\times \\sqrt{", round(p_hat,4), "*(1-", round(p_hat,4), ")/", n, " + ", round(z_val,4)^2, "/(4*", n, "^2)}}{1 + ", round(z_val,4)^2, "/", n, "}, \\infty \\right)$$"
+        )
+        
+        answer_line = paste0("$$CI = (", round(lower,4), ", \\infty)$$")
+        
+        if (p0 < lower) {
+          conclusion_text = "As the null proportion is below the confidence interval, we <b>reject the null hypothesis</b>."
+        } else {
+          conclusion_text = "As the null proportion is inside the confidence interval, we <b>fail to reject the null hypothesis</b>."
+        }
+        
+      } else if (input$alternate_hypothesis_choice == 3) {
+        z_val = qnorm(1 - alpha)
+        ci_vals = wilson_ci(p_hat, n, z_val)
+        upper = ci_vals$upper
+        
+        formula_line = "$$CI = \\left( -\\infty, \\frac{\\widehat{p} + z^2/(2n) + z \\sqrt{\\widehat{p}(1-\\widehat{p})/n + z^2/(4n^2)}}{1 + z^2/n} \\right)$$"
+        
+        substitution_line = paste0(
+          "$$CI = \\left(-\\infty, \\frac{",  
+          round(p_hat,4), " + ", round(z_val,4)^2, "/(2*", n, ") + ",  
+          round(z_val,4), " \\times \\sqrt{(", round(p_hat,4), "*(1-", round(p_hat,4), ")/", n, ") + (", round(z_val,4)^2, "/(4*", n, "^2))}}{1 + ",  
+          round(z_val,4)^2, "/", n, "}\\right)$$"
+        )
+        
+        answer_line = paste0("$$CI = (-\\infty, ", round(upper,4), ")$$")
+        
+        if (p0 > upper) {
+          conclusion_text = "As the null proportion is above the confidence interval, we <b>reject the null hypothesis</b>."
+        } else {
+          conclusion_text = "As the null proportion is inside the confidence interval, we <b>fail to reject the null hypothesis</b>."
+        }
+      }
+      
+      tagList(
+        withMathJax(HTML(formula_line)),
+        withMathJax(HTML(substitution_line)),
+        withMathJax(HTML(answer_line)),
+        HTML(paste0("<span style='color: blue;'><p>", conclusion_text, "</p></span>"))
+      )
+    })
+    
+    
     ############################ Modal Intro ############################# 
     
     # Text
@@ -323,7 +439,7 @@ proportionTestMainServer <- function(id) {
         title = "The 'Proportion Test'",
         
         HTML("<p>
-            When you walk into a room, you can be assured that lots of epople will be Taylor Swift fans (you could say that people are cray-cray for Tay-Tay).<br><br>
+            When you walk into a room, you can be assured that lots of people will be Taylor Swift fans (you could say that people are cray-cray for Tay-Tay).<br><br>
             
             Let's say that we <b>'hypothesise' that 70% of people are Taylor Swift fans</b>. Now, to test our hypothesis, we go to our data science class of <b>30 students</b>
             and ask <b>how many students are Taylor Swift fans</b>. The main goal here is to see if our <b>sample</b> is consistent with our 70% hypothesis.<br><br>
@@ -343,7 +459,7 @@ proportionTestMainServer <- function(id) {
                  HTML("<p>
                  <h5><u>How do we go about doing this?</u></h5><br>
               
-                  We set up our box assuming that the <b>null hypothesis is true</b>. We add ticketgs valued <b>\"1\" to represent our target</b> (in this example, that someone 
+                  We set up our box assuming that the <b>null hypothesis is true</b>. We add tickets valued <b>\"1\" to represent our target</b> (in this example, that someone 
                   likes Taylor Swift), and <b>\"0\" to represent the complement</b>. The tickets are arranged such that the proportion of \"1\" tickets is the same as the null 
                   hypothesis. As seen in the box model to the right, there are seven \"1\" tickets and three \"0\" tickets, meaning the proportion of \"1\"'s is correctly 70%.<br><br>
                   
@@ -351,7 +467,7 @@ proportionTestMainServer <- function(id) {
                   value (OV)</b>.<br><br>
                   
                   Let's say that in the class, 22 people like Taylor Swift, and 8 do not. We can represent the observed value derived from this observation using the <b>mean</b>
-                  or <b>sum</b>.<br><br>
+                  or the <b>sum</b>.<br><br>
                   
                   <u>Mean:</u>
                   
@@ -500,105 +616,13 @@ proportionTestMainServer <- function(id) {
     
     # Histogram with normal curve to shown normal curve approximation.
     output$test_stat_normal_plot = renderPlot({
-      
       return(curve_shaded_test_stat(dnorm, list(mean = 0, sd = 1), as.numeric(test_stat()), input$alternate_hypothesis_choice))
-      
-      
-      # ts = as.numeric(test_stat())
-      # 
-      # # Define the plots lowest and highest x-value.
-      # lower_xlimit_plot = -3.5
-      # upper_xlimit_plot = 3.5
-      # if (input$alternate_hypothesis_choice == 1 && abs(ts) > upper_xlimit_plot) {
-      #   lower_xlimit_plot = -abs(ts) - 1
-      #   upper_xlimit_plot = abs(ts) + 1
-      # } else if (ts < lower_xlimit_plot) {
-      #   lower_xlimit_plot = ts - 1
-      # } else if (ts > upper_xlimit_plot) {
-      #   upper_xlimit_plot = ts + 1
-      # }
-      # 
-      # data <- data.frame(x = seq(lower_xlimit_plot, upper_xlimit_plot, length.out = 100))
-      # 
-      # # Define general ggplot.
-      # base_plot = ggplot(data, aes(x)) +
-      #   # Plot the normal distribution curve
-      #   stat_function(fun = dnorm, args = list(mean = 0, sd = 1), color = "black", size = 1) +
-      #   theme_minimal() +
-      #   theme(
-      #     panel.grid = element_blank(),
-      #     axis.line = element_line(color = "black"),
-      #     axis.text.y = element_blank(),
-      #     axis.ticks.y = element_blank(),
-      #     axis.title.y = element_blank(),
-      #     axis.title.x = element_blank(),
-      #     axis.line.y = element_blank(),
-      #     panel.border = element_blank()
-      #   )
-      # 
-      # # Create a data frame for shading based upon alternate hypothesis choice.
-      # if (input$alternate_hypothesis_choice == 1) {
-      #   base_plot = base_plot + 
-      #     # Lower tail
-      #     geom_area(stat = "function", 
-      #               fun = dnorm,
-      #               args = list(mean = 0, sd = 1),
-      #               fill = "red",
-      #               alpha = 0.5,
-      #               xlim = c(lower_xlimit_plot, -abs(ts))) +
-      #     # Add annotated line on test statistic
-      #     geom_vline(xintercept = -abs(ts), linetype = "dashed", color = "blue") +
-      #     annotate("text", x = -abs(ts) - 0.8, y = 0.3, 
-      #              label = as.character(round(-abs(ts), 2)), color = "blue", hjust = 0) +
-      #     
-      #     # Upper tail
-      #     geom_area(stat = "function", 
-      #               fun = dnorm,
-      #               args = list(mean = 0, sd = 1),
-      #               fill = "red",
-      #               alpha = 0.5,
-      #               xlim = c(abs(ts), upper_xlimit_plot)) +
-      #     # Add annotated line on test statistic
-      #     geom_vline(xintercept = abs(ts), linetype = "dashed", color = "blue") +
-      #     annotate("text", x = abs(ts) + 0.25, y = 0.3, 
-      #              label = as.character(round(abs(ts), 2)), color = "blue", hjust = 0)
-      #   
-      # } else if (input$alternate_hypothesis_choice == 2) {
-      #   base_plot = base_plot +
-      #     # Upper tail
-      #     geom_area(stat = "function", 
-      #               fun = dnorm,
-      #               args = list(mean = 0, sd = 1),
-      #               fill = "red",
-      #               alpha = 0.5,
-      #               xlim = c(ts, upper_xlimit_plot)) +
-      #     # Add annotated line on test statistic
-      #     geom_vline(xintercept = ts, linetype = "dashed", color = "blue") +
-      #     annotate("text", x = ts + 0.25, y = 0.3, 
-      #              label = as.character(round(ts, 2)), color = "blue", hjust = 0)
-      #   
-      # } else if (input$alternate_hypothesis_choice == 3) {
-      #   base_plot = base_plot + 
-      #     # Lower tail
-      #     geom_area(stat = "function", 
-      #               fun = dnorm,
-      #               args = list(mean = 0, sd = 1),
-      #               fill = "red",
-      #               alpha = 0.5,
-      #               xlim = c(lower_xlimit_plot, ts)) +
-      #     # Add annotated line on test statistic
-      #     geom_vline(xintercept = ts, linetype = "dashed", color = "blue") +
-      #     annotate("text", x = ts - 0.8, y = 0.3, 
-      #              label = as.character(round(ts, 2)), color = "blue", hjust = 0)
-      # }
-      # 
-      # return(base_plot)
     })
     
     
     
     ################################################################
-
-  })
     
+  })
+  
 }

@@ -241,10 +241,7 @@ proportionTestMainUI <- function(id) {
     fluidRow(
       column(6,
              tight_card(
-               title = HTML("<u><b>p-value</b></u>"),
-               status = "primary",
-               width = "100%",
-               solidHeader = FALSE,
+               "Conclusion (p-value)",
                uiOutput(ns("p_value_prelude")),
                header_colour = "#3179ae"
              )
@@ -261,12 +258,13 @@ proportionTestMainUI <- function(id) {
 
     HTML("<br><br><br>"),
 
-    ############ SECTION:Conclusion ############
+    ############ SECTION: Conclusion (p-value) ############
     fluidRow(
       column(12,
              tight_card(
-               "Conclusion",
-
+               "Conclusion (p-value)",
+               HTML("<p>One way to tell whether we accept or reject the null hypothesis is to observe whether our p-value is below or above the significance level.</p>"),
+               
                fluidRow(
                  # Section to enter significance level.
                  column(6,
@@ -295,6 +293,50 @@ proportionTestMainUI <- function(id) {
                  column(6,
                         HTML("<p><b>Step 2) Final Conclusion</b></p>"),
                         uiOutput(ns("conclusion_output")),
+                 )
+               ),
+               header_colour = "#3179ae"
+             )
+      ),
+    ),
+    
+    HTML("<br><br><br>"),
+    
+    ############ SECTION: Conclusion (Confidence Interval) ############
+    fluidRow(
+      column(12,
+             tight_card(
+               "Conclusion (Confidence Interval)",
+               HTML("<p>One way to tell whether we accept or reject the null hypothesis is to observe whether our p-value is below or above the significance level.</p>"),
+               
+               fluidRow(
+                 # Section to enter significance level.
+                 column(6,
+                        HTML("<p><b>Step 1) What is your confidence level</b>?</p>"),
+                        
+                        # Space to enter significance value.
+                        fluidRow(
+                          column(1,
+                                 withMathJax(HTML("<p style='font-size: 16px; text-align: right;'>\\( \\alpha = \\)</p>"))
+                          ),
+                          column(3,
+                                 numericInput(
+                                   ns("confidence_level"),
+                                   NULL,
+                                   value = 0.95,
+                                   min = 0,
+                                   max = 1,
+                                   width = "100%"
+                                 ),
+                          ),
+                        ),
+                        uiOutput(ns("confidence_level_warning")),
+                 ),
+               ),
+               fluidRow(
+                 column(12,
+                        HTML("<p><b>Step 2) Final Conclusion</b></p>"),
+                        uiOutput(ns("confidence_level_output")),
                  )
                ),
                header_colour = "#3179ae"
