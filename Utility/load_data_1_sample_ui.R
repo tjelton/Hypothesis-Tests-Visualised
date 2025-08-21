@@ -7,8 +7,8 @@ load_1_sample_data_UI <- function(id, test_name = "1-sample z-test") {
       column(7,
              tight_card(
                "Input Sample Data",
-               HTML(paste("<p>In order to do a ",  test_name, " we first need to proivde our ONE sample that we will be analysing. Below you can
-                        choose pre-uploaded data to analysis, or you can manually enter data.</p>"), sep = ""),
+               HTML(paste("<p>In order to do a ",  test_name, ", we first need to proivde our single (one) sample that we will be analysing. Below you can
+                        choose pre-uploaded data to analyse, or you can manually enter data.</p>"), sep = ""),
                HTML("<br>"),
                
                # User specifies whether they will use inbuilt data or manually specify data.
