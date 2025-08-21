@@ -63,7 +63,7 @@ tCurveMotivationUI <- function(id) {
                   HTML("$$\\begin{align*} \\text{Test Statistic (TS)} &= \\frac{\\text{OV} - \\text{EV}}{\\color{red}{\\text{SE}}} \\end{align*}$$"),
                   HTML(
                     "<p>
-                        As a reminder, \\(\\text{OV}\\) stands for observed value and \\(\\text{EV}\\) stands for expected value. As mentioned in the above seection,
+                        As a reminder, \\(\\text{OV}\\) stands for observed value and \\(\\text{EV}\\) stands for expected value. As mentioned in the above section,
                         the \\(\\text{SE}\\) (indicated in red) requires that the population standard deviation is known. When this is not known, we can instead use
                         the estimate standard error (using the sample’s standard deviation):
                     </p>"
@@ -132,14 +132,14 @@ tCurveMotivationUI <- function(id) {
                         As mentioned previously, if we do not have the population standard deviation, we need to account for the extra variability introduced by using
                         the sample standard deviation. Degrees of freedom allow us to do just that! The value of degrees of freedom is directly linked to sample size,
                         meaning larger degrees of freedom are associated with larger sample sizes. When degrees of freedom are equal to 1, this indicates that our sample
-                        is tiny (likely contains only 2 points), meaning there is lots of variability/uncertainty and that is why the tails of the t-curve are so fat.
+                        is tiny (likely contains only 2 points), meaning there is lots of variability/uncertainty, and that is why the tails of the t-curve are so fat.
                         The result of this is that the area under the curve will be much larger, meaning that a more extreme test statistic is needed to reject the null
                         hypothesis.<br><br>
 
                         On the other hand, when degrees of freedom are equal to a larger value (such as 25), the t-curve tails appear much more closely aligned with the
                         normal curve’s tails. This is because we are now taking a much larger sample, and there is less variability to account for.<br><br>
 
-                        The demo to the right allows you to compare the p-values from a normal and t-distribution. You can see that for low values for degrees of freedom,
+                        The demo to the right allows you to compare the p-values from a normal and t-distribution. You can see that for low values of degrees of freedom,
                         the p-value is much larger than that of the normal distribution. However, as you increase degrees of freedom, the p-values become more similar.
                     </p>"
                  )
@@ -193,9 +193,9 @@ tCurveMotivationUI <- function(id) {
              tight_card(
                "Conclusion",
                HTML("<p>
-                  The purpose of this exercise was to develop a conceptual understanding of what the t-distribution is, and why we need it. We did this through discussing
+                  The purpose of this exercise was to develop a conceptual understanding of what the t-distribution is and why we need it. We did this through discussing
                   the 1-sample z-test, and specifically, how things change when we don't know the population standard deviation. I have left some things vague (such as
-                  how do we know which value to set degrees of freedom to), but we will go into greater detail in further exercises.
+                  how we know which value to set degrees of freedom to), but we will go into greater detail in further exercises.
               </p>"),
                header_colour = "#3179ae"
              )
