@@ -34,9 +34,9 @@ twoSampleTTestUI <- function(id) {
                tight_card(
                  "The 'NULL' Hypothesis - Setting up the Box",
                  
-                 HTML("<p>Simimlar to the 1 sample tests, we will be using the box model to represent the null hypothesis. The key difference here however,
-                                 is that we don't have to input any values. The null hypothesis is set by default! Take somen time to read the points below to ensure
-                                 you understand why the boxes are arranged as they are.</p>"),
+                 HTML("<p>Similar to the 1-sample tests, we will be using the box model to represent the null hypothesis. The key difference here, however, is that we don't have
+                       input any values. The null hypothesis is set by default! Take some time to read the points below to ensure you understand why the boxes are arranged as
+                       they are.</p>"),
                  
                  accordion(
                    
@@ -45,7 +45,7 @@ twoSampleTTestUI <- function(id) {
                    accordion_panel(
                      HTML("<b>Why do we have two boxes?</b>"),
                      withMathJax(HTML("<p>
-                                  The first thing you may wonder is why we have two box models for a 2-sample t-test. Unlike the 1-sample t-test which only had ONE sample, 
+                                  The first thing you may wonder is why we have two box models for a 2-sample t-test. Unlike the 1-sample t-test, which only had ONE sample, 
                                   the 2-sample t-test has TWO samples, and so we need to have two box models to represent each sample.<br><br>
                                   
                                   More concretely, these 2 samples are different, and so they are likely to come from slightly different distributions. Hence, we need to have
@@ -57,7 +57,7 @@ twoSampleTTestUI <- function(id) {
                      HTML("<b>What is going on with the means of the boxes?</b>"),
                      withMathJax(HTML("<p>
                                   For a 2-sample t-test, under the null hypothesis, we claim that the mean of sample 1 (\\(\\mu_1\\)) is equal to the mean of sample 2 
-                                  (\\(\\mu_2\\)). More formally, we write this as - \\(H_0: \\mu_1 = \\mu_2\\).<br><br>
+                                  (\\(\\mu_2\\)). More formally, we write this as \\(H_0: \\mu_1 = \\mu_2\\).<br><br>
                                   
                                   Hence, the mean of sample 1 (\\(\\mu_1\\)) is equal to the mean of sample 2 (\\(\\mu_2\\)). 
                                   <br>Likewise, the mean of sample 2 (\\(\\mu_2\\)) is equal to the mean of sample 1 (\\(\\mu_1\\)).
@@ -70,7 +70,7 @@ twoSampleTTestUI <- function(id) {
                                    sample 2 data that you specified above. In particular:
                                   <ul>
                                      <li>\\(s_1\\) represents the sample standard deviation for sample 1 (similar for sample 2). Recall that in a t-test, we estimate
-                                     the sample standard devation as the population standard deviation.</li>
+                                     the population standard devation as the sample standard deviation.</li>
                                      <li>\\(n_1 \\) is the number of observation in sample 1 (simlar for sample 2).</li>
                                      <li>\\(\\text{OV}_1 \\) is the observed sample mean for sample 1 (similar for sample 2).</li>
                                   </ul>
@@ -154,7 +154,7 @@ twoSampleTTestUI <- function(id) {
                                       For example, consider we were doing an experiment where we were interested in the effect of a treatment on resting heart rate,
                                       and had a control and treatment group. Independence would be violated if people in the sample were related (family members would share
                                       similar genetics, and similar resting heart rates). Randomness could be violated if we only choose people with certain characteristics for 
-                                      one of the groups, such as healthy people for the treatment group. It could appear the treament is reducing these people's heart rate,
+                                      one of the groups, such as healthy people for the treatment group. It could appear the treatment is reducing these people's heart rate,
                                       but it is actually that they are healthy so already have a comparably low heart rate.</p>")
                    ),
                    
@@ -166,13 +166,13 @@ twoSampleTTestUI <- function(id) {
                      HTML("<p>Firstly, it is important to realise that here, we want the distribution of sample means to be normally distributed. Hence, we do not
                                 necessarily need the underlying data to be normally distributed, as we can rely on the Central Limit Theorem (CLT) to apply.<br><br>
                                 
-                                That being said, knowing whether the CLT applies or not is not straight forward. A common convention used online is that if there are 
+                                That being said, knowing whether the CLT applies or not is not straightforward. A common convention used online is that if there are 
                                 more than 30 points in the sample, then the CLT will 'kick in'. But this is not necessarily true! If the underlying distribution is very skewed
-                                and/or assymetric, then you will likely need many more than 30 points. Hence, checking whether the underlying data is nearly normally distributed
-                                will give us some insight. This is because if data is nearly normally distributed, you need less points for the CLT to 'kick in'.<br><br> 
+                                and/or asymmetric, then you will likely need many more than 30 points. Hence, checking whether the underlying data is nearly normally distributed
+                                will give us some insight. This is because if data is nearly normally distributed, you need fewer points for the CLT to 'kick in'.<br><br> 
                                 
                                 There are a few different ways that you can check whether the underlying data is normally distributed. For each of the following, you must
-                                look at both samples seperately:
+                                look at both samples separately:
                                 <ul>
                                   <li>Boxplots: look to see if the plot is symmetric with few outliers.</li>
                                   <li>Histograms: look to see if the frequency (or density) is normally distributed.</li>
@@ -219,14 +219,14 @@ twoSampleTTestUI <- function(id) {
                tight_card(
                  "Checking Assumption 3 - Is the Spread Equal?",
                  HTML("<p>
-                                 As mentioned in <b>assumption 3</b> an assumption of a standard 2-sample t-test with equal variance is that the population spreads of sample 1 and sample 2 
-                                 are equal. However, if this assumption is not satisfied, it is not bad news! We can instead use a different type of 2-sample t-test was relaxes this 
+                                 As mentioned in <b>assumption 3</b>, an assumption of a standard 2-sample t-test with equal variance is that the population spreads of sample 1 and sample 2 
+                                 are equal. However, if this assumption is not satisfied, it is not bad news! We can instead use a different type of 2-sample t-test which relaxes this 
                                  assumption. In particular, the two types of test we can use include:
                                  <ul>
-                                    <li><span style='color: blue;'><b>2-Sample T-Test With Equal Variance</b></span>: When the 2 samples have the same (apprxoimately the same) spread.</li>
-                                    <li><span style='color: blue;'><b>Welch 2-Sample T-Test</b></span>: When the 2 samples have different spread.</li>
+                                    <li><span style='color: blue;'><b>2-Sample T-Test With Equal Variance</b></span>: When the 2 samples have the same (approximately the same) spread.</li>
+                                    <li><span style='color: blue;'><b>Welch 2-Sample T-Test</b></span>: When the 2 samples have different spreads.</li>
                                  </ul>
-                                 Below, you goal is to decide whether we will use a 2-sample t-test with equal variance, or a Welch 2-sample t-test. To make this determination, use a 
+                                 Your goal is to decide whether we will use a 2-sample t-test with equal variance, or a Welch 2-sample t-test. To make this determination, use a 
                                  combination of the outputs below to make your decision.
                                </p>"),
                  accordion(
@@ -271,7 +271,7 @@ twoSampleTTestUI <- function(id) {
         column(3,
                primary_card(
                  "Equal Spread?",
-                 HTML("<p><i>Toggle the switch below to wether the spread is the same or not.</i></p>"),
+                 HTML("<p><i>Toggle the switch below to determine whether the spread is the same or not.</i></p>"),
                  input_switch(ns("spread_toggle"), "Same Spread", value = TRUE), 
                  uiOutput(ns("same_spread_output_decision")),
                  header_colour = "#3179ae"
@@ -329,7 +329,7 @@ twoSampleTTestUI <- function(id) {
       fluidRow(
         column(12,
                tight_card(
-                 "Conclusion",
+                 "Conclusion (p-value)",
                  
                  fluidRow(
                    # Section to enter significance level.
@@ -366,7 +366,54 @@ twoSampleTTestUI <- function(id) {
         ),
       ),
       
-      HTML("<br><br><br>")
+      HTML("<br><br><br>"),
+      
+      ############ SECTION: Confidence Interval ############
+      fluidRow(
+        column(12,
+               tight_card(
+                 "Conclusion (Confidence Interval)",
+                 HTML("<p>
+                      A confidence interval in a two-sample t-test shows the range of plausible values for the difference between the population means at the chosen confidence
+                      level. If 0 falls outside this range, we reject the null hypothesis.
+                      <br><br>
+
+                      We can also use the confidence interval to guide hypothesis testing: if 0 (representing no difference between the two population means) does not lie within
+                      the confidence interval, then we reject the null hypothesis. If 0 does lie within the interval, we do not reject the null.
+                      </p>"),
+                 fluidRow(
+                   column(6,
+                          HTML("<p><b>Step 1) What is your confidence level</b>?</p>"),
+                          
+                          fluidRow(
+                            column(1,
+                                   withMathJax(HTML("<p style='font-size: 16px; text-align: right;'>\\( \\alpha = \\)</p>"))
+                            ),
+                            column(3,
+                                   numericInput(
+                                     ns("confidence_level"),
+                                     NULL,
+                                     value = 0.95,
+                                     min = 0,
+                                     max = 1,
+                                     width = "100%"
+                                   ),
+                            ),
+                          ),
+                      uiOutput(ns("confidence_level_warning")),
+                   ),
+                   column(6,
+                          HTML("<p><b>Step 2) Final Conclusion</b></p>"),
+                          uiOutput(ns("confidence_level_output")),
+                   )
+                 ),
+                 header_colour = "#3179ae"
+               )
+        ),
+      ),
+      
+      HTML("<br><br><br><br><br><br>"),
+      
     )
   
   )

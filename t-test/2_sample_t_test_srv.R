@@ -47,7 +47,7 @@ twoSampleTTestServer <- function(id) {
            
            <center><p style='font-size: 16px'>\\( H_{0} : \\mu_1 = \\mu_2 \\)</p></center>
            
-           or equivalenty:
+           or equivalently:
            
            <center><p style='font-size: 16px'>\\( H_{0} : \\mu_1 - \\mu_2 = 0 \\)</p></center>
            
@@ -57,11 +57,11 @@ twoSampleTTestServer <- function(id) {
 
            <center><p style='font-size: 16px'>\\( H_{0} : \\mu_1 \\neq \\mu_2 \\)</p></center>
            
-           or equivalenty:
+           or equivalently:
            
            <center><p style='font-size: 16px'>\\( H_{0} : \\mu_1 - \\mu_2 \\neq 0 \\)</p></center>
            
-           Now that we have set up our hypotherses, let's discuss how you can find the test-statistic for this test.
+           Now that we have set up our hypotheses, let's discuss how you can find the test-statistic for this test.
       </p>")),
         fluidRow(
           column(8,
@@ -86,8 +86,8 @@ twoSampleTTestServer <- function(id) {
                    mean of sample 1 equals the mean of sample 2. Hence, \\(\\mu_1 = \\mu_2\\).
                    <br><br>
 
-                   When considering the box model for sample 2, it is the same idea, except using the values that we measured among the people assigend to the sample 2 group. 
-                   Note that here, \\(n_2\\) is also equal to 50. However, for a 2-sample t-test, there is no requirment that \\(n_1 = n_2\\)! Similarly, we write 
+                   When considering the box model for sample 2, it is the same idea, except using the values that we measured among the people assigned to the sample 2 group. 
+                   Note that here, \\(n_2\\) is also equal to 50. However, for a 2-sample t-test, there is no requirement that \\(n_1 = n_2\\)! Similarly, we write 
                    \\(\\mu_2 = \\mu_1\\), as under our null hypothesis, we assume the mean of sample 2 is equal to the mean of sample 1.
                    </p>"))
           ),
@@ -435,12 +435,12 @@ twoSampleTTestServer <- function(id) {
                                                  &= ", df_welch, "\\end{align*}$$", sep = ""))
         )
       } else {
-        df(n1+n2-1)
+        df(n1+n2-2)
         second_string = withMathJax(
           HTML("<p>For a 2-sample t-test with equal variance, we set the degree of freedom equal to:</p>"),
-          HTML(paste("$$\\begin{align*} \\text{df} &= n_1 + n_2 - 1\\\\
-                                                                 &=", n1, "+", n2, " - 1 \\\\
-                                                                 &=", n1 + n2 - 1,  "\\end{align*}$$", sep = ""))
+          HTML(paste("$$\\begin{align*} \\text{df} &= n_1 + n_2 - 2\\\\
+                                                                 &=", n1, "+", n2, " - 2 \\\\
+                                                                 &=", n1 + n2 - 2,  "\\end{align*}$$", sep = ""))
         )
       }
       
@@ -463,11 +463,11 @@ twoSampleTTestServer <- function(id) {
       # Calculate p-value.
       p_val_local = 0
       if (input$alternate_hypothesis_choice == 1) {
-        p_val_local = 2 * (1 - pnorm(abs(as.numeric(test_stat()))))
+        p_val_local = 2 * (1 - pt(abs(as.numeric(test_stat())), df()))
       } else if (input$alternate_hypothesis_choice == 2) {
-        p_val_local = 1 - pnorm(as.numeric(test_stat()))
+        p_val_local = 1 - pt(as.numeric(test_stat()), df())
       } else if (input$alternate_hypothesis_choice == 3) {
-        p_val_local = pnorm(as.numeric(test_stat()))
+        p_val_local = pt(as.numeric(test_stat()), df)
       }
       p_val(p_val_local)
       
@@ -534,6 +534,124 @@ twoSampleTTestServer <- function(id) {
       )
     })
     
+    # Process confidence level text input.
+    confidence_level = reactiveVal(0.95)
+    alpha_warning_confidence_lvel = reactiveVal(FALSE)
+    observeEvent(input$confidence_level, {
+      if (is.na(input$confidence_level) || input$confidence_level <= 0 || input$confidence_level >= 1) {
+        confidence_level(0.95)
+        alpha_warning_confidence_lvel(TRUE)
+      } else {
+        confidence_level(input$confidence_level)
+        alpha_warning_confidence_lvel(FALSE)
+      }
+    })
+    
+    # Error message for when the value for alpha is invalid.
+    output$confidence_level_warning <- renderUI({
+      if (alpha_warning_confidence_lvel()) {
+        return(
+          HTML("<span style='color: red;'><p>Error: The value for confidence level must be between 0 and 1.</p></span>")
+        )
+      }
+    })
+    
+    output$confidence_level_output = renderUI({
+      
+      x1 = data_sample_1()
+      x2 = data_sample_2()
+      
+      n1 = length(x1)
+      n2 = length(x2)
+      mean1 = mean(x1)
+      mean2 = mean(x2)
+      var1 = var(x1)
+      var2 = var(x2)
+      
+      conf_level = as.numeric(confidence_level())
+      alpha = 1 - conf_level
+      
+      # Mean difference
+      diff_means = mean1 - mean2
+      
+      # --- Choose variance method ---
+      if (isTRUE(input$spread_toggle)) {
+        # Equal variance (pooled)
+        sp = sqrt(((n1 - 1)*var1 + (n2 - 1)*var2) / (n1 + n2 - 2))
+        se = sp * sqrt(1/n1 + 1/n2)
+        df = n1 + n2 - 2
+      } else {
+        # Welch
+        se = sqrt(var1/n1 + var2/n2)
+        df = ( (var1/n1 + var2/n2)^2 ) / 
+          ( ((var1/n1)^2)/(n1-1) + ((var2/n2)^2)/(n2-1) )
+      }
+      
+      formula_line = substitution_line = answer_line = conclusion_text = NULL
+      
+      # --- CI based on alternative hypothesis ---
+      if (input$alternate_hypothesis_choice == 1) {
+        # Two sided
+        t_val = qt(1 - alpha/2, df = df)
+        lower = diff_means - t_val * se
+        upper = diff_means + t_val * se
+        
+        formula_line = "$$CI = (\\bar{x}_1 - \\bar{x}_2) \\pm t_{\\alpha/2, df} \\cdot SE$$"
+        substitution_line = paste0("$$CI = ", round(diff_means,4),
+                                   " \\pm t_{", round(alpha/2,4), ", ", round(df,2), "} \\times ",
+                                   round(se,4), "$$")
+        answer_line = paste0("$$CI = (", round(lower,4), ", ", round(upper,4), ")$$")
+        
+        if (0 < lower || 0 > upper) {
+          conclusion_text = "As 0 (no difference) is outside the confidence interval, we <b>reject the null hypothesis</b>."
+        } else {
+          conclusion_text = "As 0 (no difference) is inside the confidence interval, we <b>fail to reject the null hypothesis</b>."
+        }
+        
+      } else if (input$alternate_hypothesis_choice  == 2) {
+        # Greater than (diff > 0)
+        t_val = qt(1 - alpha, df = df)
+        lower = diff_means - t_val * se
+        
+        formula_line = "$$CI = (\\bar{x}_1 - \\bar{x}_2 - t_{\\alpha, df} \\cdot SE, \\infty)$$"
+        substitution_line = paste0("$$CI = (", round(diff_means,4),
+                                   " - t_{", round(alpha,4), ", ", round(df,2), "} \\times ",
+                                   round(se,4), ", \\infty)$$")
+        answer_line = paste0("$$CI = (", round(lower,4), ", \\infty)$$")
+        
+        if (0 < lower) {
+          conclusion_text = "As 0 is below the confidence interval, we <b>reject the null hypothesis</b>."
+        } else {
+          conclusion_text = "As 0 is inside the confidence interval, we <b>fail to reject the null hypothesis</b>."
+        }
+        
+      } else if (input$alternate_hypothesis_choice  == 3) {
+        # Less than (diff < 0)
+        t_val = qt(1 - alpha, df = df)
+        upper = diff_means + t_val * se
+        
+        formula_line = "$$CI = (-\\infty, \\bar{x}_1 - \\bar{x}_2 + t_{\\alpha, df} \\cdot SE)$$"
+        substitution_line = paste0("$$CI = (-\\infty, ", round(diff_means,4),
+                                   " + t_{", round(alpha,4), ", ", round(df,2), "} \\times ",
+                                   round(se,4), ")$$")
+        answer_line = paste0("$$CI = (-\\infty, ", round(upper,4), ")$$")
+        
+        if (0 > upper) {
+          conclusion_text = "As 0 is above the confidence interval, we <b>reject the null hypothesis</b>."
+        } else {
+          conclusion_text = "As 0 is inside the confidence interval, we <b>fail to reject the null hypothesis</b>."
+        }
+      }
+      
+      # --- Build UI ---
+      tagList(
+        withMathJax(HTML(formula_line)),
+        withMathJax(HTML(substitution_line)),
+        withMathJax(HTML(answer_line)),
+        HTML(paste0("<span style='color: blue;'><p>", conclusion_text, "</p></span>"))
+      )
+    })
+
   })
     
 }
