@@ -106,12 +106,16 @@ oneSampleTTestUI <- function(id) {
       
       ############ SECTION: p-value ############
       p_value_1_sample_t_test_UI(ns("p_val")),
-      HTML("<br><br>"),
+      HTML("<br><br><br>"),
 
-      ############ SECTION:Conclusion ############
+      ############ SECTION: Conclusion (p-value) ############
       conclusion_1_sample_t_test_UI(ns("conclusion")),
-      HTML("<br><br><br><br><br>"),
+      HTML("<br><br><br>"),
       
+      ############ SECTION: Conclusion (Confidence Interval) ############
+      confidence_interval_1_sample_t_test_UI(ns("confidence_interval")),
+      
+      HTML("<br><br><br><br><br>"),
       
     )
 

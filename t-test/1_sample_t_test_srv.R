@@ -160,6 +160,8 @@ oneSampleTTestServer <- function(id) {
 
     conclusion_1_sample_t_test_Server(id = "conclusion", p_value_session$p_val)
     
+    confidence_interval_1_sample_t_test_Server(id = "confidence_interval", sample_data, null_mean_string, alt_hypothesis_session$alternate_hypothesis_choice)
+    
   })
     
 }
