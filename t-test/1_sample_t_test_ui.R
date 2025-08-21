@@ -65,11 +65,11 @@ oneSampleTTestUI <- function(id) {
                    # Extra notes
                    accordion_panel(
                      HTML("<b>Extra Points</b>"),
-                     withMathJax(HTML("<p>In case you are confused about where all the values in the diagram have come from, these comes from the sample data that you previously
+                     withMathJax(HTML("<p>In case you are confused about where all the values in the diagram have come from, these come from the sample data that you previously
                             specified. In particular:
                            <ul>
                               <li>\\(s \\) represents the sample standard deviation. Unlike the 1-sample z-test which requires that the population standard
-                                deviation is known, the 1-sample t-test removes this assumption, instead, using the standard deviation of the sample and then later
+                                deviation is known, the 1-sample t-test removes this assumption, instead using the standard deviation of the sample and then later
                                 the t-distribution to determine the p-value.</li>
                               <li>The value for \\(n \\) comes from the number of values in the sample chosen above.</li>
                               <li>The observed value (\\(\\text{OV} \\)) comes from the mean of the sample chosen above.</li>

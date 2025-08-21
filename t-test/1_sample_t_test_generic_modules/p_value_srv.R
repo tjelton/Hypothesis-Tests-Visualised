@@ -23,7 +23,7 @@ p_value_1_sample_t_test_Server <- function(id, test_stat, sample_data, alternate
                             If you recall from the \"T-Curve Motivation\" exercise, to specify a t-distribution, you need to specify the degree of freedom, which adjusts
                             the 'fatness' of the t-curve's tails.</p>
                             
-                            <p><b>For a 1-sample t-test, we set the degree of freedom equal to the sample size - 1 (that is, \\(n - 1\\)).</b></p>
+                            <p><b>For a 1-sample t-test, we set the degrees of freedom equal to the sample size - 1 (that is, \\(n - 1\\)).</b></p>
                             
                             </p>In this case, the degree of freedom is equal to \\(", length(sample_data()), " - 1 = ",length(sample_data()) - 1 ,"\\).</p>")))
         
@@ -44,13 +44,15 @@ p_value_1_sample_t_test_Server <- function(id, test_stat, sample_data, alternate
         third_string = HTML(third_string)
         
         # Calculate p-value.
+        n = length(sample_data())
+        df = n - 1
         p_val_local = 0
         if (alternate_hypothesis_choice() == 1) {
-          p_val_local = 2 * (1 - pnorm(abs(as.numeric(test_stat()))))
+          p_val_local = 2 * (1 - pt(abs(as.numeric(test_stat())), df))
         } else if (alternate_hypothesis_choice() == 2) {
-          p_val_local = 1 - pnorm(as.numeric(test_stat()))
+          p_val_local = 1 - pt(as.numeric(test_stat()), df)
         } else if (alternate_hypothesis_choice() == 3) {
-          p_val_local = pnorm(as.numeric(test_stat()))
+          p_val_local = pt(as.numeric(test_stat()), df)
         }
         p_val(p_val_local)
         

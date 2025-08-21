@@ -21,7 +21,7 @@ oneSampleTTestServer <- function(id) {
                  withMathJax(HTML("<p>
                   <i>\"Suppose that in a made-up country, there is a statistics exam that all high school students take. If a student received a mark in the exam of 140 or over, 
                   it means that they are demonstrating a satisfactory level of statistical knowledge as deemed by the education board. <span style='color: red;'>Based on data from
-                  multiple years, it’s known the population standard deviation in test scores is 7.5.</span><br><br>
+                  multiple years, it’s known that the population standard deviation in test scores is 7.5.</span><br><br>
                   
                   Mr. Han is a statistics teacher who has been testing some new innovative teaching methods. In particular, he wants to test whether the average exam grade for the
                   25 students in his class is statistically greater than a mark of 140.\"</i><br><br>
@@ -55,7 +55,7 @@ oneSampleTTestServer <- function(id) {
                    <h5><u>How does Mr. Han go about doing this?</u></h5><br>
                    
                    Similar to before, we can use the box model to model the hypothesis test. This time, let’s first turn our attention to the test scores that Mr. Han’s students 
-                   achieved in the class. Let’s say that the 25 students had an average score of 142.843 As there were 25 students, we specify \\(n = 25 \\). The average score of 
+                   achieved in the class. Let’s say that the 25 students had an average score of 142.843. As there were 25 students, we specify \\(n = 25 \\). The average score of 
                    142.843 is called the observed value (OV). Also, using the scores, Mr. Han found that the sample standard deviation equals 4.751 (\\(s = 4.751\\)).<br><br>
 
                    Using these values and \\(\\mu = 140\\) from the null hypothesis, we have all the information needed to create the box model, which is shown on the right.
@@ -77,7 +77,7 @@ oneSampleTTestServer <- function(id) {
                               \\\\ &= 2.992 \\text{ (3 decimal places)} \\end{align*}$$", sep = ""))
         ),
         HTML("<p><br>
-            With the test statistic found, Mr. Han is ready to find the p-value. However, this represents a big difference between the ‘1-sample  
+            With the test statistic found, Mr. Han is ready to calculate the p-value. However, this represents a big difference between the ‘1-sample  
             <span style='color: red;'>z</span>-test’ and the ‘1-sample  <span style='color: red;'>t</span>-test’. These hypothesis tests get the last part of their names from
             the type of curve used to find the p-values. The ‘z-test’ gets its name because the p-value is found from the standard normal distribution (also called the 
              <span style='color: red;'>z</span>-distribution). The ‘t-test’ gets its name because the p-value is found from the  <span style='color: red;'>t</span>-distribution.<br><br>
@@ -151,6 +151,8 @@ oneSampleTTestServer <- function(id) {
     
     null_mean_string = reactive({as.character(round(input$null_mu, digits = 3))})
     alt_hypothesis_session <- alternate_hypotheses_1_sample_t_test_Server(id = "alternate_hypothesis", null_mean_string)
+    
+    assumptions_1_sample_t_test_Server(id = "assumptions", sample_data)
 
     test_stat_session <- test_statistic_1_sample_t_test_Server(id = "test_stat", sample_data, null_mean_string)
 
