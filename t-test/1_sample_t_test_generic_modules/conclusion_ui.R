@@ -6,7 +6,8 @@ conclusion_1_sample_t_test_UI <- function(id) {
     fluidRow(
       column(12,
              tight_card(
-               "Conclusion",
+               "Conclusion (p-value)",
+               HTML("<p>One way to tell whether we accept or reject the null hypothesis is to observe whether our p-value is below or above the significance level.</p>"),
                
                fluidRow(
                  # Section to enter significance level.
