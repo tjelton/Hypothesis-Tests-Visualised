@@ -26,7 +26,7 @@ pairedTTestServer <- function(id) {
            the difference \\(\\mu_d = \\mu_2 - \\mu_1 \\).
            <br><br>
            
-           In this example, we are simply interested in whether the drug causes a change to someones blood pressure. Hence, the null hypothesis is:
+           In this example, we are simply interested in whether the drug causes a change to someone's blood pressure. Hence, the null hypothesis is:
            
            <center><p style='font-size: 16px'>\\( H_{0} : \\mu_d = 0 \\)</p></center><br>
 
@@ -47,8 +47,8 @@ pairedTTestServer <- function(id) {
                    
                    Identical to the 1-sample t-test exercise, we can use the box model to model the hypothesis test. We first find the sample standard deviation.
                    To do this, we subtract the blood pressure values from before taking the drug from the measured values after taking the drug. We find that the sample standard
-                   deviation is equal to 17.346. Additionally, from this data, we know that the observed value (OV) is -4.373. This means that from our sample, on avearge, blood 
-                   pressure decreases by 4.373 mmHg (we still have to investigate whether this is stastistically different from 0).
+                   deviation is equal to 17.346. Additionally, from this data, we know that the observed value (OV) is -4.373. This means that from our sample, on average, blood 
+                   pressure decreases by 4.373 mmHg (we still have to investigate whether this is statistically different from 0).
                    <br><br>
                    
                    We also have that \\(n = 30\\) as there are 30 people in the sample, and \\(\\mu = 0\\), which comes from the null hypothesis.
@@ -137,12 +137,15 @@ pairedTTestServer <- function(id) {
     null_mean_string = reactive({as.character(round(input$null_mu, digits = 3))})
     alt_hypothesis_session <- alternate_hypotheses_1_sample_t_test_Server(id = "alternate_hypothesis", null_mean_string, "d")
     
+    assumptions_1_sample_t_test_Server(id = "assumptions", sample_data)
+    
     test_stat_session <- test_statistic_1_sample_t_test_Server(id = "test_stat", sample_data, null_mean_string, "d")
     
     p_value_session <- p_value_1_sample_t_test_Server(id = "p_val", test_stat_session$test_stat, sample_data, alt_hypothesis_session$alternate_hypothesis_choice)
     
     conclusion_1_sample_t_test_Server(id = "conclusion", p_value_session$p_val)
     
+    confidence_interval_1_sample_t_test_Server(id = "confidence_interval", sample_data, null_mean_string, alt_hypothesis_session$alternate_hypothesis_choice)
     
   })
     
