@@ -39,7 +39,7 @@ tight_card <- function(title, ..., content_style = NULL,  header_colour = NULL) 
   )
 }
 
-primary_card <- function(title, ..., content_style = NULL, header_colour = "#FFFFFF") {
+primary_card <- function(title, ..., content_style = NULL, header_colour = "#FFFFFF", title_color = "#FFFFFF") {
   card(
     full_screen = FALSE,
     style = "width: 100%; padding: 0; margin: 0;",
@@ -53,7 +53,7 @@ primary_card <- function(title, ..., content_style = NULL, header_colour = "#FFF
       ),
       style = paste(
         "background-color:", header_colour, ";",
-        "color: white;",
+        "color:", title_color, ";",
         "font-size: 1.25rem;",
         "padding-top: 0.8rem; padding-bottom: 0.8rem;",  # vertical padding only here
         "line-height: 1.2;",
