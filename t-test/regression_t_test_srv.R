@@ -256,6 +256,12 @@ regressionTTestServer <- function(id) {
       t_stat <- (beta_hat - EV_beta_hat) / SE_beta_hat
       test_stat(round(t_stat, 3))
       
+      beta_hat_line = HTML(paste0(
+        "<p>When calculating the linear regression line for the sample data, ",
+        "$$\\widehat{\\beta}_1 = ", round(beta_hat,3), "$$",
+        ".</p>"
+      ))
+      
       t_stat = withMathJax(
         HTML(paste0("$$\\begin{align*}",
                     "t &= \\frac{\\widehat{\\beta}_1 - \\mathbb{E}[\\widehat{\\beta}_1]}{SE(\\widehat{\\beta}_1)} \\\\",
@@ -267,6 +273,8 @@ regressionTTestServer <- function(id) {
       additional_line = HTML(paste("<p style = 'text-align: left;'><span style='color: blue;'><i>The value for the test-statistic is ", round(test_stat(), 3), ". </i></span></p>", sep = ""))
       return(
         tagList(
+          beta_hat_line,
+          HTML("<p>Now to calculate the test statistic:</p>"),
           t_stat,
           additional_line
         )
@@ -385,6 +393,111 @@ regressionTTestServer <- function(id) {
         )
       )
     })
+    
+    # Process confidence level text input.
+    confidence_level = reactiveVal(0.95)
+    alpha_warning_confidence_lvel = reactiveVal(FALSE)
+    observeEvent(input$confidence_level, {
+      if (is.na(input$confidence_level) || input$confidence_level <= 0 || input$confidence_level >= 1) {
+        confidence_level(0.95)
+        alpha_warning_confidence_lvel(TRUE)
+      } else {
+        confidence_level(input$confidence_level)
+        alpha_warning_confidence_lvel(FALSE)
+      }
+    })
+    
+    # Error message for when the value for alpha is invalid.
+    output$confidence_level_warning <- renderUI({
+      if (alpha_warning_confidence_lvel()) {
+        return(
+          HTML("<span style='color: red;'><p>Error: The value for confidence level must be between 0 and 1.</p></span>")
+        )
+      }
+    })
+    
+    output$confidence_level_output = renderUI({
+      
+      x = data_x_axis()
+      y = data_y_axis()
+      
+      n = length(x)
+      conf_level = as.numeric(confidence_level())
+      alpha = 1 - conf_level
+      
+      # Fit linear model
+      fit = lm(y ~ x)
+      slope_est = coef(fit)[2]                 # slope estimate
+      se_slope = summary(fit)$coefficients[2,2] # standard error of slope
+      df = n - 2                                # degrees of freedom for slope
+      
+      formula_line = substitution_line = answer_line = conclusion_text = NULL
+      
+      # --- CI based on alternative hypothesis ---
+      if (input$alternate_hypothesis_choice == 1) {
+        # Two-sided
+        t_val = qt(1 - alpha/2, df = df)
+        lower = slope_est - t_val * se_slope
+        upper = slope_est + t_val * se_slope
+        
+        formula_line = "$$CI = (\\widehat{\\beta}_1) \\pm t_{\\alpha/2, df} \\cdot SE(\\widehat{\\beta}_1)$$"
+        substitution_line = paste0("$$CI = ", round(slope_est,4),
+                                   " \\pm t_{", round(alpha/2,4), ", ", round(df,2), "} \\times ",
+                                   round(se_slope,4), "$$")
+        answer_line = paste0("$$CI = (", round(lower,4), ", ", round(upper,4), ")$$")
+        
+        if (0 < lower || 0 > upper) {
+          conclusion_text = "As 0 (no linear association) is outside the confidence interval, we <b>reject the null hypothesis</b>."
+        } else {
+          conclusion_text = "As 0 (no linear association) is inside the confidence interval, we <b>fail to reject the null hypothesis</b>."
+        }
+        
+      } else if (input$alternate_hypothesis_choice == 2) {
+        # Greater than (slope > 0)
+        t_val = qt(1 - alpha, df = df)
+        lower = slope_est - t_val * se_slope
+        
+        formula_line = "$$CI = (\\widehat{\\beta}_1 - t_{\\alpha, df} \\cdot SE(\\widehat{\\beta}_1), \\infty)$$"
+        substitution_line = paste0("$$CI = (", round(slope_est,4),
+                                   " - t_{", round(alpha,4), ", ", round(df,2), "} \\times ",
+                                   round(se_slope,4), ", \\infty)$$")
+        answer_line = paste0("$$CI = (", round(lower,4), ", \\infty)$$")
+        
+        if (0 < lower) {
+          conclusion_text = "As 0 is below the confidence interval, we <b>reject the null hypothesis</b>."
+        } else {
+          conclusion_text = "As 0 is inside the confidence interval, we <b>fail to reject the null hypothesis</b>."
+        }
+        
+      } else if (input$alternate_hypothesis_choice == 3) {
+        # Less than (slope < 0)
+        t_val = qt(1 - alpha, df = df)
+        upper = slope_est + t_val * se_slope
+        
+        formula_line = "$$CI = (-\\infty, \\widehat{\\beta}_1 + t_{\\alpha, df} \\cdot SE(\\widehat{\\beta}_1))$$"
+        substitution_line = paste0("$$CI = (-\\infty, ", round(slope_est,4),
+                                   " + t_{", round(alpha,4), ", ", round(df,2), "} \\times ",
+                                   round(se_slope,4), ")$$")
+        answer_line = paste0("$$CI = (-\\infty, ", round(upper,4), ")$$")
+        
+        if (0 > upper) {
+          conclusion_text = "As 0 is above the confidence interval, we <b>reject the null hypothesis</b>."
+        } else {
+          conclusion_text = "As 0 is inside the confidence interval, we <b>fail to reject the null hypothesis</b>."
+        }
+      }
+      
+      # --- Build UI ---
+      tagList(
+        withMathJax(HTML(formula_line)),
+        withMathJax(HTML(substitution_line)),
+        withMathJax(HTML(answer_line)),
+        HTML(paste0("<span style='color: blue;'><p>", conclusion_text, "</p></span>"))
+      )
+    })
+    
+    
+
     
   })
     

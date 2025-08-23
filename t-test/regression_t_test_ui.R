@@ -94,9 +94,9 @@ regressionTTestUI <- function(id) {
                      withMathJax(HTML("<p><span style='color: blue;'><b>How do we check?</b></span> 
                                 
                                       <ul>
-                                        <li>Look at a scatterplot of \\(X\\) vs \\(Y\\). There should be a straight-line trend (check graph on the left below).</li>
+                                        <li>Look at a scatterplot of \\(X\\) vs \\(Y\\). There should be a straight-line trend (check the graph on the left below).</li>
                                         <li>Look at a residual plot for the linear equation where \\(X\\) is the independent variable and \\(Y\\) is the dependent variable.
-                                            It should show homoscedasticity with no pattern (check graph on the right below).</li>
+                                            It should show homoscedasticity with no pattern (check the graph on the right below).</li>
                                       </ul>
                                      </p>")),
                      fluidRow(
@@ -112,11 +112,11 @@ regressionTTestUI <- function(id) {
                    # Assumption 2: Homoscedasticity
                    accordion_panel(
                      HTML("<b>Assumption 2: Homoscedasticity</b>"),
-                     withMathJax(HTML("<p>The second assumption is that the residuals show <b>homoscedasticity</b>, that is, the residuals have <b>constance varaince</b> across
+                     withMathJax(HTML("<p>The second assumption is that the residuals show <b>homoscedasticity</b>, that is, the residuals have <b>constant varaince</b> across
                                            \\(X\\).</p>")),
                      HTML("<p><span style='color: blue;'><b>How do we check?</b></span><br></p>"),
                      HTML("<p><ul>
-                                        <li>Residual plot: The spread of the residuals should be equal (check graph below).</li>
+                                        <li>Residual plot: The spread of the residuals should be equal (check the graph below).</li>
                                       </ul></p>"),
                      HTML("<center>"),
                      plotOutput(ns("assumption_homoscedasticity_residual_plot"), width = "50%"),
@@ -131,16 +131,16 @@ regressionTTestUI <- function(id) {
                                           <span style='color: blue;'><b>How do we check?</b></span><br><br>
                                           
                                           First, a bit of context. The reason why we care about this assumption is because the regression t-test relies on the sample distribution of
-                                          the slope \\(\\beta_1\\) being apprxoiately normal.<br><br>
+                                          the slope \\(\\beta_1\\) being approximately normal.<br><br>
                                           
-                                          However, lucky for us, the CLT tell us that the sampling distibution will appoach normality regardless of the residual distribution,
+                                          However, lucky for us, the CLT tell us that the sampling distribution will approach normality regardless of the residual distribution, 
                                           provided the sample size is large enough.<br><br>
                                           
-                                          The reason we are interetsed in checking that the residuals are normally distributed is that we may be unsure as to whether the CLT applies.
-                                          For example, we may be unsure whether we have enough points for the CLT to apply in our circusmtance. If we see that the residuals are 
+                                          The reason we are interested in checking that the residuals are normally distributed is that we may be unsure as to whether the CLT applies.
+                                          For example, we may be unsure whether we have enough points for the CLT to apply in our circumstance. If we see that the residuals are 
                                           normally distributed, we can be more confident that the CLT applies.<br><br>
                                           
-                                          There are two main ways to checkthis assumption:
+                                          There are two main ways to check this assumption:
                                           
                                           <ul>
                                             <li>QQ-plot: see if the residuals follow the diagonal QQ-line (see below).</li>
@@ -157,14 +157,14 @@ regressionTTestUI <- function(id) {
                    # Assumption 4: Independence of Residuals
                    accordion_panel(
                      HTML("<b>Assumption 4: Independence of Residuals</b>"),
-                     HTML("<p>The second assumption is the <b>independence of residuals</b>. The assumption is that the residuals are unrealted to eachother.</p>"),
+                     HTML("<p>The second assumption is the <b>independence of residuals</b>. The assumption is that the residuals are unrelated to each other.</p>"),
                      HTML("<p><span style='color: blue;'><b>How do we check?</b></span><br></p>"),
                      HTML("<p>There are some advanced methods used to detect this. Two methods that you could use:
                                       <ul>
                                         <li>Residual plot against observation order: This is a plot of residuals in the order the data was collected or indexed. If we see a random
-                                        scatter of points, this suggests independence. On the other hand, patterns, trends or clusters could suggest dependence (check graph on the 
+                                        scatter of points, this suggests independence. On the other hand, patterns, trends or clusters could suggest dependence (check the graph on the 
                                         left below).</li>
-                                        <li>Standard residual plot: If the residuals show a systemtic shape or wave, it could suggest dependence, that is the residuals are not
+                                        <li>Standard residual plot: If the residuals show a systematic shape or wave, it could suggest dependence, that is, the residuals are not
                                         independent (check graph on the right below).</li>
                                       </ul></p>"),
                      fluidRow(
@@ -229,11 +229,11 @@ regressionTTestUI <- function(id) {
       
       HTML("<br><br><br>"),
       
-      ############ SECTION: Conclusion ############
+      ############ SECTION: Conclusion (p-value) ############
       fluidRow(
         column(12,
                tight_card(
-                 "Conclusion",
+                 "Conclusion (p-value)",
                  
                  fluidRow(
                    # Section to enter significance level.
@@ -270,7 +270,53 @@ regressionTTestUI <- function(id) {
         ),
       ),
       
-      HTML("<br><br><br>")
+      HTML("<br><br><br>"),
+      
+      ############ SECTION: Confidence Interval ############
+      fluidRow(
+        column(12,
+               tight_card(
+                 "Conclusion (Confidence Interval)",
+                 HTML("<p>
+                       A confidence interval in a regression test gives a range of values for the true population slope that are consistent with the observed data at the chosen
+                       confidence level. In informal terms, we can think of this as the range of plausible values for the effect of the predictor on the response.
+                       <br><br>
+
+                       We can also use the confidence interval to guide hypothesis testing: if 0 (representing no linear association between predictor and response) does not 
+                       lie within the confidence interval, then we reject the null hypothesis. If 0 does lie within the interval, we do not reject the null.
+                       </p>"),
+                 fluidRow(
+                   column(6,
+                          HTML("<p><b>Step 1) What is your confidence level</b>?</p>"),
+                          
+                          fluidRow(
+                            column(1,
+                                   withMathJax(HTML("<p style='font-size: 16px; text-align: right;'>\\( \\alpha = \\)</p>"))
+                            ),
+                            column(3,
+                                   numericInput(
+                                     ns("confidence_level"),
+                                     NULL,
+                                     value = 0.95,
+                                     min = 0,
+                                     max = 1,
+                                     width = "100%"
+                                   ),
+                            ),
+                          ),
+                          uiOutput(ns("confidence_level_warning")),
+                   ),
+                   column(6,
+                          HTML("<p><b>Step 2) Final Conclusion</b></p>"),
+                          uiOutput(ns("confidence_level_output")),
+                   )
+                 ),
+                 header_colour = "#3179ae"
+               )
+        ),
+      ),
+
+      HTML("<br><br><br><br><br><br>")
       
     )
 
