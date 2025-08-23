@@ -189,7 +189,16 @@ load_data_regression_2_variable_Server <- function(id) {
             )
           )
         )
-        
+      })
+      
+      # Re-update the data store if None is selected.
+      observeEvent(input$factor_filtering_select_pre_uploaded, {
+        if (input$factor_filtering_select_pre_uploaded == "(None)") {
+          data_to_store = get(input$data_set_pre_uploaded)
+          data_x_axis(data_to_store[[input$x_axis_column_select_pre_uploaded]])
+          data_y_axis(data_to_store[[input$y_axis_column_select_pre_uploaded]])
+          return()
+        }
       })
       
       # If the user takes up the option to separate by a categorical variable, get the category they wish to filter with.
@@ -221,6 +230,7 @@ load_data_regression_2_variable_Server <- function(id) {
         if (input$factor_filtering_select_pre_uploaded == "(None)") {
           return()
         }
+        
         data_to_store = get(input$data_set_pre_uploaded)
         
         # Filter the data.
