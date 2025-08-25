@@ -1,5 +1,6 @@
-source("libraries.R")
-source("linking_source_files.R")
+library(shiny)
+library(bslib)
+library(DiagrammeR)
 
 ui <- page_navbar(
   tags$head(
