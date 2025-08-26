@@ -2,7 +2,7 @@ Package: HypothesisTestsVisualised
 Type: Package
 Title: Hypothesis Tests Visualised Project
 Version: 0.1.0
-Authors@R: person("Thomas", "Elton", role = c("aut", "cre"))
+Authors@R: person("Thomas", "Elton", email = "thomaselton.github.maintenance@proton.me", role = c("aut", "cre"))
 Description: A Shiny app for visualising hypothesis tests.
 Encoding: UTF-8
 Imports:
