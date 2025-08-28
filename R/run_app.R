@@ -1,6 +1,6 @@
 #' Launch the Hypothesis Tests Visualised app
 #' @export
-run_HTPV_app <- function() {
+run_HTVP_app <- function() {
   app_dir <- system.file("app", package = "HypothesisTestsVisualised")
   
   if (app_dir == "") {
