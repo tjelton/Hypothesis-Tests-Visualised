@@ -12,7 +12,7 @@ instructions can be found below.
 | Method | How to Access | Advantages | Disadvantages | Intended Audience |
 |:-------------:|:-------------:|:-------------:|:-------------:|:-------------:|
 | Package Install | R console | • Site is fast. <br> • Site is most up-to-date. | • Technical knowledge needed on how to use the R console. | • Students using R (and RStudio).<br> • People with IT experience |
-| Shinylive | [URL](tjelton.github.io/Hypothesis-Tests-Visualised/) | • Simple URL. | • First load is slow (can take around 30 seconds). <br> • Site is slower than the package install option. | • Students studying a course in hypothesis tests without technical experience. |
+| Shinylive | [URL](https://tjelton.github.io/Hypothesis-Tests-Visualised/) | • Simple URL. | • First load is slow (can take around 30 seconds). <br> • Site is slower than the package install option. | • Students studying a course in hypothesis tests without technical experience. |
 | Shinyapps.io | URL - coming soon | • Simple URL. | • Fast load. | • Using the free version of Shinyapps.io. Site will be slow with concurrent users. | • People wanting to quickly view the site. <br> • Not suitable for classrooms because of the many concurrent users. |
 
 ### Package Install
