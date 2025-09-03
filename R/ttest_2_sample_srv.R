@@ -467,7 +467,7 @@ twoSampleTTestServer <- function(id) {
       } else if (input$alternate_hypothesis_choice == 2) {
         p_val_local = 1 - pt(as.numeric(test_stat()), df())
       } else if (input$alternate_hypothesis_choice == 3) {
-        p_val_local = pt(as.numeric(test_stat()), df)
+        p_val_local = pt(as.numeric(test_stat()), df())
       }
       p_val(p_val_local)
       
