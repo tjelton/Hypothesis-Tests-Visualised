@@ -102,7 +102,7 @@ boxModelPart3UI <- function(id) {
              tight_card(
                NULL,
                HTML("<center>"),
-               grVizOutput(ns("example_coin_flip"), width = "80%", height = "100%"),
+               uiOutput(ns("example_coin_flip")),
                HTML("</center>")
              )
       )
@@ -186,7 +186,7 @@ boxModelPart3UI <- function(id) {
              tight_card(
                NULL,
                HTML("<center>"),
-               grVizOutput(ns("box_model"), width = "70%", height = "70%"),
+               uiOutput(ns("box_model")),
                HTML("</center>")
              ),
 

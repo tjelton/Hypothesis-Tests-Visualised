@@ -95,10 +95,10 @@ twoSampleTTestServer <- function(id) {
                  HTML("<center>"),
                  HTML("<br>"),
                  HTML("<h5><b>Sample 1</b></h5>"),
-                 grVizOutput(ns("box_model_modal_sample_1"), width = "60%", height = "40%"),
+                 uiOutput(ns("box_model_modal_sample_1")),
                  HTML("<br>"),
                  HTML("<h5><b>Sample 2</b></h5>"),
-                 grVizOutput(ns("box_model_modal_sample_2"), width = "60%", height = "40%"),
+                 uiOutput(ns("box_model_modal_sample_2")),
                  HTML("</center>")
           )
         ),
@@ -116,102 +116,58 @@ twoSampleTTestServer <- function(id) {
       ))
     })
     
-    output$box_model_modal_sample_1 <- renderGrViz({
+    output$box_model_modal_sample_1 <- renderUI({
       
       data = blood_pressure$blood_pressure[blood_pressure$drug == "Drug_A"]
-      
+
       # Compose label text with Unicode subscripts and rounded stats
       pop_details <- paste0("μ₁ = μ₂ ; s₁ = ", round(sd(data), 3))
-      
-      # Build the Graphviz diagram string
-      diagram <- paste0(
-        "digraph diagram {
-      graph [layout = dot, rankdir = TB]
-      
-      node [shape = box, style = filled, fillcolor = \"#bdfeff\", fontsize = 12]
-      box [label = \"", pop_details, "\"]
-      
-      node [shape = oval, width = 1.5, fillcolor = \"#f9ffbd\", fontsize = 12]
-      sample [label = \"OV₁ = ", round(mean(data, na.rm = TRUE), 3), "\"]
-      
-      edge [minlen = 2]
-      box -> sample [label = \"  n₁ = ", length(data), "\", fontsize = 12, labeldistance = 5]
-    }"
+
+      box_model_html(
+        box_label = pop_details,
+        sample_label = paste0("OV₁ = ", round(mean(data, na.rm = TRUE), 3)),
+        n_label = paste0("n₁ = ", length(data))
       )
-      grViz(diagram)
     })
     
-    output$box_model_modal_sample_2 <- renderGrViz({
+    output$box_model_modal_sample_2 <- renderUI({
       
       data = blood_pressure$blood_pressure[blood_pressure$drug == "Drug_B"]
-      
+
       # Compose label text with Unicode subscripts and rounded stats
       pop_details <- paste0("μ₁ = μ₂ ; s₁ = ", round(sd(data), 3))
-      
-      # Build the Graphviz diagram string
-      diagram <- paste0(
-        "digraph diagram {
-      graph [layout = dot, rankdir = TB]
-      
-      node [shape = box, style = filled, fillcolor = \"#bdfeff\", fontsize = 12]
-      box [label = \"", pop_details, "\"]
-      
-      node [shape = oval, width = 1.5, fillcolor = \"#f9ffbd\", fontsize = 12]
-      sample [label = \"OV₁ = ", round(mean(data, na.rm = TRUE), 3), "\"]
-      
-      edge [minlen = 2]
-      box -> sample [label = \"  n₁ = ", length(data), "\", fontsize = 12, labeldistance = 5]
-    }"
+
+      box_model_html(
+        box_label = pop_details,
+        sample_label = paste0("OV₁ = ", round(mean(data, na.rm = TRUE), 3)),
+        n_label = paste0("n₁ = ", length(data))
       )
-      grViz(diagram)
     })
     
     
     
-    output$box_model_sample_1 <- renderGrViz({
+    output$box_model_sample_1 <- renderUI({
       
       # Compose label text with Unicode subscripts and rounded stats
       pop_details <- paste0("μ₁ = μ₂ ; s₁ = ", round(sd(data_sample_1()), 3))
-      
-      # Build the Graphviz diagram string
-      diagram <- paste0(
-        "digraph diagram {
-      graph [layout = dot, rankdir = TB]
-      
-      node [shape = box, style = filled, fillcolor = \"#bdfeff\", fontsize = 12]
-      box [label = \"", pop_details, "\"]
-      
-      node [shape = oval, width = 1.5, fillcolor = \"#f9ffbd\", fontsize = 12]
-      sample [label = \"OV₁ = ", round(mean(data_sample_1(), na.rm = TRUE), 3), "\"]
-      
-      edge [minlen = 2]
-      box -> sample [label = \"  n₁ = ", length(data_sample_1()), "\", fontsize = 12, labeldistance = 5]
-    }"
+
+      box_model_html(
+        box_label = pop_details,
+        sample_label = paste0("OV₁ = ", round(mean(data_sample_1(), na.rm = TRUE), 3)),
+        n_label = paste0("n₁ = ", length(data_sample_1()))
       )
-      grViz(diagram)
     })
     
-    output$box_model_sample_2 <- renderGrViz({
+    output$box_model_sample_2 <- renderUI({
       
       # Compose label text with Unicode subscripts and rounded stats
       pop_details <- paste0("μ₂ = μ₁ ; s₂ = ", round(sd(data_sample_2()), 3))
-      
-      # Build the Graphviz diagram string
-      diagram <- paste0(
-        "digraph diagram {
-      graph [layout = dot, rankdir = TB]
-      
-      node [shape = box, style = filled, fillcolor = \"#bdfeff\", fontsize = 12]
-      box [label = \"", pop_details, "\"]
-      
-      node [shape = oval, width = 1.5, fillcolor = \"#f9ffbd\", fontsize = 12]
-      sample [label = \"OV₂ = ", round(mean(data_sample_2(), na.rm = TRUE), 3), "\"]
-      
-      edge [minlen = 2]
-      box -> sample [label = \"  n₂ = ", length(data_sample_2()), "\", fontsize = 12, labeldistance = 5]
-    }"
+
+      box_model_html(
+        box_label = pop_details,
+        sample_label = paste0("OV₂ = ", round(mean(data_sample_2(), na.rm = TRUE), 3)),
+        n_label = paste0("n₂ = ", length(data_sample_2()))
       )
-      grViz(diagram)
     })
     
     # Alternate hypothesis (rendered) output.

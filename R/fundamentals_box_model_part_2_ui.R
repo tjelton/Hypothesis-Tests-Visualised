@@ -12,7 +12,7 @@ boxModelPart2UI <- function(id) {
                HTML("<p>Consider that we have a box model with one '1' ticket and three '0' tickets. Each sample consists of 25 draws from the box, and we
                                          represent the sample using the mean of the tickets.</p>"),
                HTML("<center>"),
-               grVizOutput(ns("box_model_n_25"), width = "50%", height = "50%"),
+               uiOutput(ns("box_model_n_25")),
                HTML("</center><br>"),
                HTML("<p>For example, imagine that from one experiment, we drew 10 '1' tickets and 15 '0' tickets. The sample mean would then be:</p>"),
                withMathJax(HTML(
@@ -101,7 +101,7 @@ boxModelPart2UI <- function(id) {
                HTML("<p>Now, let's repeat the task that we did before (repeatedly forming samples) for a new box model that is mostly identical to the one
                                   before, except now, each sample consists of only 5 draws from the box.</p>"),
                HTML("<center>"),
-               grVizOutput(ns("box_model_n_5"), width = "50%", height = "50%"),
+               uiOutput(ns("box_model_n_5")),
                HTML("</center><br>"),
                HTML("<p><b>Task 2:</b> Repeat what we did before, but for when we only take 5 draws from the box.
                                      Do we still see a normal distribution?</p>"),
@@ -244,7 +244,7 @@ boxModelPart2UI <- function(id) {
                      </p>"
                ),
                HTML("<center>"),
-               grVizOutput(ns("custon_box_model"), width = "50%", height = "50%"),
+               uiOutput(ns("custon_box_model")),
                HTML("</center>"),
                HTML("<br>"),
                HTML("<p><b>Box contents:</b></p>"),

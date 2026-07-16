@@ -2,3 +2,9 @@
 .Rhistory
 .RData
 .Rproj.user
+
+# Generated shinylive build artifacts (see tools/build_shinylive.R).
+# inst/app/R is a staging copy of R/; site/ is the export output (published to
+# the gh-pages branch, not committed on main).
+inst/app/R/
+site/

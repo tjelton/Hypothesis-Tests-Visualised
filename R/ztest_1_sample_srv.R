@@ -48,7 +48,7 @@ oneSampleZTestServer <- function(id) {
           ),
           column(4,
                  HTML("<br>"),
-                 grVizOutput(ns("intro_example_box_model"), width = "80%", height = "70%"),
+                 uiOutput(ns("intro_example_box_model")),
           )
         ),
         HTML("<p><br>
@@ -70,20 +70,12 @@ oneSampleZTestServer <- function(id) {
     })
     
     # Example box model
-    output$intro_example_box_model <- renderGrViz({
-      string = "digraph diagram {
-          graph [layout = dot, rankdir = TB]
-
-          node [shape = box, style = filled, fillcolor = \"#bdfeff\", fontsize = 12, width = 2.5]
-          box [label = '&mu; = 140; &sigma; = 7.5']
-
-          node [shape = oval,width = 1.5,fillcolor = \"#f9ffbd\", fontsize = 12]
-          sample [label = 'OV = 142.843']
-
-          edge [minlen = 2]
-            box->sample [label = '  n = 25', fontsize = 12, labeldistance = 5]
-          }"
-      return(grViz(string))
+    output$intro_example_box_model <- renderUI({
+      box_model_html(
+        box_label = "&mu; = 140; &sigma; = 7.5",
+        sample_label = "OV = 142.843",
+        n_label = "n = 25"
+      )
     })
     
     ############################ Uploading Data Mechanism ############################# 
@@ -138,7 +130,7 @@ oneSampleZTestServer <- function(id) {
     })
     
     # Box model plot
-    output$box_model <- renderGrViz({
+    output$box_model <- renderUI({
       
       if (is.null(input$null_mu) || is.null(input$population_standard_deviation_numeric)) {
         return()
@@ -146,21 +138,15 @@ oneSampleZTestServer <- function(id) {
       
       # String with mu and sigma.
       pop_details = paste("&mu; = ", as.character(round(input$null_mu, digits = 3)), "; &sigma; = ", as.character(round(input$population_standard_deviation_numeric, digits = 3)))
-      
-      # Set up graph and box
-      diagram = "digraph diagram { graph [layout = dot, rankdir = TB] node [shape = box, style = filled, fillcolor = \"#bdfeff\", fontsize = 12, width = 2.5] box [label = '"
-      diagram = paste(diagram, pop_details, "']", sep = "")
-      
-      # Set up sample circle.
-      diagram = paste(diagram, " node [shape = oval,width = 1.5,fillcolor = \"#f9ffbd\", fontsize = 12] sample [label = '", "OV = ",
-                      as.character(round(mean(sample_data(), na.rm = TRUE), digits = 3)), "']", sep = "")
-      
-      # Create edge between box and circle.
-      # Annotate edge with n value.
+
+      sample_label = paste0("OV = ", as.character(round(mean(sample_data(), na.rm = TRUE), digits = 3)))
       n = length(sample_data())
-      diagram = paste(diagram, " edge [minlen = 2] box->sample [label = '  n = ", n, "', fontsize = 12, labeldistance = 5]}", sep = "")
-      
-      return (grViz(diagram))
+
+      box_model_html(
+        box_label = pop_details,
+        sample_label = sample_label,
+        n_label = paste0("n = ", n)
+      )
     })
     
     # Null hypothesis (rendered) output.

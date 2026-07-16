@@ -1,6 +1,5 @@
 library(shiny)
 library(bslib)
-library(DiagrammeR)
 
 ui <- page_navbar(
   tags$head(

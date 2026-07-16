@@ -36,7 +36,7 @@ boxModelPart1UI <- function(id) {
              tight_card(
                NULL,
                HTML("<center>"),
-               grVizOutput(ns("example_coin_flip_1"), width = "85%", height = "80%"),
+               uiOutput(ns("example_coin_flip_1")),
                HTML("</center>")
              )
       )
@@ -76,7 +76,7 @@ boxModelPart1UI <- function(id) {
                  column(6,
                         HTML("<center>"),
                         HTML("<br>"),
-                        grVizOutput(ns("example_coin_flip_2"), width = "70%", height = "80%"),
+                        uiOutput(ns("example_coin_flip_2")),
                         HTML("<br><br>"),
                         actionButton(
                           inputId = ns("simulate_coin_flip_1"), label = HTML('<i class="fa fa-plus"></i>Simulate'),
@@ -87,7 +87,7 @@ boxModelPart1UI <- function(id) {
                         
                  ),
                  column(6,
-                        grVizOutput(ns("simulated_coin_flip_samples"))
+                        uiOutput(ns("simulated_coin_flip_samples"))
                  )
                ),
                header_colour = "#3179ae"
@@ -105,7 +105,7 @@ boxModelPart1UI <- function(id) {
                HTML("<p>Using the same box model from before, let's consider that after our experiment, we observed the sample:</p>"),
                fluidRow(
                  column(3),
-                 column(6, grVizOutput(ns("single_sample_words"), height = "80%")),
+                 column(6, uiOutput(ns("single_sample_words"))),
                  column(3)
                ),
                HTML("<p>
@@ -118,7 +118,7 @@ boxModelPart1UI <- function(id) {
                      </p>"),
                fluidRow(
                  column(3),
-                 column(6, grVizOutput(ns("single_sample_numbers"), height = "80%")),
+                 column(6, uiOutput(ns("single_sample_numbers"))),
                  column(3)
                ),
                HTML("<p>
@@ -157,7 +157,7 @@ boxModelPart1UI <- function(id) {
                  column(6,
                         HTML("<center>"),
                         HTML("<br>"),
-                        grVizOutput(ns("coin_flip_numeric_box_model"), width = "70%", height = "80%"),
+                        uiOutput(ns("coin_flip_numeric_box_model")),
                         HTML("<br><br>"),
                         actionButton(
                           inputId = ns("simulate_coin_flip_2"), label = HTML('<i class="fa fa-plus"></i>Simulate'),
@@ -168,7 +168,7 @@ boxModelPart1UI <- function(id) {
                         
                  ),
                  column(6,
-                        grVizOutput(ns("simulated_coin_flip_samples_numbers"))
+                        uiOutput(ns("simulated_coin_flip_samples_numbers"))
                  )
                ),
                header_colour = "#3179ae"
@@ -262,7 +262,7 @@ boxModelPart1UI <- function(id) {
                  column(6,
                         HTML("<center>"),
                         HTML("<br>"),
-                        grVizOutput(ns("box_model"), width = "70%", height = "70%"),
+                        uiOutput(ns("box_model")),
                         HTML("<br><br>"),
                         actionButton(
                           inputId = ns("simulate_your_own_box_model_button"), label = HTML('<i class="fa fa-plus"></i>Simulate'),
@@ -273,7 +273,7 @@ boxModelPart1UI <- function(id) {
                         
                  ),
                  column(6,
-                        grVizOutput(ns("simulated_your_own_box_model_values"))
+                        uiOutput(ns("simulated_your_own_box_model_values"))
                  )
                ),
                header_colour = "#3179ae"

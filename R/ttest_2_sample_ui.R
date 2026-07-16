@@ -85,7 +85,7 @@ twoSampleTTestUI <- function(id) {
                  NULL,
                  HTML("<center>"),
                  HTML("<h5><b>Sample 1</b></h5>"),
-                 grVizOutput(ns("box_model_sample_1"), width = "100%", height = "70%"),
+                 uiOutput(ns("box_model_sample_1")),
                  HTML("</center>")
                ),
         ),
@@ -94,7 +94,7 @@ twoSampleTTestUI <- function(id) {
                  NULL,
                  HTML("<center>"),
                  HTML("<h5><b>Sample 2</b></h5>"),
-                 grVizOutput(ns("box_model_sample_2"), width = "100%", height = "70%"),
+                 uiOutput(ns("box_model_sample_2")),
                  HTML("</center>")
                ),
         )

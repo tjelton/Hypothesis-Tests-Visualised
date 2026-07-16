@@ -84,7 +84,7 @@ oneSampleTTestUI <- function(id) {
                tight_card(
                  NULL,
                  HTML("<center>"),
-                 grVizOutput(ns("box_model"), width = "70%", height = "70%"),
+                 uiOutput(ns("box_model")),
                  HTML("</center>")
                ),
         )

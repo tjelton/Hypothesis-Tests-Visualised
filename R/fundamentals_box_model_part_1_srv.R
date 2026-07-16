@@ -6,27 +6,18 @@ boxModelPart1Server <- function(id) {
     
     # Heads and tails box model (with words).
     make_coin_flip_plot <- function() {
-      string <- "
-        digraph diagram {
-          graph [layout = dot, rankdir = TB]
-      
-          node [shape = box, style = filled, fillcolor = \"#bdfeff\", fontsize = 12, width = 2.5]
-          box [label = 'Head (H), Tail (T)']
-      
-          node [shape = oval,width = 1.5,fillcolor = \"#f9ffbd\", fontsize = 12]
-          sample [label = 'Sample']
-      
-          edge [minlen = 2]
-            box->sample [label = '  n = 5', fontsize = 12, labeldistance = 5]
-        }"
-      grViz(string)
+      box_model_html(
+        box_label = "Head (H), Tail (T)",
+        sample_label = "Sample",
+        n_label = "n = 5"
+      )
     }
     
-    output$example_coin_flip_1 <- renderGrViz({
+    output$example_coin_flip_1 <- renderUI({
       make_coin_flip_plot()
     })
     
-    output$example_coin_flip_2 <- renderGrViz({
+    output$example_coin_flip_2 <- renderUI({
       make_coin_flip_plot()
     })
     
@@ -54,120 +45,37 @@ boxModelPart1Server <- function(id) {
     })
     
     # Display the samples. Arranged in yellow circles in 5 row by 2 column arrangment.
-    output$simulated_coin_flip_samples <- renderGrViz({
+    output$simulated_coin_flip_samples <- renderUI({
       
       if (count_coin_flip_simulation() == 0) {
         return(NULL)
       }
       
       n <- min(count_coin_flip_simulation(), 10)
-      
+
       labels <- coin_flip_word_labels()
-      
-      num_rows <- ceiling(n / 2)
-      
-      table_rows <- ""
-      for (i in 1:num_rows) {
-        left_label <- labels[(i - 1) * 2 + 1]
-        right_index <- (i - 1) * 2 + 2
-        right_label <- if (right_index <= n) labels[right_index] else NULL
-        
-        # Left cell (always present)
-        left_cell <- sprintf(
-              "<TD FIXEDSIZE='TRUE' WIDTH='120' HEIGHT='40' BGCOLOR='#f9ffbd' STYLE='rounded' BORDER='1' COLOR='black' CELLPADDING='4' ALIGN='CENTER' VALIGN='MIDDLE'>
-           <FONT POINT-SIZE='12'>%s</FONT>
-         </TD>", left_label)
-        
-        right_cell <- if (!is.null(right_label)) {
-          sprintf(
-                "<TD FIXEDSIZE='TRUE' WIDTH='120' HEIGHT='40' BGCOLOR='#f9ffbd' STYLE='rounded' BORDER='1' COLOR='black' CELLPADDING='4' ALIGN='CENTER' VALIGN='MIDDLE'>
-             <FONT POINT-SIZE='12'>%s</FONT>
-           </TD>", right_label)
-        } else {
-          "<TD FIXEDSIZE='TRUE' WIDTH='120' HEIGHT='40' CELLPADDING='4'></TD>"
-        }
-        
-        row <- sprintf("<TR>%s%s</TR>", left_cell, right_cell)
-        table_rows <- paste0(table_rows, row, "\n")
-      }
-      
-      graph_string <- sprintf("
-          digraph diagram {
-            node [shape=plaintext]
-            graph [layout=dot]
-    
-            tbl [label=<
-              <TABLE BORDER='0' CELLBORDER='0' CELLSPACING='10'>
-                %s
-              </TABLE>
-            >]
-          }
-        ", table_rows)
-      
-      grViz(graph_string)
+
+      sample_grid_html(head(labels, n))
     })
-    
-    ###################### Sample Single Word Examples ###################### 
-    
-    output$single_sample_words <- renderGrViz({
-      grViz("
-        digraph diagram {
-          node [shape=plaintext]
-          graph [margin=0, rankdir=LR]
-    
-          tbl [label=<
-            <TABLE BORDER='0' CELLBORDER='0' CELLSPACING='0'>
-              <TR>
-                <TD FIXEDSIZE='TRUE' WIDTH='120' HEIGHT='40' 
-                    BGCOLOR='#f9ffbd' STYLE='rounded' BORDER='1' COLOR='black' 
-                    CELLPADDING='4' ALIGN='CENTER' VALIGN='MIDDLE'>
-                  <FONT POINT-SIZE='12'>H T T H T</FONT>
-                </TD>
-              </TR>
-            </TABLE>
-          >]
-        }
-      ")
+
+    ###################### Sample Single Word Examples ######################
+
+    output$single_sample_words <- renderUI({
+      sample_cell_html("H T T H T")
     })
-    
-    output$single_sample_numbers <- renderGrViz({
-      grViz("
-        digraph diagram {
-          node [shape=plaintext]
-          graph [margin=0, rankdir=LR]
-    
-          tbl [label=<
-            <TABLE BORDER='0' CELLBORDER='0' CELLSPACING='0'>
-              <TR>
-                <TD FIXEDSIZE='TRUE' WIDTH='120' HEIGHT='40' 
-                    BGCOLOR='#f9ffbd' STYLE='rounded' BORDER='1' COLOR='black' 
-                    CELLPADDING='4' ALIGN='CENTER' VALIGN='MIDDLE'>
-                  <FONT POINT-SIZE='12'>1 0 0 1 0</FONT>
-                </TD>
-              </TR>
-            </TABLE>
-          >]
-        }
-      ")
+
+    output$single_sample_numbers <- renderUI({
+      sample_cell_html("1 0 0 1 0")
     })
     
     ###################### Simulated Coin Flip Samples (Sums and Means) ###################### 
     
-    output$coin_flip_numeric_box_model <- renderGrViz({
-      string <- paste("
-        digraph diagram {
-          graph [layout = dot, rankdir = TB]
-      
-          node [shape = box, style = filled, fillcolor = \"#bdfeff\", fontsize = 12, width = 2.5]
-          box [label = '1, 0']
-      
-          node [shape = oval,width = 1.5,fillcolor = \"#f9ffbd\", fontsize = 12]
-          sample [label = 'Sample ", input$demonstration_sum_or_mean, "']
-      
-          edge [minlen = 2]
-            box->sample [label = '  n = 5', fontsize = 12, labeldistance = 5]
-        }", sep = "")
-      grViz(string)
+    output$coin_flip_numeric_box_model <- renderUI({
+      box_model_html(
+        box_label = "1, 0",
+        sample_label = paste0("Sample ", input$demonstration_sum_or_mean),
+        n_label = "n = 5"
+      )
     })
     
     # When the radio button is changed, re-set counter and simulated values.
@@ -221,60 +129,20 @@ boxModelPart1Server <- function(id) {
     })
     
     # Display the samples. Arranged in yellow circles in 5 row by 2 column arrangment.
-    output$simulated_coin_flip_samples_numbers <- renderGrViz({
+    output$simulated_coin_flip_samples_numbers <- renderUI({
       
       if (count_coin_flip_simulation_2() == 0) {
         return(NULL)
       }
       
       n <- min(count_coin_flip_simulation_2(), 10)
-      
+
       labels <- coin_flip_number_labels()
-      
-      num_rows <- ceiling(n / 2)
-      
-      table_rows <- ""
-      for (i in 1:num_rows) {
-        left_label <- labels[(i - 1) * 2 + 1]
-        right_index <- (i - 1) * 2 + 2
-        right_label <- if (right_index <= n) labels[right_index] else NULL
-        
-        # Left cell (always present)
-        left_cell <- sprintf(
-              "<TD FIXEDSIZE='TRUE' WIDTH='120' HEIGHT='40' BGCOLOR='#f9ffbd' STYLE='rounded' BORDER='1' COLOR='black' CELLPADDING='4' ALIGN='CENTER' VALIGN='MIDDLE'>
-           <FONT POINT-SIZE='12'>%s</FONT>
-         </TD>", left_label)
-        
-        right_cell <- if (!is.null(right_label)) {
-          sprintf(
-              "<TD FIXEDSIZE='TRUE' WIDTH='120' HEIGHT='40' BGCOLOR='#f9ffbd' STYLE='rounded' BORDER='1' COLOR='black' CELLPADDING='4' ALIGN='CENTER' VALIGN='MIDDLE'>
-           <FONT POINT-SIZE='12'>%s</FONT>
-         </TD>", right_label)
-        } else {
-          "<TD FIXEDSIZE='TRUE' WIDTH='120' HEIGHT='40' CELLPADDING='4'></TD>"
-        }
-        
-        row <- sprintf("<TR>%s%s</TR>", left_cell, right_cell)
-        table_rows <- paste0(table_rows, row, "\n")
-      }
-      
-      graph_string <- sprintf("
-        digraph diagram {
-          node [shape=plaintext]
-          graph [layout=dot]
-  
-          tbl [label=<
-            <TABLE BORDER='0' CELLBORDER='0' CELLSPACING='10'>
-              %s
-            </TABLE>
-          >]
-        }
-      ", table_rows)
-        
-      grViz(graph_string)
+
+      sample_grid_html(head(labels, n))
     })
-    
-    ###################### Choose your own box ###################### 
+
+    ###################### Choose your own box ######################
     
     ticket_numbers <- reactiveVal(c(1,0,0,0,0,0))
     invalid_tickets_string_bool <- reactiveVal(FALSE)
@@ -348,7 +216,7 @@ boxModelPart1Server <- function(id) {
       }
     })
     
-    output$box_model <- renderGrViz({
+    output$box_model <- renderUI({
       
       your_own_model_number_labels(c())
       count_your_own_box_model(0)
@@ -375,19 +243,12 @@ boxModelPart1Server <- function(id) {
         sample = "Sample Mean"
       }
       
-      ##### Specify model ##### 
-      # Set up graph and box
-      diagram = "digraph diagram { graph [layout = dot, rankdir = TB] node [shape = box, style = filled, fillcolor = \"#bdfeff\", fontsize = 12, width = 2.5] box [label = '"
-      diagram = paste(diagram, tickets_string, "']", sep = "")
-      
-      # Set up sample circle.
-      diagram = paste(diagram, " node [shape = oval,width = 1.5,fillcolor = \"#f9ffbd\", fontsize = 12]sample [label = '", sample, "']", sep = "")
-      
-      # Create edge between box and circle.
-      # Annotate edge with n value.
-      diagram = paste(diagram, " edge [minlen = 2] box->sample [label = '  n = ", n, "', fontsize = 12, labeldistance = 5]}", sep = "")
-      
-      return (grViz(diagram))
+      ##### Specify model #####
+      box_model_html(
+        box_label = tickets_string,
+        sample_label = sample,
+        n_label = paste0("n = ", n)
+      )
     })
     
     your_own_model_number_labels = reactiveVal(c())
@@ -434,57 +295,17 @@ boxModelPart1Server <- function(id) {
     })
     
     # Display the sample means or sums for the user defined box. Arranged in yellow circles in 5 row by 2 column arrangement.
-    output$simulated_your_own_box_model_values <- renderGrViz({
+    output$simulated_your_own_box_model_values <- renderUI({
       
       if (count_your_own_box_model() == 0) {
         return(NULL)
       }
       
       n <- min(count_your_own_box_model(), 10)
-      
+
       labels <- your_own_model_number_labels()
-      
-      num_rows <- ceiling(n / 2)
-      
-      table_rows <- ""
-      for (i in 1:num_rows) {
-        left_label <- labels[(i - 1) * 2 + 1]
-        right_index <- (i - 1) * 2 + 2
-        right_label <- if (right_index <= n) labels[right_index] else NULL
-        
-        # Left cell (always present)
-        left_cell <- sprintf(
-              "<TD FIXEDSIZE='TRUE' WIDTH='120' HEIGHT='40' BGCOLOR='#f9ffbd' STYLE='rounded' BORDER='1' COLOR='black' CELLPADDING='4' ALIGN='CENTER' VALIGN='MIDDLE'>
-           <FONT POINT-SIZE='12'>%s</FONT>
-         </TD>", left_label)
-          
-        right_cell <- if (!is.null(right_label)) {
-          sprintf(
-              "<TD FIXEDSIZE='TRUE' WIDTH='120' HEIGHT='40' BGCOLOR='#f9ffbd' STYLE='rounded' BORDER='1' COLOR='black' CELLPADDING='4' ALIGN='CENTER' VALIGN='MIDDLE'>
-           <FONT POINT-SIZE='12'>%s</FONT>
-         </TD>", right_label)
-        } else {
-          "<TD FIXEDSIZE='TRUE' WIDTH='120' HEIGHT='40' CELLPADDING='4'></TD>"
-        }
-        
-        row <- sprintf("<TR>%s%s</TR>", left_cell, right_cell)
-        table_rows <- paste0(table_rows, row, "\n")
-      }
-      
-      graph_string <- sprintf("
-        digraph diagram {
-          node [shape=plaintext]
-          graph [layout=dot]
-  
-          tbl [label=<
-            <TABLE BORDER='0' CELLBORDER='0' CELLSPACING='10'>
-              %s
-            </TABLE>
-          >]
-        }
-      ", table_rows)
-      
-      grViz(graph_string)
+
+      sample_grid_html(head(labels, n))
     })
     
   })

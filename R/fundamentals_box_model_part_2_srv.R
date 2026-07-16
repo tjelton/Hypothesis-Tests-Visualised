@@ -6,21 +6,12 @@ boxModelPart2Server <- function(id) {
     
     ########## Box with tickets 1,0,0,0 (n = 25) ########## 
     
-    output$box_model_n_25 <- renderGrViz({
-      string <- paste("
-        digraph diagram {
-          graph [layout = dot, rankdir = TB]
-      
-          node [shape = box, style = filled, fillcolor = \"#bdfeff\", fontsize = 12, width = 2.5]
-          box [label = '1, 0, 0, 0']
-      
-          node [shape = oval,width = 1.5,fillcolor = \"#f9ffbd\", fontsize = 12]
-          sample [label = 'Sample Mean']
-      
-          edge [minlen = 2]
-            box->sample [label = '  n = 25', fontsize = 12, labeldistance = 5]
-        }", sep = "")
-      grViz(string)
+    output$box_model_n_25 <- renderUI({
+      box_model_html(
+        box_label = "1, 0, 0, 0",
+        sample_label = "Sample Mean",
+        n_label = "n = 25"
+      )
     })
     
     empirical_data_n_25 <- reactiveVal(c())
@@ -103,21 +94,12 @@ boxModelPart2Server <- function(id) {
     
     ########## Box with tickets 1,0,0,0 (n = 5) ########## 
     
-    output$box_model_n_5 <- renderGrViz({
-      string <- paste("
-        digraph diagram {
-          graph [layout = dot, rankdir = TB]
-      
-          node [shape = box, style = filled, fillcolor = \"#bdfeff\", fontsize = 12, width = 2.5]
-          box [label = '1, 0, 0, 0']
-      
-          node [shape = oval,width = 1.5,fillcolor = \"#f9ffbd\", fontsize = 12]
-          sample [label = 'Sample Mean']
-      
-          edge [minlen = 2]
-            box->sample [label = '  n = 5', fontsize = 12, labeldistance = 5]
-        }", sep = "")
-      grViz(string)
+    output$box_model_n_5 <- renderUI({
+      box_model_html(
+        box_label = "1, 0, 0, 0",
+        sample_label = "Sample Mean",
+        n_label = "n = 5"
+      )
     })
     
     empirical_data_n_5 <- reactiveVal(c())
@@ -228,7 +210,7 @@ boxModelPart2Server <- function(id) {
       } 
     })
     
-    output$custon_box_model = renderGrViz({
+    output$custon_box_model = renderUI({
       vals = custom_box_model_tickets()
       
       # Initialize empty string and counter
@@ -247,20 +229,9 @@ boxModelPart2Server <- function(id) {
       
       # Remove leading comma or newline
       tickets_string = substring(tickets_string, 3)
-      
-      # Escape newlines for Graphviz
-      label_text = gsub("\n", "\\\\n", tickets_string)
-      
-      # Build the diagram string
-      string = paste0("
-      digraph diagram {
-        graph [layout = dot, rankdir = TB]
-        node [shape = box, style = filled, fillcolor = \"#bdfeff\", fontsize = 12, width = 2.5]
-        box [label = \"", label_text, "\"]
-      }
-    ")
-      
-      grViz(string)
+
+      # Box-only model (no sample oval / arrow); "\n" line breaks render via CSS.
+      box_model_html(box_label = tickets_string)
     })
     
     # If the user wants to manually specify a box model, bring up a text box for them to specify their tickets.

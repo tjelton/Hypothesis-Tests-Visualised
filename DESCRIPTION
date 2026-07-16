@@ -7,5 +7,4 @@ Description: A Shiny app for visualising hypothesis tests.
 Encoding: UTF-8
 Imports:
     shiny,
-    bslib,
-    DiagrammeR
+    bslib

@@ -114,7 +114,7 @@ boxModelPart3Server <- function(id) {
     
     ############################ Plots ############################# 
     
-    output$box_model <- renderGrViz({
+    output$box_model <- renderUI({
       
       # If there has been a change to the input values (and hence this graph has been re-generated), reset the empirical data.
       empirical_data(c())
@@ -141,34 +141,12 @@ boxModelPart3Server <- function(id) {
         sample = "Sample Mean"
       }
       
-      ##### Specify model ##### 
-      
-      ### This is code that creates the box model.
-      # digraph diagram {
-      #   graph [layout = dot, rankdir = TB]
-      #   
-      #   node [shape = box, style = filled, fillcolor = \"#bdfeff\", fontsize = 12, width = 2.5]
-      #     box [label = '1,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0\n1,0,0,0,0,0,0,0,0,0,0,0,0']
-      #     
-      #     node [shape = oval,width = 1.5,fillcolor = \"#f9ffbd\", fontsize = 12]  
-      #     sample [label = '?']
-      #     
-      #     edge [minlen = 2]
-      #       box->sample [label = '  n = 10', fontsize = 12, labeldistance = 5]
-      #   }
-      
-      # Set up graph and box
-      diagram = "digraph diagram { graph [layout = dot, rankdir = TB] node [shape = box, style = filled, fillcolor = \"#bdfeff\", fontsize = 12, width = 2.5] box [label = '"
-      diagram = paste(diagram, tickets_string, "']", sep = "")
-      
-      # Set up sample circle.
-      diagram = paste(diagram, " node [shape = oval,width = 1.5,fillcolor = \"#f9ffbd\", fontsize = 12]sample [label = '", sample, "']", sep = "")
-      
-      # Create edge between box and circle.
-      # Annotate edge with n value.
-      diagram = paste(diagram, " edge [minlen = 2] box->sample [label = '  n = ", n, "', fontsize = 12, labeldistance = 5]}", sep = "")
-      
-      return (grViz(diagram))
+      ##### Specify model #####
+      box_model_html(
+        box_label = tickets_string,
+        sample_label = sample,
+        n_label = paste0("n = ", n)
+      )
     })
     
     # Histogram of mean and sum frequencies.
@@ -550,20 +528,12 @@ boxModelPart3Server <- function(id) {
       }
     })
     
-    output$example_coin_flip <- renderGrViz({
-      string = "digraph diagram {
-        graph [layout = dot, rankdir = TB]
-      
-        node [shape = box, style = filled, fillcolor = \"#bdfeff\", fontsize = 12, width = 2.5]
-        box [label = '1, 0']
-      
-        node [shape = oval,width = 1.5,fillcolor = \"#f9ffbd\", fontsize = 12]
-        sample [label = 'Sample Sum']
-      
-        edge [minlen = 2]
-          box->sample [label = '  n = 100', fontsize = 12, labeldistance = 5]
-        }"
-      return(grViz(string))
+    output$example_coin_flip <- renderUI({
+      box_model_html(
+        box_label = "1, 0",
+        sample_label = "Sample Sum",
+        n_label = "n = 100"
+      )
     })
     
   })
