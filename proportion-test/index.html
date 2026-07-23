@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Proportion Test (z-test) — Hypothesis Tests Visualised</title>
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootswatch@5.3.3/dist/lumen/bootstrap.min.css">
+  <link rel="stylesheet" href="../shared/css/style.css">
+
+  <script>
+    window.MathJax = {
+      tex: { inlineMath: [["\\(", "\\)"]], displayMath: [["$$", "$$"], ["\\[", "\\]"]] },
+      startup: { typeset: true }
+    };
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-chtml.js" defer></script>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg bg-light border-bottom mb-3">
+  <div class="container-fluid">
+    <span class="navbar-brand mb-0 h1">Hypothesis Tests Visualised</span>
+    <span class="navbar-text">Proportion Test (JavaScript version) &nbsp;·&nbsp; <a href="../">back to the full app</a></span>
+  </div>
+</nav>
+
+<div class="container-fluid px-4">
+
+  <!-- Title strip -->
+  <div class="row">
+    <div class="col-sm-8"><h1>Proportion Test (z-test)</h1></div>
+    <div class="col-sm-4">
+      <button id="learning-text" type="button" class="btn btn-primary w-100" style="color:#fff; font-size:20px; padding:10px 20px;" data-bs-toggle="modal" data-bs-target="#introModal">
+        What is the proportion test?
+      </button>
+    </div>
+  </div>
+  <br>
+
+  <!-- ############ SECTION: The NULL Hypothesis - Setting up the Box ############ -->
+  <div class="row">
+    <div class="col-sm-7">
+      <div class="tight-card accent">
+        <div class="tight-card-title">The 'NULL' Hypothesis - Setting up the Box</div>
+        <div class="tight-card-body">
+          <p>We start by using the box model to represent our null hypothesis.</p>
+          <div class="accordion" id="null-accordion">
+            <div class="accordion-item">
+              <h2 class="accordion-header"><button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#null-acc-1"><b>Step 1) Specify NULL Hypotheis (Box Tickets)</b></button></h2>
+              <div id="null-acc-1" class="accordion-collapse collapse show" data-bs-parent="#null-accordion"><div class="accordion-body">
+                <ul>
+                  <li>First, we need to specify the 'null' hypothesis for our proportion test. As it is a proportion, the value must be between <b>0</b> and <b>1</b>.</li>
+                  <li>This is the proportion we are assuming our null hypothesis is equal to.</li>
+                  <li>The null hypothesis changes the tickets in our box that we are drawing from.</li>
+                </ul>
+                <p style="font-size: 16px; text-align: right;">Given \( p \), where \( p \) is the proportion of some event:</p>
+                <div class="row">
+                  <div class="col-sm-7"></div>
+                  <div class="col-sm-2"><p style="font-size: 16px; text-align: right;">\( H_0: \) \( p = \)</p></div>
+                  <div class="col-sm-3"><input type="number" class="form-control" id="null-prop" value="0.7" min="0" max="1" step="any"></div>
+                </div>
+                <div id="null-prop-warning" class="d-none"><span style="color: red;"><p>Error: The value must be between 0 and 1.</p></span></div>
+              </div></div>
+            </div>
+            <div class="accordion-item">
+              <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#null-acc-2"><b>Step 2) Sample Size (Number of Draws)</b></button></h2>
+              <div id="null-acc-2" class="accordion-collapse collapse" data-bs-parent="#null-accordion"><div class="accordion-body">
+                <ul>
+                  <li>Specify how large your sample will be in the text box below.</li>
+                  <li>You can think of this as how many tickets we are drawing from the box with replacement.</li>
+                  <li>You will enter the observed value (i.e. the proportion you saw from the sample) later.</li>
+                </ul>
+                <div class="row">
+                  <div class="col-sm-7"></div>
+                  <div class="col-sm-2"><p style="font-size: 16px; text-align: right;">\( n = \)</p></div>
+                  <div class="col-sm-3"><input type="number" class="form-control" id="number-of-draws" value="30" min="1"></div>
+                </div>
+                <div id="n-warning" class="d-none"><span style="color: red;"><p>Error: The value for n must be a whole number greater than 0.</p></span></div>
+              </div></div>
+            </div>
+            <div class="accordion-item">
+              <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#null-acc-3"><b>Step 3) Model Using Sum or Sample</b></button></h2>
+              <div id="null-acc-3" class="accordion-collapse collapse" data-bs-parent="#null-accordion"><div class="accordion-body">
+                <p>Third, we need to specify whether we will be modelling the sample using the mean or sum of the draws:<br><br></p>
+                <div class="form-check"><input class="form-check-input" type="radio" name="sum_or_mean" id="mode-mean" value="2" checked><label class="form-check-label" for="mode-mean">Mean</label></div>
+                <div class="form-check"><input class="form-check-input" type="radio" name="sum_or_mean" id="mode-sum" value="1"><label class="form-check-label" for="mode-sum">Sum</label></div>
+              </div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-5">
+      <div class="tight-card"><div class="tight-card-body"><center><div id="box-model"></div></center></div></div>
+    </div>
+  </div>
+
+  <br><br><br>
+
+  <!-- ############ SECTION: The Alternate Hypothesis ############ -->
+  <div class="row">
+    <div class="col-sm-7">
+      <div class="tight-card accent">
+        <div class="tight-card-title">The Alternate Hypothesis</div>
+        <div class="tight-card-body">
+          <p>Specify what type of alternate hypothesis you will be using below:</p>
+          <br>
+          <div class="form-check"><input class="form-check-input" type="radio" name="alternate_hypothesis_choice" id="alt-1" value="1" checked><label class="form-check-label" for="alt-1">Two Sided</label></div>
+          <div class="form-check"><input class="form-check-input" type="radio" name="alternate_hypothesis_choice" id="alt-2" value="2"><label class="form-check-label" for="alt-2">One Sided (greater than)</label></div>
+          <div class="form-check"><input class="form-check-input" type="radio" name="alternate_hypothesis_choice" id="alt-3" value="3"><label class="form-check-label" for="alt-3">One Sided (less than)</label></div>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-5">
+      <div class="tight-card"><div class="tight-card-body">
+        <p><b>Null Hypothesis</b></p><div id="null-hyp-out"></div>
+        <p><b>Alternate Hypothesis</b></p><div id="alt-hyp-out"></div>
+      </div></div>
+    </div>
+  </div>
+
+  <br><br><br>
+
+  <!-- ############ SECTION: Assumptions ############ -->
+  <div class="row"><div class="col-sm-12">
+    <div class="tight-card accent">
+      <div class="tight-card-title">Assumptions</div>
+      <div class="tight-card-body">
+        <p>For the hypothesis test to be valid, we need to check the following assumptions:</p>
+        <div class="accordion" id="assump-accordion">
+          <div class="accordion-item">
+            <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#assump-1"><b>Assumption 1: Independent Sample</b></button></h2>
+            <div id="assump-1" class="accordion-collapse collapse" data-bs-parent="#assump-accordion"><div class="accordion-body">
+              <p>The first assumption is that our sample is <b>independent and randomly chosen</b>.</p>
+              <p><span style="color: blue;"><b>How do we check?</b></span> <i>We check by investigating the experimental setup.</i><br><br>
+                 For example, consider we were investigating data for a proportion test involving human participants. We could read the accompanying scientific
+                 publication to understand the methodology they used to gather the people in the sample.</p>
+            </div></div>
+          </div>
+          <div class="accordion-item">
+            <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#assump-2"><b>Assumption 2: Constant Proportion</b></button></h2>
+            <div id="assump-2" class="accordion-collapse collapse" data-bs-parent="#assump-accordion"><div class="accordion-body">
+              <p>The second assumption is that our sample is the <b>constant proportion</b> assumption. This assumption states that the probability that each sample
+                 element falls within the event of interest (stipulated in our hypotheses) is unchanging.</p>
+              <p><span style="color: blue;"><b>How do we check?</b></span> <i>We check by investigating the experimental setup.</i><br><br></p>
+            </div></div>
+          </div>
+          <div class="accordion-item">
+            <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#assump-3"><b>Assumption 3: Normal Approximation</b></button></h2>
+            <div id="assump-3" class="accordion-collapse collapse" data-bs-parent="#assump-accordion"><div class="accordion-body">
+              <div class="row">
+                <div class="col-sm-6"><div id="assump3-text"></div><br><br></div>
+                <div class="col-sm-6"><div id="empirical-hist" style="width:100%;"></div></div>
+              </div>
+            </div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div></div>
+
+  <br><br><br>
+
+  <!-- ############ SECTION: Test Statistic ############ -->
+  <div class="row"><div class="col-sm-12">
+    <div class="tight-card accent">
+      <div class="tight-card-title">Test Statistic</div>
+      <div class="tight-card-body"><div class="row">
+        <div class="col-sm-6">
+          <p><b>Step 1) Observed Value (OV)</b></p>
+          <div id="observed-value-text"></div>
+          <div class="row">
+            <div class="col-2"></div>
+            <div class="col-2"><p style="font-size: 16px; text-align: right;">\( OV = \)</p></div>
+            <div class="col-3"><input type="number" class="form-control" id="observed-value" value="0.73" min="0" max="1" step="any" style="width:100%;"></div>
+          </div>
+          <div id="observed-val-warning" class="d-none"><span style="color: red;"><p>Error: The observed value must be between 0 and 1.</p></span></div>
+          <p><b>Step 2) Calculate Expected Value (SE) and Standard Error (SE)</b></p>
+          <div id="ev-se-out"></div>
+        </div>
+        <div class="col-sm-6"><p><b>Step 3) Test Statistic Calculation</b></p><div id="ts-out"></div></div>
+      </div></div>
+    </div>
+  </div></div>
+
+  <br><br><br>
+
+  <!-- ############ SECTION: p-value ############ -->
+  <div class="row">
+    <div class="col-sm-6">
+      <div class="tight-card accent">
+        <div class="tight-card-title">Conclusion (p-value)</div>
+        <div class="tight-card-body" id="p-value-prelude"></div>
+      </div>
+    </div>
+    <div class="col-sm-6">
+      <div class="tight-card"><div class="tight-card-body"><center><div id="normal-plot" style="width:100%;"></div></center></div></div>
+    </div>
+  </div>
+
+  <br><br><br>
+
+  <!-- ############ SECTION: Conclusion (p-value) ############ -->
+  <div class="row"><div class="col-sm-12">
+    <div class="tight-card accent">
+      <div class="tight-card-title">Conclusion (p-value)</div>
+      <div class="tight-card-body">
+        <p>One way to tell whether we accept or reject the null hypothesis is to observe whether our p-value is below or above the significance level.</p>
+        <div class="row">
+          <div class="col-sm-6">
+            <p><b>Step 1) What is your significance level</b>?</p>
+            <div class="row align-items-center">
+              <div class="col-2 col-sm-1"><p style="font-size: 16px; text-align: right; margin-bottom:0;">\( \alpha = \)</p></div>
+              <div class="col-4 col-sm-3"><input type="number" class="form-control" id="alpha-input" value="0.05" min="0" max="1" step="any" style="width:100%;"></div>
+            </div>
+            <div id="alpha-warning" class="d-none"><span style="color: red;"><p>Error: The value for α must be between 0 and 1.</p></span></div>
+          </div>
+          <div class="col-sm-6"><p><b>Step 2) Final Conclusion</b></p><div id="conclusion-out"></div></div>
+        </div>
+      </div>
+    </div>
+  </div></div>
+
+  <br><br><br>
+
+  <!-- ############ SECTION: Confidence Interval ############ -->
+  <div class="row"><div class="col-sm-12">
+    <div class="tight-card accent">
+      <div class="tight-card-title">Conclusion (Confidence Interval)</div>
+      <div class="tight-card-body">
+        <p>One way to tell whether we accept or reject the null hypothesis is to observe whether our p-value is below or above the significance level.</p>
+        <div class="row">
+          <div class="col-sm-6">
+            <p><b>Step 1) What is your confidence level</b>?</p>
+            <div class="row align-items-center">
+              <div class="col-2 col-sm-1"><p style="font-size: 16px; text-align: right; margin-bottom:0;">\( \alpha = \)</p></div>
+              <div class="col-4 col-sm-3"><input type="number" class="form-control" id="conf-input" value="0.95" min="0" max="1" step="any" style="width:100%;"></div>
+            </div>
+            <div id="conf-warning" class="d-none"><span style="color: red;"><p>Error: The value for confidence level must be between 0 and 1.</p></span></div>
+          </div>
+        </div>
+        <div class="row"><div class="col-sm-12"><p><b>Step 2) Final Conclusion</b></p><div id="ci-out"></div></div></div>
+      </div>
+    </div>
+  </div></div>
+
+  <br><br><br><br><br><br><br>
+
+</div><!-- /container -->
+
+<!-- ############ Intro modal ############ -->
+<div class="modal fade" id="introModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">The 'Proportion Test'</h4>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p>
+          When you walk into a room, you can be assured that lots of people will be Taylor Swift fans (you could say that people are cray-cray for Tay-Tay).<br><br>
+          Let's say that we <b>'hypothesise' that 70% of people are Taylor Swift fans</b>. Now, to test our hypothesis, we go to our data science class of <b>30 students</b>
+          and ask <b>how many students are Taylor Swift fans</b>. The main goal here is to see if our <b>sample</b> is consistent with our 70% hypothesis.<br><br>
+          In this regard, we set up a <b>null hypothesis</b> that the <b>proportion of Taylor Swift fans is 0.7</b> (70%). We mathematically write this as:<br>
+        </p>
+        <center><p style="font-size: 16px">\( H_{0} : p = 0.7 \)</p></center>
+        <p><br>We set up our alternate hypothesis to be that the proportion of Taylor Swift fans is <b>NOT 0.7</b>. We mathematically write this as:</p>
+        <center><p style="font-size: 16px">\( H_{1} : p \neq 0.7 \)</p></center>
+        <p><br>The main idea is that from our sample of 30 students, we want to see if there is <b>evidence to support or reject</b> the null hypothesis.</p>
+        <div class="row">
+          <div class="col-sm-8">
+            <p>
+              <h5><u>How do we go about doing this?</u></h5><br>
+              We set up our box assuming that the <b>null hypothesis is true</b>. We add tickets valued <b>"1" to represent our target</b> (in this example, that someone
+              likes Taylor Swift), and <b>"0" to represent the complement</b>. The tickets are arranged such that the proportion of "1" tickets is the same as the null
+              hypothesis. As seen in the box model to the right, there are seven "1" tickets and three "0" tickets, meaning the proportion of "1"'s is correctly 70%.<br><br>
+              After setting up our box model, we want to see if what we observe from the class is consistent with the null hypothesis. We call what we observe the <b>observed
+              value (OV)</b>.<br><br>
+              Let's say that in the class, 22 people like Taylor Swift, and 8 do not. We can represent the observed value derived from this observation using the <b>mean</b>
+              or the <b>sum</b>.<br><br>
+              <u>Mean:</u>
+            </p>
+            $$\begin{align*} \text{OV} &= \frac{1 \times \text{Number of TS Fans} + 0 \times \text{Number of Non-TS Fans}}{\text{Data Science Class Size}}
+            \\ &= \frac{1 \times 22 + 0 \times 8}{30} \\ &= \frac{22}{30} \\ &= 0.73 \text{ (2 decimal places)} \end{align*}$$
+            <p><u>Sum:</u></p>
+            $$\begin{align*} \text{OV} &= 1 \times \text{Number of TS Fans} + 0 \times \text{Number of Non-TS Fans}
+            \\ &= 1 \times 22 + 0 \times 8 \\ &= 22 \end{align*}$$
+          </div>
+          <div class="col-sm-4"><br><div id="intro-example-box-model"></div></div>
+        </div>
+        <p><br>
+          Now that we've introduced how to set up the box for this test, as well as what the observed value is, it's your turn to use this app to test whether our
+          observed value is consistent with our null hypothesis or not. Good luck :)
+        </p>
+      </div>
+      <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button></div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="../shared/js/stats.js"></script>
+<script src="../shared/js/boxmodel.js"></script>
+<script src="../shared/js/plots.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

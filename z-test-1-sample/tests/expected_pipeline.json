@@ -1,0 +1,18 @@
+{
+  "n": 25,
+  "box_mu": "140",
+  "box_sigma": "4.751",
+  "box_ov": "142.843",
+  "EV_string": "140",
+  "SE_string": "0.95011",
+  "sigma_5": "4.75054",
+  "ov_5": "142.84333",
+  "ts_string": "2.9926",
+  "p_two_sided_5": "0.00277",
+  "p_greater_5": "0.00138",
+  "p_less_5": "0.99862",
+  "ci_two_lower_4": "138.1378",
+  "ci_two_upper_4": "141.8622",
+  "ci_greater_lower_4": "138.4372",
+  "ci_less_upper_4": "141.5628"
+}
