@@ -88,6 +88,10 @@ function runStatsChecks(Stats, ref, hanValues, log) {
     assertClose(fit.slope / fit.seSlope, 55.804862397149, 1e-11, "linreg t");
   }
 
+  // popsd: population SD (denominator n). Checked against hand-computed values.
+  assertClose(Stats.popsd([1, 0]), 0.5, 1e-15, "popsd([1,0])");
+  assertClose(Stats.popsd([1, 2, 3, 4, 5]), Math.sqrt(2), 1e-15, "popsd(1..5)");
+
   // R-style rounding (round half to even).
   assertEqual(Stats.roundR(0.5), 0, "roundR(0.5)");
   assertEqual(Stats.roundR(1.5), 2, "roundR(1.5)");

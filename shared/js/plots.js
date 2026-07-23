@@ -116,6 +116,115 @@ const Plots = (() => {
     return svgWrap(width, height, f.parts, cssHeight);
   }
 
+  // ---------- density histogram (R hist(..., freq = FALSE)) ----------
+  // Used by the CLT (box model part 2) lesson. `breaks` may be a bin COUNT
+  // (equal-width bins over [min, max], as R's seq(range, length.out = n+1)) or
+  // the string "sturges" (R's default nclass.Sturges -> pretty breaks). With no
+  // data it draws the empty placeholder axes (xlim 0..10, ylim 0..0.25).
+  function densityHistogramSVG(values, { width = 460, height = 430, main = "", xlab = "", ylab = "Density",
+      col = "lightgreen", breaks = "sturges", curve = null, cssHeight = null } = {}) {
+    if (!values || values.length === 0) {
+      const f = makeFrame(width, height, { xdomain: [0, 10], ydomain: [0, 0.25], main, xlab, ylab, padY: false });
+      return svgWrap(width, height, f.parts, cssHeight);
+    }
+    const n = values.length;
+    let lo = Math.min(...values), hi = Math.max(...values);
+    if (hi <= lo) { lo -= 0.5; hi += 0.5; }               // degenerate: single value
+    let bks;
+    if (Array.isArray(breaks)) {
+      bks = breaks;
+    } else if (breaks === "sturges") {
+      const nclass = Math.ceil(Math.log2(n) + 1);
+      bks = Stats.prettyBreaks(lo, hi, nclass);
+    } else {
+      const nb = Math.max(1, Math.round(breaks));
+      bks = [];
+      for (let i = 0; i <= nb; i++) bks.push(lo + (hi - lo) * i / nb);
+    }
+    // Counts per bin, R default right = TRUE (first bin includes the left edge).
+    const counts = new Array(bks.length - 1).fill(0);
+    for (const v of values) {
+      for (let i = 0; i < bks.length - 1; i++) {
+        if ((v > bks[i] || (i === 0 && v >= bks[0])) && v <= bks[i + 1]) { counts[i]++; break; }
+      }
+    }
+    // Density: bar area sums to 1, so height = count / (n * binWidth).
+    const dens = counts.map((c, i) => c / (n * (bks[i + 1] - bks[i])));
+    // Optional overlaid normal density curve N(curve.ev, curve.se) in red.
+    const dnorm = (x, ev, se) => Stats.dnorm((x - ev) / se) / se;
+    let ymax = Math.max(...dens);
+    if (curve) ymax = Math.max(ymax, dnorm(curve.ev, curve.ev, curve.se));  // peak at the mean
+    const f = makeFrame(width, height, {
+      xdomain: [bks[0], bks[bks.length - 1]], ydomain: [0, ymax], main, xlab, ylab
+    });
+    for (let i = 0; i < dens.length; i++) {
+      const x0 = f.sx(bks[i]), x1 = f.sx(bks[i + 1]);
+      const y0 = f.sy(0), y1 = f.sy(dens[i]);
+      f.parts.push(`<rect x="${x0}" y="${y1}" width="${x1 - x0}" height="${y0 - y1}" fill="${col}" stroke="black"/>`);
+    }
+    if (curve) {
+      const N = 200, lo = bks[0], hi = bks[bks.length - 1], pts = [];
+      for (let i = 0; i < N; i++) { const xv = lo + (hi - lo) * i / (N - 1); pts.push(`${f.sx(xv)},${f.sy(dnorm(xv, curve.ev, curve.se))}`); }
+      f.parts.push(`<polyline points="${pts.join(" ")}" fill="none" stroke="red" stroke-width="2"/>`);
+    }
+    return svgWrap(width, height, f.parts, cssHeight);
+  }
+
+  // ---------- general normal curve with a shaded region [lower, upper] ----------
+  // Ports the R "shaded_normal_curve" (box model part 3, finding probabilities):
+  // a N(ev, se^2) curve over ev +/- 4 se, shading between the bounds (null = the
+  // corresponding +/-infinity edge), with x ticks at ev + se*(-3..3).
+  function shadedNormalRegionSVG(ev, se, lower, upper, { width = 480, height = 350, cssHeight = null } = {}) {
+    const lo = ev - 4 * se, hi = ev + 4 * se;
+    let a = (lower === null || !isFinite(lower)) ? lo : Math.max(lower, lo);
+    let b = (upper === null || !isFinite(upper)) ? hi : Math.min(upper, hi);
+    const dnorm = x => Stats.dnorm((x - ev) / se) / se;
+    const N = 1000, xs = [], ys = [];
+    for (let i = 0; i < N; i++) { const xv = lo + (hi - lo) * i / (N - 1); xs.push(xv); ys.push(dnorm(xv)); }
+    const ticks = [];
+    for (let k = -3; k <= 3; k++) ticks.push(ev + se * k);
+    const f = makeFrame(width, height, {
+      xdomain: [lo, hi], ydomain: [0, Math.max(...ys)],
+      margins: { top: 10, right: 10, bottom: 40, left: 10 }, yAxis: false, xAxis: false
+    });
+    // shaded region
+    const shade = [];
+    for (let i = 0; i < N; i++) if (xs[i] >= a && xs[i] <= b) shade.push(`${f.sx(xs[i])},${f.sy(ys[i])}`);
+    if (shade.length) {
+      const first = shade[0].split(",")[0], last = shade[shade.length - 1].split(",")[0];
+      f.parts.push(`<polygon points="${first},${f.sy(0)} ${shade.join(" ")} ${last},${f.sy(0)}" fill="rgba(255,0,0,0.5)" stroke="none"/>`);
+    }
+    f.parts.push(`<polyline points="${xs.map((xv, i) => `${f.sx(xv)},${f.sy(ys[i])}`).join(" ")}" fill="none" stroke="black" stroke-width="2"/>`);
+    // custom x-axis
+    const y0 = height - f.m.bottom;
+    f.parts.push(`<line x1="${f.sx(ticks[0])}" y1="${y0}" x2="${f.sx(ticks[ticks.length - 1])}" y2="${y0}" stroke="black"/>`);
+    for (const t of ticks) {
+      f.parts.push(`<line x1="${f.sx(t)}" y1="${y0}" x2="${f.sx(t)}" y2="${y0 + 5}" stroke="black"/>`);
+      f.parts.push(`<text x="${f.sx(t)}" y="${y0 + 18}" text-anchor="middle" font-size="11" style="${FONT}">${t.toFixed(2)}</text>`);
+    }
+    return svgWrap(width, height, f.parts, cssHeight);
+  }
+
+  // ---------- confidence-interval plot (horizontal CIs, coloured by coverage) ----------
+  // Ports the R CI simulation plots: one horizontal segment per interval at
+  // y = i, green if it contains trueMean else red, with a dashed vertical line
+  // at trueMean. `xlim` fixes the axis (demo 2 uses a fixed axis).
+  function ciPlotSVG(lowers, uppers, contains, trueMean, { width = 620, height = 430, main = "",
+      xlab = "Value", ylab = "Sample Number", xlim = null, cssHeight = null } = {}) {
+    const n = lowers.length;
+    const xd = xlim || (n > 0
+      ? [Math.min(...lowers), Math.max(...uppers)]
+      : [trueMean - 10, trueMean + 10]);
+    const f = makeFrame(width, height, { xdomain: xd, ydomain: [1, 100], main, xlab, ylab });
+    f.parts.push(`<line x1="${f.sx(trueMean)}" y1="${f.sy(1)}" x2="${f.sx(trueMean)}" y2="${f.sy(100)}" stroke="black" stroke-dasharray="5,4"/>`);
+    for (let i = 0; i < n; i++) {
+      const y = f.sy(i + 1);
+      const colr = contains[i] ? "green" : "red";
+      f.parts.push(`<line x1="${f.sx(lowers[i])}" y1="${y}" x2="${f.sx(uppers[i])}" y2="${y}" stroke="${colr}" stroke-width="2"/>`);
+    }
+    return svgWrap(width, height, f.parts, cssHeight);
+  }
+
   // ---------- boxplot (R boxplot.stats: fivenum hinges, 1.5 IQR whiskers) ----------
   function boxplotStats(x) {
     const fn = Stats.fivenum(x);
@@ -365,8 +474,9 @@ const Plots = (() => {
     return svgWrap(width, height, f.parts, cssHeight);
   }
 
-  return { histogramSVG, boxplotSVG, boxplotPairSVG, scatterSVG, qqPlotSVG, shadedCurveSVG,
-           shadedTCurveSVG, shadedNormalCurveSVG, densityOverlaySVG, boxplotStats };
+  return { histogramSVG, densityHistogramSVG, boxplotSVG, boxplotPairSVG, scatterSVG, qqPlotSVG,
+           shadedCurveSVG, shadedTCurveSVG, shadedNormalCurveSVG, shadedNormalRegionSVG,
+           densityOverlaySVG, ciPlotSVG, boxplotStats };
 })();
 
 if (typeof module !== "undefined" && module.exports) module.exports = Plots;

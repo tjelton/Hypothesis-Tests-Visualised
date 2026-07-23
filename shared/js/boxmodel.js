@@ -54,4 +54,23 @@ function boxModelHTML(boxLabel, sampleLabel = null, nLabel = null, fontSize = 22
   );
 }
 
-if (typeof module !== "undefined" && module.exports) module.exports = boxModelHTML;
+// One yellow rounded "sample" cell (port of sample_cell_html). The label may
+// contain HTML.
+function sampleCellHTML(label) {
+  return '<div style="display:flex; align-items:center; justify-content:center; text-align:center;' +
+    "width:120px; min-height:40px; padding:4px;" +
+    "background-color:#f9ffbd; border:1px solid black; border-radius:8px;" +
+    'font-size:12px; box-sizing:border-box;">' + label + "</div>";
+}
+
+// A 2-column grid of sample cells (port of sample_grid_html). Empty -> "".
+function sampleGridHTML(labels) {
+  if (!labels || labels.length === 0) return "";
+  return '<div style="display:grid; grid-template-columns:repeat(2, max-content);' +
+    'gap:12px; justify-content:center; padding:6px 0;">' +
+    labels.map(sampleCellHTML).join("") + "</div>";
+}
+
+if (typeof module !== "undefined" && module.exports) {
+  module.exports = { boxModelHTML, sampleCellHTML, sampleGridHTML };
+}

@@ -225,6 +225,29 @@ const Stats = (() => {
     return Math.sqrt(ss / (n - 1));
   }
 
+  // Population standard deviation (denominator n). R has no built-in for this;
+  // the box-model lessons define popsd(x) = sqrt(mean((x - mean(x))^2)).
+  function popsd(x) {
+    const n = x.length;
+    const m = mean(x);
+    let ss = 0;
+    for (const v of x) ss += (v - m) * (v - m);
+    return Math.sqrt(ss / n);
+  }
+
+  // Random normal draws (R's rnorm) via Box-Muller. Used only by the simulation
+  // lessons, so it draws from Math.random (no seed fidelity to R is required).
+  function rnorm(n, mean = 0, sd = 1) {
+    const out = new Array(n);
+    for (let i = 0; i < n; i++) {
+      let u = 0, v = 0;
+      while (u === 0) u = Math.random();
+      while (v === 0) v = Math.random();
+      out[i] = mean + sd * Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v);
+    }
+    return out;
+  }
+
   // Simple linear regression y ~ x (ordinary least squares), matching R's
   // lm(y ~ x) / summary(): slope, intercept, residuals, residual standard
   // error s (= summary(model)$sigma), and SE of the slope. Used by the
@@ -349,7 +372,7 @@ const Stats = (() => {
   return {
     lgamma, pbeta, pnorm, dnorm, qnorm, erfc,
     dt, pt, qt,
-    mean, sd, linreg, quantileType7, fivenum, ppoints,
+    mean, sd, popsd, rnorm, linreg, quantileType7, fivenum, ppoints,
     roundR, formatR, roundStr, prettyBreaks
   };
 })();
