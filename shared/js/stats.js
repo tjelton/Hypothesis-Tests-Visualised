@@ -109,6 +109,12 @@ const Stats = (() => {
     return 0.5 * erfc(-x / Math.SQRT2);
   }
 
+  // Standard normal density (R's dnorm(x, mean = 0, sd = 1)). Exact closed
+  // form; used only to draw the normal reference curve in the t-curve lesson.
+  function dnorm(x) {
+    return Math.exp(-x * x / 2) / Math.sqrt(2 * Math.PI);
+  }
+
   // Acklam's inverse-normal algorithm with one Halley refinement step
   // (brings the ~1e-9 relative error of the raw rational approximation down
   // to essentially machine precision).
@@ -219,6 +225,30 @@ const Stats = (() => {
     return Math.sqrt(ss / (n - 1));
   }
 
+  // Simple linear regression y ~ x (ordinary least squares), matching R's
+  // lm(y ~ x) / summary(): slope, intercept, residuals, residual standard
+  // error s (= summary(model)$sigma), and SE of the slope. Used by the
+  // regression t-test lesson. Assumes complete (non-missing) x/y pairs.
+  function linreg(x, y) {
+    const n = x.length;
+    const mx = mean(x), my = mean(y);
+    let sxx = 0, sxy = 0;
+    for (let i = 0; i < n; i++) {
+      const dx = x[i] - mx;
+      sxx += dx * dx;
+      sxy += dx * (y[i] - my);
+    }
+    const slope = sxy / sxx;
+    const intercept = my - slope * mx;
+    const fitted = x.map(xi => intercept + slope * xi);
+    const residuals = y.map((yi, i) => yi - fitted[i]);
+    const rss = residuals.reduce((a, r) => a + r * r, 0);
+    const df = n - 2;
+    const s = Math.sqrt(rss / df);         // residual standard error
+    const seSlope = s / Math.sqrt(sxx);    // SE of the slope estimate
+    return { n, mx, my, sxx, sxy, slope, intercept, fitted, residuals, rss, df, s, seSlope };
+  }
+
   // R quantile() type 7 (the default) for a single probability.
   function quantileType7(x, p) {
     const sorted = x.slice().sort((a, b) => a - b);
@@ -317,9 +347,9 @@ const Stats = (() => {
   }
 
   return {
-    lgamma, pbeta, pnorm, qnorm, erfc,
+    lgamma, pbeta, pnorm, dnorm, qnorm, erfc,
     dt, pt, qt,
-    mean, sd, quantileType7, fivenum, ppoints,
+    mean, sd, linreg, quantileType7, fivenum, ppoints,
     roundR, formatR, roundStr, prettyBreaks
   };
 })();

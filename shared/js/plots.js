@@ -9,6 +9,10 @@ const Plots = (() => {
 
   const FONT = "font-family:sans-serif;";
 
+  // Monotonic id source for per-SVG clipPath ids (several plots of the same
+  // kind can appear on one page, and clip-path ids are document-global).
+  let uid = 0;
+
   function esc(s) {
     return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
   }
@@ -124,6 +128,19 @@ const Plots = (() => {
     return { lower, median, upper, whiskLo, whiskHi, outliers };
   }
 
+  // Parts for one horizontal box centred at pixel `cy` with half-height `halfH`.
+  function horizontalBoxParts(f, st, cy, halfH, col) {
+    const wcapH = halfH * 0.5;
+    return [
+      `<line x1="${f.sx(st.whiskLo)}" y1="${cy}" x2="${f.sx(st.lower)}" y2="${cy}" stroke="black" stroke-dasharray="5,4"/>`,
+      `<line x1="${f.sx(st.upper)}" y1="${cy}" x2="${f.sx(st.whiskHi)}" y2="${cy}" stroke="black" stroke-dasharray="5,4"/>`,
+      `<line x1="${f.sx(st.whiskLo)}" y1="${cy - wcapH}" x2="${f.sx(st.whiskLo)}" y2="${cy + wcapH}" stroke="black"/>`,
+      `<line x1="${f.sx(st.whiskHi)}" y1="${cy - wcapH}" x2="${f.sx(st.whiskHi)}" y2="${cy + wcapH}" stroke="black"/>`,
+      `<rect x="${f.sx(st.lower)}" y="${cy - halfH}" width="${f.sx(st.upper) - f.sx(st.lower)}" height="${2 * halfH}" fill="${col}" stroke="black"/>`,
+      `<line x1="${f.sx(st.median)}" y1="${cy - halfH}" x2="${f.sx(st.median)}" y2="${cy + halfH}" stroke="black" stroke-width="2.5"/>`
+    ].concat(st.outliers.map(o => `<circle cx="${f.sx(o)}" cy="${cy}" r="3.5" fill="none" stroke="black"/>`));
+  }
+
   function boxplotSVG(x, { width = 500, height = 400, main = "", ylab = "", col = "white", horizontal = false, cssHeight = null } = {}) {
     const st = boxplotStats(x);
     const dataLo = Math.min(...x), dataHi = Math.max(...x);
@@ -133,16 +150,7 @@ const Plots = (() => {
       f = makeFrame(width, height, { xdomain: [dataLo, dataHi], ydomain: [0, 1], main, ylab, yAxis: false, padY: false });
       const cy = (f.sy(0) + f.sy(1)) / 2;
       const halfH = (f.sy(0) - f.sy(1)) * 0.25;
-      const wcapH = halfH * 0.5;
-      parts.push(`<line x1="${f.sx(st.whiskLo)}" y1="${cy}" x2="${f.sx(st.lower)}" y2="${cy}" stroke="black" stroke-dasharray="5,4"/>`);
-      parts.push(`<line x1="${f.sx(st.upper)}" y1="${cy}" x2="${f.sx(st.whiskHi)}" y2="${cy}" stroke="black" stroke-dasharray="5,4"/>`);
-      parts.push(`<line x1="${f.sx(st.whiskLo)}" y1="${cy - wcapH}" x2="${f.sx(st.whiskLo)}" y2="${cy + wcapH}" stroke="black"/>`);
-      parts.push(`<line x1="${f.sx(st.whiskHi)}" y1="${cy - wcapH}" x2="${f.sx(st.whiskHi)}" y2="${cy + wcapH}" stroke="black"/>`);
-      parts.push(`<rect x="${f.sx(st.lower)}" y="${cy - halfH}" width="${f.sx(st.upper) - f.sx(st.lower)}" height="${2 * halfH}" fill="${col}" stroke="black"/>`);
-      parts.push(`<line x1="${f.sx(st.median)}" y1="${cy - halfH}" x2="${f.sx(st.median)}" y2="${cy + halfH}" stroke="black" stroke-width="2.5"/>`);
-      for (const o of st.outliers) {
-        parts.push(`<circle cx="${f.sx(o)}" cy="${cy}" r="3.5" fill="none" stroke="black"/>`);
-      }
+      parts.push(...horizontalBoxParts(f, st, cy, halfH, col));
     } else {
       f = makeFrame(width, height, { xdomain: [0, 1], ydomain: [dataLo, dataHi], main, ylab, xAxis: false });
       const cx = (f.sx(0) + f.sx(1)) / 2;
@@ -162,31 +170,81 @@ const Plots = (() => {
     return svgWrap(width, height, f.parts, cssHeight);
   }
 
+  // ---------- side-by-side horizontal boxplots (two groups) ----------
+  // Ports R's boxplot(list(`Sample 1` = x1, `Sample 2` = x2), horizontal = TRUE,
+  // col = c("blue", "red")). Sample 1 is drawn on top.
+  function boxplotPairSVG(x1, x2, { width = 560, height = 300, main = "",
+      labels = ["Sample 1", "Sample 2"], cols = ["blue", "red"], cssHeight = null } = {}) {
+    const st1 = boxplotStats(x1), st2 = boxplotStats(x2);
+    const all = x1.concat(x2);
+    const f = makeFrame(width, height, {
+      xdomain: [Math.min(...all), Math.max(...all)], ydomain: [0, 1],
+      main, ylab: "", yAxis: false, padY: false, margins: { left: 78 }
+    });
+    // Two rows: sample 1 near the top (y = 0.72), sample 2 below (y = 0.28).
+    const rows = [{ st: st1, yd: 0.72, col: cols[0], label: labels[0] },
+                  { st: st2, yd: 0.28, col: cols[1], label: labels[1] }];
+    const halfH = (f.sy(0) - f.sy(1)) * 0.16;
+    for (const r of rows) {
+      const cy = f.sy(r.yd);
+      f.parts.push(...horizontalBoxParts(f, r.st, cy, halfH, r.col));
+      f.parts.push(`<text x="${f.m.left - 10}" y="${cy + 4}" text-anchor="end" font-size="12" style="${FONT}">${esc(r.label)}</text>`);
+    }
+    return svgWrap(width, height, f.parts, cssHeight);
+  }
+
+  // ---------- scatter / residual / ordered-residual plot ----------
+  // Ports R's plot(x, y) with open circles. Options:
+  //   xlim/ylim  - override the data ranges (e.g. the intro horizontal-line plot)
+  //   hline      - draw a dashed red horizontal line at this y (residual plots)
+  //   connect    - join points in order with a line (type = "b"; ordered residuals)
+  function scatterSVG(x, y, { width = 480, height = 360, main = "", xlab = "", ylab = "",
+      xlim = null, ylim = null, hline = null, connect = false, cssHeight = null } = {}) {
+    const xd = xlim || [Math.min(...x), Math.max(...x)];
+    const yd = ylim || [Math.min(...y), Math.max(...y)];
+    const f = makeFrame(width, height, { xdomain: xd, ydomain: yd, main, xlab, ylab });
+    if (hline !== null) {
+      f.parts.push(`<line x1="${f.sx(f.xlo)}" y1="${f.sy(hline)}" x2="${f.sx(f.xhi)}" y2="${f.sy(hline)}" stroke="red" stroke-width="2" stroke-dasharray="5,4"/>`);
+    }
+    if (connect && x.length > 1) {
+      const pts = x.map((xv, i) => `${f.sx(xv)},${f.sy(y[i])}`).join(" ");
+      f.parts.push(`<polyline points="${pts}" fill="none" stroke="black"/>`);
+    }
+    for (let i = 0; i < x.length; i++) {
+      f.parts.push(`<circle cx="${f.sx(x[i])}" cy="${f.sy(y[i])}" r="3" fill="none" stroke="black"/>`);
+    }
+    return svgWrap(width, height, f.parts, cssHeight);
+  }
+
   // ---------- normal QQ plot (qqnorm + qqline(col = "red")) ----------
-  function qqPlotSVG(x, { width = 400, height = 400, cssHeight = null } = {}) {
+  function qqPlotSVG(x, { width = 400, height = 400, main = "Normal Q-Q Plot", cssHeight = null } = {}) {
     const sorted = x.slice().sort((a, b) => a - b);
     const theo = Stats.ppoints(sorted.length).map(Stats.qnorm);
     const f = makeFrame(width, height, {
       xdomain: [Math.min(...theo), Math.max(...theo)],
       ydomain: [sorted[0], sorted[sorted.length - 1]],
-      main: "Normal Q-Q Plot", xlab: "Theoretical Quantiles", ylab: "Sample Quantiles"
+      main, xlab: "Theoretical Quantiles", ylab: "Sample Quantiles"
     });
     // qqline: through the (25%, 75%) quantile pairs, clipped to the plot region.
     const qy1 = Stats.quantileType7(x, 0.25), qy2 = Stats.quantileType7(x, 0.75);
     const qx1 = Stats.qnorm(0.25), qx2 = Stats.qnorm(0.75);
     const slope = (qy2 - qy1) / (qx2 - qx1);
     const yAt = xv => qy1 + slope * (xv - qx1);
-    f.parts.push(`<clipPath id="qqclip"><rect x="${f.m.left}" y="${f.m.top}" width="${width - f.m.left - f.m.right}" height="${height - f.m.top - f.m.bottom}"/></clipPath>`);
-    f.parts.push(`<line x1="${f.sx(f.xlo)}" y1="${f.sy(yAt(f.xlo))}" x2="${f.sx(f.xhi)}" y2="${f.sy(yAt(f.xhi))}" stroke="red" stroke-width="1.5" clip-path="url(#qqclip)"/>`);
+    const clip = "qqclip" + (uid++);
+    f.parts.push(`<clipPath id="${clip}"><rect x="${f.m.left}" y="${f.m.top}" width="${width - f.m.left - f.m.right}" height="${height - f.m.top - f.m.bottom}"/></clipPath>`);
+    f.parts.push(`<line x1="${f.sx(f.xlo)}" y1="${f.sy(yAt(f.xlo))}" x2="${f.sx(f.xhi)}" y2="${f.sy(yAt(f.xhi))}" stroke="red" stroke-width="1.5" clip-path="url(#${clip})"/>`);
     for (let i = 0; i < sorted.length; i++) {
       f.parts.push(`<circle cx="${f.sx(theo[i])}" cy="${f.sy(sorted[i])}" r="3" fill="none" stroke="black"/>`);
     }
     return svgWrap(width, height, f.parts, cssHeight);
   }
 
-  // ---------- shaded t-curve (curve_shaded_test_stat with dt) ----------
-  // altChoice: 1 = two-sided, 2 = greater-than (upper tail), 3 = less-than (lower tail).
-  function shadedTCurveSVG(df, testStat, altChoice, { width = 560, height = 325, cssHeight = null } = {}) {
+  // ---------- shaded curve (curve_shaded_test_stat) ----------
+  // Generic renderer for R's curve_shaded_test_stat: draws a density curve and
+  // shades the tail region(s) for a test statistic. `density` is x -> y (e.g.
+  // t-density for a given df, or the standard normal). altChoice: 1 = two-sided,
+  // 2 = greater-than (upper tail), 3 = less-than (lower tail).
+  function shadedCurveSVG(density, testStat, altChoice, { width = 560, height = 325, cssHeight = null } = {}) {
     let lo = -3.5, hi = 3.5;
     if (altChoice === 1 && Math.abs(testStat) > hi) {
       lo = -Math.abs(testStat) - 1;
@@ -202,7 +260,7 @@ const Plots = (() => {
     for (let i = 0; i < N; i++) {
       const xv = lo + (hi - lo) * i / (N - 1);
       xs.push(xv);
-      ys.push(Stats.dt(xv, df));
+      ys.push(density(xv));
     }
     const yMax = Math.max(...ys);
 
@@ -234,21 +292,25 @@ const Plots = (() => {
       return `<text x="${f.sx(atX)}" y="${f.sy(0.3)}" font-size="13" fill="blue" style="${FONT}">${fmtTick(Stats.roundR(value, 2))}</text>`;
     }
 
+    // Only shade/annotate for a finite test statistic; if the input is blank
+    // (NaN) the R app silently draws just the curve.
     const parts = [];
-    if (altChoice === 1) {
-      const a = Math.abs(testStat);
-      parts.push(shadeRegion(lo, -a));
-      parts.push(shadeRegion(a, hi));
-      parts.push(vline(-a), vline(a));
-      parts.push(label(-a - 0.8, -a), label(a + 0.25, a));
-    } else if (altChoice === 2) {
-      parts.push(shadeRegion(testStat, hi));
-      parts.push(vline(testStat));
-      parts.push(label(testStat + 0.25, testStat));
-    } else if (altChoice === 3) {
-      parts.push(shadeRegion(lo, testStat));
-      parts.push(vline(testStat));
-      parts.push(label(testStat - 0.8, testStat));
+    if (Number.isFinite(testStat)) {
+      if (altChoice === 1) {
+        const a = Math.abs(testStat);
+        parts.push(shadeRegion(lo, -a));
+        parts.push(shadeRegion(a, hi));
+        parts.push(vline(-a), vline(a));
+        parts.push(label(-a - 0.8, -a), label(a + 0.25, a));
+      } else if (altChoice === 2) {
+        parts.push(shadeRegion(testStat, hi));
+        parts.push(vline(testStat));
+        parts.push(label(testStat + 0.25, testStat));
+      } else if (altChoice === 3) {
+        parts.push(shadeRegion(lo, testStat));
+        parts.push(vline(testStat));
+        parts.push(label(testStat - 0.8, testStat));
+      }
     }
 
     // Curve on top of the shading, like the R draw order visually implies.
@@ -259,7 +321,52 @@ const Plots = (() => {
     return svgWrap(width, height, f.parts, cssHeight);
   }
 
-  return { histogramSVG, boxplotSVG, qqPlotSVG, shadedTCurveSVG, boxplotStats };
+  // Shaded t-curve for a given df (the case the t-test lessons use).
+  function shadedTCurveSVG(df, testStat, altChoice, opts = {}) {
+    return shadedCurveSVG(x => Stats.dt(x, df), testStat, altChoice, opts);
+  }
+
+  // Shaded standard-normal curve (the z-test comparison in the t-curve lesson).
+  function shadedNormalCurveSVG(testStat, altChoice, opts = {}) {
+    return shadedCurveSVG(x => Stats.dnorm(x), testStat, altChoice, opts);
+  }
+
+  // ---------- t-curve vs normal overlay (t-curve motivation, Demo 1) ----------
+  // Ports the R renderPlot: x in [-4, 4], t-density (black solid), and the
+  // standard normal (red dashed) when `showNormal`. Only an x-axis is drawn
+  // (axes = FALSE; axis(1)), and the y-range always spans BOTH curves so the
+  // t-curve keeps the same vertical scale whether or not the normal is shown
+  // (R computes ylim = range(y_t, y_norm) before the checkbox branch).
+  function densityOverlaySVG(df, showNormal, { width = 500, height = 300, cssHeight = null } = {}) {
+    const N = 100;
+    const xs = [], yt = [], yn = [];
+    for (let i = 0; i < N; i++) {
+      const xv = -4 + 8 * i / (N - 1);
+      xs.push(xv);
+      yt.push(Stats.dt(xv, df));
+      yn.push(Stats.dnorm(xv));
+    }
+    const all = yt.concat(yn);
+    const yMin = Math.min(...all), yMax = Math.max(...all);
+
+    const f = makeFrame(width, height, {
+      xdomain: [-4, 4],
+      ydomain: [yMin, yMax],
+      margins: { top: 8, right: 8, bottom: 40, left: 8 },
+      yAxis: false, xlab: "", ylab: "", main: ""
+    });
+
+    const tCurve = xs.map((xv, i) => `${f.sx(xv)},${f.sy(yt[i])}`).join(" ");
+    if (showNormal) {
+      const nCurve = xs.map((xv, i) => `${f.sx(xv)},${f.sy(yn[i])}`).join(" ");
+      f.parts.push(`<polyline points="${nCurve}" fill="none" stroke="red" stroke-width="1" stroke-dasharray="6,4"/>`);
+    }
+    f.parts.push(`<polyline points="${tCurve}" fill="none" stroke="black" stroke-width="1"/>`);
+    return svgWrap(width, height, f.parts, cssHeight);
+  }
+
+  return { histogramSVG, boxplotSVG, boxplotPairSVG, scatterSVG, qqPlotSVG, shadedCurveSVG,
+           shadedTCurveSVG, shadedNormalCurveSVG, densityOverlaySVG, boxplotStats };
 })();
 
 if (typeof module !== "undefined" && module.exports) module.exports = Plots;

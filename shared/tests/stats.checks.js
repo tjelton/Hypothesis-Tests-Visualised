@@ -55,6 +55,13 @@ function runStatsChecks(Stats, ref, hanValues, log) {
                 "qnorm(" + ref.qnorm.p[i] + ")");
   }
 
+  // dnorm: standard-normal density (exact closed form) used to draw the normal
+  // reference curve in the t-curve lesson. Spot-checked against R's dnorm().
+  assertClose(Stats.dnorm(0), 0.3989422804014327, 1e-14, "dnorm(0)");
+  assertClose(Stats.dnorm(1), 0.24197072451914337, 1e-14, "dnorm(1)");
+  assertClose(Stats.dnorm(-1.96), 0.058440944333451469, 1e-14, "dnorm(-1.96)");
+  assertClose(Stats.dnorm(3.5), 0.00087268269504576015, 1e-14, "dnorm(3.5)");
+
   // Sample statistics on the seeded Mr. Han data (must equal what the Shiny
   // app computes for the same data).
   const han = ref.sample_stats;
@@ -66,6 +73,19 @@ function runStatsChecks(Stats, ref, hanValues, log) {
   const fn = Stats.fivenum(hanValues);
   for (let i = 0; i < 5; i++) {
     assertClose(fn[i], han.han_fivenum[i], 1e-13, "han fivenum[" + i + "]");
+  }
+
+  // linreg: OLS fit must match R's lm()/summary() (slope, intercept, residual
+  // standard error sigma, SE of slope). Fixed vector checked against R.
+  {
+    const lx = [1, 2, 3, 4, 5, 6, 7, 8];
+    const ly = [2.1, 3.9, 6.2, 7.8, 10.1, 11.7, 14.3, 15.8];
+    const fit = Stats.linreg(lx, ly);
+    assertClose(fit.slope, 1.98452380952381, 1e-12, "linreg slope");
+    assertClose(fit.intercept, 0.0571428571428555, 1e-11, "linreg intercept");
+    assertClose(fit.s, 0.230467089548767, 1e-12, "linreg sigma");
+    assertClose(fit.seSlope, 0.0355618439733882, 1e-12, "linreg SE(slope)");
+    assertClose(fit.slope / fit.seSlope, 55.804862397149, 1e-11, "linreg t");
   }
 
   // R-style rounding (round half to even).
