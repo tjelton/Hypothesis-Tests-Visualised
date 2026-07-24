@@ -26,7 +26,16 @@
   const S = Stats;
 
   function typeset(el) {
-    if (window.MathJax && window.MathJax.typesetPromise) window.MathJax.typesetPromise(el ? [el] : undefined).catch(() => {});
+    if (!window.MathJax) return;
+    const nodes = el ? [el] : undefined;
+    const run = () => window.MathJax.typesetPromise(nodes).catch(() => {});
+    // MathJax loads async (deferred script): on first render it may not be ready
+    // yet, so chain onto its startup promise to typeset once it has initialised.
+    if (window.MathJax.startup && window.MathJax.startup.promise) {
+      window.MathJax.startup.promise = window.MathJax.startup.promise.then(run);
+    } else if (window.MathJax.typesetPromise) {
+      run();
+    }
   }
   function gcd(a, b) { a = Math.round(a); b = Math.round(b); while (b) { [a, b] = [b, a % b]; } return a; }
 
@@ -133,7 +142,10 @@
 
       renderConclusion();
       renderCI();
-      typeset(document.querySelector(".container-fluid"));
+      // Typeset the whole document (no arg): MathJax's startup pass already
+      // processed the outer container, so re-typesetting that same ancestor node
+      // finds no math — a full-document pass reliably picks up the injected LaTeX.
+      typeset();
     }
 
     function renderConclusion() {
