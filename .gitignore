@@ -1,0 +1,13 @@
+.DS_Store
+.Rhistory
+.RData
+.Rproj.user
+
+# Local-only working notes for Claude Code; never committed.
+CLAUDE.md
+
+# Generated shinylive build artifacts (see tools/build_shinylive.R).
+# inst/app/R is a staging copy of R/; site/ is the export output (published to
+# the gh-pages branch, not committed on main).
+inst/app/R/
+site/

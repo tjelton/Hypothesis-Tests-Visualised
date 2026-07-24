@@ -1,0 +1,13 @@
+{
+  "coin_sum_ev": "50",
+  "coin_sum_se": "5",
+  "coin_mean_ev": "0.5",
+  "coin_mean_se": "0.05",
+  "dice_sum_ev": "175",
+  "dice_sum_se": "12.07615",
+  "p_coin_ge_60": "0.02275",
+  "p_coin_ge_70": "3e-05",
+  "p_coin_40_70": "0.97722",
+  "p_dice_ge_150": "0.98078",
+  "p_coin_all": "1"
+}

@@ -1,28 +1,100 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Shiny App</title>
-    <script
-      src="./shinylive/load-shinylive-sw.js"
-      type="module"
-    ></script>
-    <script type="module">
-      import { runExportedApp } from "./shinylive/shinylive.js";
-      runExportedApp({
-        id: "root",
-        appEngine: "r",
-        relPath: "",
-      });
-    </script>
-    <link rel="stylesheet" href="./shinylive/style-resets.css" />
-    <link rel="stylesheet" href="./shinylive/shinylive.css" />
-    
-  </head>
-  <body>
-    
-    <div style="height: 100vh; width: 100vw" id="root"></div>
-    
-  </body>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Hypothesis Tests Visualised</title>
+
+  <!-- Bootswatch Lumen (same Bootstrap 5 theme as the Shiny app's bs_theme) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootswatch@5.3.3/dist/lumen/bootstrap.min.css">
+  <link rel="stylesheet" href="shared/css/style.css">
+  <style>
+    /* The shared .tight-card is height:100% so lesson cards match heights when
+       placed side by side. On this home page the cards are stacked, so that
+       makes them stretch to fill the (taller) row and leaves empty space below
+       their content -- override to natural height here. */
+    .tight-card { height: auto; }
+  </style>
+</head>
+<body>
+
+
+<div class="container-fluid px-4">
+
+  <div class="row align-items-start">
+    <!-- ############ Left column: Welcome + Quick Links ############ -->
+    <div class="col-lg-8">
+      <h1>Home</h1>
+      <br>
+      <div class="tight-card accent">
+        <div class="tight-card-title">Welcome!</div>
+        <div class="tight-card-body">
+          <p>Welcome to the Hypothesis Tests Visualised Project (HTPV)!</p>
+          <ul>
+            <li>This project is aimed at helping people better understand hypothesis tests through an interactive environment.</li>
+            <li>Many of the hypothesis tests on this site are motivated using the box model. If unfamiliar, please refer to the 'Fundamentals' section, and complete
+                the three 'Box Model' pages.</li>
+            <li><b>To get started</b> on this site, navigate to an exercise by clicking the links in the header above, or the links below!</li>
+          </ul>
+        </div>
+      </div>
+      <br>
+      <div class="tight-card">
+        <div class="tight-card-body">
+          <h5 class="mb-3">Quick Links</h5>
+          <div class="row">
+            <div class="col-sm-4">
+              <b>Fundamentals 📦</b><br>
+              <a href="box-model-part-1/">Box Model - Part 1</a><br>
+              <a href="box-model-part-2/">Box Model - Part 2</a><br>
+              <a href="box-model-part-3/">Box Model - Part 3</a><br>
+              <a href="confidence-intervals/">Confidence Intervals</a><br>
+            </div>
+            <div class="col-sm-4">
+              <b>Z-Tests 🧪</b><br>
+              <a href="z-test-1-sample/">1-Sample Z-Test</a><br>
+              <a href="proportion-test/">Proportion (Z-test)</a><br>
+            </div>
+            <div class="col-sm-4">
+              <b>T-Tests 🧪</b><br>
+              <a href="t-curve-motivation/">T-Curve Motivation</a><br>
+              <a href="t-test-1-sample/">1-Sample T-Test</a><br>
+              <a href="t-test-paired/">Paired T-Test</a><br>
+              <a href="t-test-2-sample/">2-Sample T-Test</a><br>
+              <a href="t-test-regression/">Regression T-Test</a><br>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ############ Right column: support cards ############ -->
+    <div class="col-lg-4">
+      <div class="card" style="width:100%;">
+        <div class="card-header text-center" style="background-color:#FFD700; color:#000; font-size:1.25rem;">Supporting the Project</div>
+        <div class="card-body text-center" style="background-color: rgba(255, 215, 0, 0.1);">
+          <p><br>The best way to support the project is by starring it on GitHub. Click on the button below to go to this project's repository.<br><br></p>
+          <a class="btn" style="background-color:#FFD700;" href="https://github.com/tjelton/Hypothesis-Tests-Visualised" target="_blank" rel="noopener">HTPV Repo</a>
+          <br><br>
+        </div>
+      </div>
+      <br>
+      <div class="card" style="width:100%;">
+        <div class="card-header text-center" style="background-color:#3179ae; color:#fff; font-size:1.25rem;">Something not quite right?</div>
+        <div class="card-body text-center" style="background-color: rgba(49, 121, 174, 0.1);">
+          <p><br>Did you find a bug? Is one of the statistical explanations incorrect, or is the math not quite what you would expect?<br><br>
+             I'd apprecaite you letting me know! Please click on the button above to go the projects respoistory so that you can launch an issue. Important information
+             is provided in the projects README file.<br></p>
+          <br>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <br><br>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="shared/js/navbar.js"></script>
+</body>
 </html>
