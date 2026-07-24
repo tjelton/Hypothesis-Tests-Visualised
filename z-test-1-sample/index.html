@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>1-Sample z-Test — Hypothesis Tests Visualised</title>
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootswatch@5.3.3/dist/lumen/bootstrap.min.css">
+  <link rel="stylesheet" href="../shared/css/style.css">
+
+  <script>
+    window.MathJax = {
+      tex: { inlineMath: [["\\(", "\\)"]], displayMath: [["$$", "$$"], ["\\[", "\\]"]] },
+      startup: { typeset: true }
+    };
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-chtml.js" defer></script>
+</head>
+<body>
+
+
+<div class="container-fluid px-4">
+
+  <!-- Title strip -->
+  <div class="row">
+    <div class="col-sm-8"><h1>1-Sample z-test</h1></div>
+    <div class="col-sm-4">
+      <button id="learning-text" type="button" class="btn btn-primary w-100" style="color:#fff; font-size:20px; padding:10px 20px;" data-bs-toggle="modal" data-bs-target="#introModal">
+        What is a 1-sample z-test?
+      </button>
+    </div>
+  </div>
+  <br>
+
+  <!-- ############ SECTION: Input Data ############ -->
+  <div class="row">
+    <div class="col-sm-7">
+      <div class="tight-card accent">
+        <div class="tight-card-title">Input Sample Data</div>
+        <div class="tight-card-body">
+          <p>In order to do a 1-sample z-test , we first need to proivde our single (one) sample that we will be analysing. Below you can
+             choose pre-uploaded data to analyse, or you can manually enter data.</p>
+          <br>
+          <p><b>What data source will you be using?</b></p>
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="data_upload_choice" id="choice-pre" value="pre_uploaded">
+            <label class="form-check-label" for="choice-pre">Pre-uploaded Data</label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="data_upload_choice" id="choice-manual" value="manually_specified">
+            <label class="form-check-label" for="choice-manual">Manually Specified Data</label>
+          </div>
+
+          <!-- Pre-uploaded data controls -->
+          <div id="pre-uploaded-block" class="d-none">
+            <br>
+            <div class="mb-3">
+              <label class="form-label" for="dataset-select">Which data set would you like to analyse?</label>
+              <select class="form-select" id="dataset-select"></select>
+            </div>
+            <div class="mb-3" id="column-block">
+              <label class="form-label" for="column-select">Which column containing numeric deata would you like to analyse?</label>
+              <select class="form-select" id="column-select"></select>
+            </div>
+            <div class="mb-3 d-none" id="factor-block">
+              <label class="form-label" for="factor-select">(OPTIONAL) Below, you can optionally indicate if you want to separate your identified numeric variable by a categorical variable.</label>
+              <select class="form-select" id="factor-select"></select>
+            </div>
+            <div class="mb-3 d-none" id="category-block">
+              <label class="form-label" for="category-select">(OPTIONAL) Select which column to filter on.</label>
+              <select class="form-select" id="category-select"></select>
+            </div>
+          </div>
+
+          <!-- Manual entry controls -->
+          <div id="manual-block" class="d-none">
+            <br>
+            <p><b>Enter data into the text box below.</b></p>
+            <ul>
+              <li>All values must be numeric, and numbers should contain no spaces or any characters other than a . for a decimal place.</li>
+              <li>Each value must be on it's own line, or comma seperated.</li>
+              <li>Don't forget to press 'Upload' once you are finished!</li>
+            </ul>
+            <textarea class="form-control" id="manual-textarea" rows="3" style="width:100%;"></textarea>
+            <div class="row mt-2">
+              <div class="col-sm-8"></div>
+              <div class="col-sm-4"><button type="button" class="btn btn-success w-100" style="color:#fff;" id="upload-btn">Upload</button></div>
+            </div>
+            <div id="manual-unique-warning" class="d-none"><br><span style="color: red;"><p>Warning: You must have at least two unique values in your manually specified data.</p></span></div>
+            <div id="manual-missing-warning" class="d-none"><br><span style="color: red;"><p id="manual-missing-warning-text"></p></span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-5">
+      <div class="tight-card">
+        <div class="tight-card-body" id="data-preview">
+          <span style="color: blue;"><p>In order to proceed, you must select some data to act as your sample.</p></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <br><br><br>
+
+  <div id="rest-of-exercise" class="d-none">
+
+    <!-- ############ SECTION: The NULL Hypothesis - Setting up the Box ############ -->
+    <div class="row">
+      <div class="col-sm-7">
+        <div class="tight-card accent">
+          <div class="tight-card-title">The 'NULL' Hypothesis - Setting up the Box</div>
+          <div class="tight-card-body">
+            <p>We start by using the box model to represent our null hypothesis.</p>
+            <div class="accordion" id="null-accordion">
+              <div class="accordion-item">
+                <h2 class="accordion-header"><button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#null-acc-1"><b>Step 1) Specify Population Standard Deviation (σ)</b></button></h2>
+                <div id="null-acc-1" class="accordion-collapse collapse show" data-bs-parent="#null-accordion"><div class="accordion-body">
+                  <p>
+                    An assumption for the 1-sample z-test is that the standard deviation of the population (denoted \(\sigma\)) in which our sample is drawn is
+                    known. For example, a prior research paper may have estimated the population standard deviation, and you could use the value they discovered.<br><br>
+                    For this exercise, you can manually set the population standard deviation. However, for the most part, it is likely that the population standard
+                    deviation is unknown. Hence, for the purposes of this exercise, you can set the population standard deviation to be equal to the sample standard
+                    deviation (this has been automatically done below, but you are free to change the value). In practice, this is far from ideal, and in a future
+                    exercise, we will use the 1-sample t-test when the population standard deviation is unknown.
+                  </p>
+                  <br>
+                  <div class="row align-items-center">
+                    <div class="col-sm-7"><button type="button" class="btn btn-primary w-100" style="color:#fff;" id="set-pop-sd">Set Population SD to be Sample SD</button></div>
+                    <div class="col-sm-2"><p style="font-size: 16px; text-align: right; margin-bottom:0;">\(\sigma = \)</p></div>
+                    <div class="col-sm-3"><input type="number" class="form-control" id="pop-sd" step="any" min="0"></div>
+                  </div>
+                </div></div>
+              </div>
+              <div class="accordion-item">
+                <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#null-acc-2"><b>Step 2) Specify NULL Hypothesis</b></button></h2>
+                <div id="null-acc-2" class="accordion-collapse collapse" data-bs-parent="#null-accordion"><div class="accordion-body">
+                  <p>Next we need to specify the 'null' hypothesis. In this test we are focusing on the mean, so the null hypothesis is that the population mean
+                     is equal to some value which we set below.</p>
+                  <p style="font-size: 16px; text-align: right;">Given \(\mu \), where \(\mu \) is the mean of some variable:</p>
+                  <div class="row">
+                    <div class="col-sm-7"></div>
+                    <div class="col-sm-2"><p style="font-size: 16px; text-align: right;">\( H_0: \) \(\mu = \)</p></div>
+                    <div class="col-sm-3"><input type="number" class="form-control" id="null-mu" value="140" step="any"></div>
+                  </div>
+                </div></div>
+              </div>
+              <div class="accordion-item">
+                <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#null-acc-3"><b>Other</b></button></h2>
+                <div id="null-acc-3" class="accordion-collapse collapse" data-bs-parent="#null-accordion"><div class="accordion-body">
+                  <ul>
+                    <li>The value for <b>n</b> comes from the number of values in the sample chosen above.</li>
+                    <li>The <b>observed value (OV)</b> comes from the mean of the sample chosen above.</li>
+                  </ul>
+                </div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-5">
+        <div class="tight-card"><div class="tight-card-body"><center><div id="box-model"></div></center></div></div>
+      </div>
+    </div>
+
+    <br><br><br>
+
+    <!-- ############ SECTION: The Alternate Hypothesis ############ -->
+    <div class="row">
+      <div class="col-sm-7">
+        <div class="tight-card accent">
+          <div class="tight-card-title">The Alternate Hypothesis</div>
+          <div class="tight-card-body">
+            <p>Specify what type of alternate hypothesis you will be using below:</p>
+            <br>
+            <div class="form-check"><input class="form-check-input" type="radio" name="alternate_hypothesis_choice" id="alt-1" value="1" checked><label class="form-check-label" for="alt-1">Two Sided</label></div>
+            <div class="form-check"><input class="form-check-input" type="radio" name="alternate_hypothesis_choice" id="alt-2" value="2"><label class="form-check-label" for="alt-2">One Sided (greater than)</label></div>
+            <div class="form-check"><input class="form-check-input" type="radio" name="alternate_hypothesis_choice" id="alt-3" value="3"><label class="form-check-label" for="alt-3">One Sided (less than)</label></div>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-5">
+        <div class="tight-card"><div class="tight-card-body">
+          <p><b>Null Hypothesis</b></p><div id="null-hyp-out"></div>
+          <p><b>Alternate Hypothesis</b></p><div id="alt-hyp-out"></div>
+        </div></div>
+      </div>
+    </div>
+
+    <br><br><br>
+
+    <!-- ############ SECTION: Assumptions ############ -->
+    <div class="row"><div class="col-sm-12">
+      <div class="tight-card accent">
+        <div class="tight-card-title">Assumptions</div>
+        <div class="tight-card-body">
+          <p>For the hypothesis test to be valid, we need to check the following assumptions:</p>
+          <div class="accordion" id="assump-accordion">
+            <div class="accordion-item">
+              <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#assump-1"><b>Assumption 1: Independent Sample</b></button></h2>
+              <div id="assump-1" class="accordion-collapse collapse" data-bs-parent="#assump-accordion"><div class="accordion-body">
+                <p>The first assumption is that our sample is <b>independent and randomly chosen</b>.</p>
+                <p><span style="color: blue;"><b>How do we check?</b></span> <i>We check by investigating the experimental setup.</i><br><br>
+                   For example, consider we were investigating data for a proportion test involving human participants. We could read the accompanying scientific
+                   publication to understand the methodology they used to gather the people in the sample.</p>
+              </div></div>
+            </div>
+            <div class="accordion-item">
+              <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#assump-2"><b>Assumption 2: Normality</b></button></h2>
+              <div id="assump-2" class="accordion-collapse collapse" data-bs-parent="#assump-accordion"><div class="accordion-body">
+                <p>The second assumption is that the sample means follow a normal distribution.</p>
+                <p><span style="color: blue;"><b>How do we check?</b></span><br><br>
+                   <b>Idea 1: Large n</b><br>
+                   Recall that the central limit theorem tells us that if we take a sufficiently large number of draws from the box, then the sample
+                   means will approximately follow a normal distribution. If confused, please do the exerice at Fundamentals &gt; Box Model Part 2.</p>
+                <ul>
+                  <li>Recall that the central limit theorem tells us that if we take a sufficiently large number of draws from the box, then the sample
+                      means will approximately follow a normal distribution. If confused, please do the exerice at Fundamentals &gt; Box Model Part 2.</li>
+                  <li>One way to gauge whether the central limit theorem holds or not is to see how large our sample is (this is indicated by the "n" in
+                      the box model above).</li>
+                  <li>Many textbooks will say that you can say that you can use the rule of thumb that the central limit theorem will apply if we have 30
+                      or more draws. BEWARE - this is not always true! If the distribution of the values is very skewed, you will need much more than 30 draws!</li>
+                </ul>
+                <br>
+                <p><b>Idea 2: QQ-plot, Boxplot and Histogram</b><br>
+                   We learnt that if our data has some specific properties, then required a smaller value for n for the CLT to apply. In particular...</p>
+                <ul>
+                  <li>(QQ-plot) If the sample closely follows the QQ line, it suggests the data is normally distribued. Data that is normally distributed
+                      requires far less point for the CLT to apply.</li>
+                  <li>(Boxplot and Histogram) If the data is symmetric, less points are required for the CLT. These plots can also be used to indicate whether the
+                      data appears to be normally distributed.</li>
+                </ul>
+                <div class="row">
+                  <div class="col-sm-4"><div id="qq-plot"></div></div>
+                  <div class="col-sm-4"><div id="assump-boxplot"></div></div>
+                  <div class="col-sm-4"><div id="assump-hist"></div></div>
+                </div>
+              </div></div>
+            </div>
+            <div class="accordion-item">
+              <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#assump-3"><b>Assumption 3: Known Population Standard Deviation</b></button></h2>
+              <div id="assump-3" class="accordion-collapse collapse" data-bs-parent="#assump-accordion"><div class="accordion-body">
+                <p>As mentioned previously in "The NULL Hypothesis - Setting up the Box" section, it is assumed that the population standard deviation is known.</p>
+              </div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div></div>
+
+    <br><br><br>
+
+    <!-- ############ SECTION: Test Statistic ############ -->
+    <div class="row"><div class="col-sm-12">
+      <div class="tight-card accent">
+        <div class="tight-card-title">Test Statistic</div>
+        <div class="tight-card-body"><div class="row">
+          <div class="col-sm-6"><p><b>Step 1) Calculate Expected Value (SE) and Standard Error (SE)</b></p><div id="ev-se-out"></div></div>
+          <div class="col-sm-6"><p><b>Step 2) Test Statistic Calculation</b></p><div id="ts-out"></div></div>
+        </div></div>
+      </div>
+    </div></div>
+
+    <br><br><br>
+
+    <!-- ############ SECTION: p-value ############ -->
+    <div class="row">
+      <div class="col-sm-6">
+        <div class="tight-card accent">
+          <div class="tight-card-title">p-value</div>
+          <div class="tight-card-body" id="p-value-prelude"></div>
+        </div>
+      </div>
+      <div class="col-sm-6">
+        <div class="tight-card"><div class="tight-card-body"><center><div id="normal-plot" style="width:100%;"></div></center></div></div>
+      </div>
+    </div>
+
+    <br><br><br>
+
+    <!-- ############ SECTION: Conclusion (p-value) ############ -->
+    <div class="row"><div class="col-sm-12">
+      <div class="tight-card accent">
+        <div class="tight-card-title">Conclusion (p-value)</div>
+        <div class="tight-card-body">
+          <p>One way to tell whether we accept or reject the null hypothesis is to observe whether our p-value is below or above the significance level.</p>
+          <div class="row">
+            <div class="col-sm-6">
+              <p><b>Step 1) What is your significance level</b>?</p>
+              <div class="row align-items-center">
+                <div class="col-2 col-sm-1"><p style="font-size: 16px; text-align: right; margin-bottom:0;">\( \alpha = \)</p></div>
+                <div class="col-4 col-sm-3"><input type="number" class="form-control" id="alpha-input" value="0.05" min="0" max="1" step="any" style="width:100%;"></div>
+              </div>
+              <div id="alpha-warning" class="d-none"><span style="color: red;"><p>Error: The value for α must be between 0 and 1.</p></span></div>
+            </div>
+            <div class="col-sm-6"><p><b>Step 2) Final Conclusion</b></p><div id="conclusion-out"></div></div>
+          </div>
+        </div>
+      </div>
+    </div></div>
+
+    <br><br><br>
+
+    <!-- ############ SECTION: Confidence Interval ############ -->
+    <div class="row"><div class="col-sm-12">
+      <div class="tight-card accent">
+        <div class="tight-card-title">Conclusion (Confidence Interval)</div>
+        <div class="tight-card-body">
+          <p>
+            A confidence interval in a 1-sample z-test shows the range of population means that are plausible at the chosen confidence level, and if the
+            hypothesized mean falls outside this range, the null hypothesis is rejected.
+            <br><br>
+            We can also use a confidence interval to tell us whether we should accept or reject the null hypothesis. If the expected value DOES NOT lie within the
+            confidence interval, then we reject the null hypothesis.
+          </p>
+          <div class="row">
+            <div class="col-sm-6">
+              <p><b>Step 1) What is your confidence level</b>?</p>
+              <div class="row align-items-center">
+                <div class="col-2 col-sm-1"><p style="font-size: 16px; text-align: right; margin-bottom:0;">\( \alpha = \)</p></div>
+                <div class="col-4 col-sm-3"><input type="number" class="form-control" id="conf-input" value="0.95" min="0" max="1" step="any" style="width:100%;"></div>
+              </div>
+              <div id="conf-warning" class="d-none"><span style="color: red;"><p>Error: The value for confidence level must be between 0 and 1.</p></span></div>
+            </div>
+            <div class="col-sm-6"><p><b>Step 2) Final Conclusion</b></p><div id="ci-out"></div></div>
+          </div>
+        </div>
+      </div>
+    </div></div>
+
+    <br><br><br><br><br><br><br>
+
+  </div><!-- /rest-of-exercise -->
+
+</div><!-- /container -->
+
+<!-- ############ Intro modal ############ -->
+<div class="modal fade" id="introModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">The '1-Sample z-test'</h4>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p>
+          Suppose that in a made-up country, there is a statistics exam that all high school students take. If a student received a mark in the exam of 140 or over,
+          it means that they are demonstrating a satisfactory level of statistical knowledge as deemed by the education board. Based on data from multiple years, it’s
+          known that the population standard deviation in test scores is 7.5.<br><br>
+          Mr. Han is a statistics teacher who has been testing some new innovative teaching methods. In particular, he wants to test whether the average exam grade for
+          the 25 students in his class is statistically greater than a mark of 140.<br><br>
+          To do this, Mr. Han sets up a hypothesis test. He lets the symbol \(\mu \) represent the average of his class. He sets up the null hypothesis that his class’s
+          average grade is 140. Mathematically, this is written as:<br>
+          <center><p style="font-size: 16px">\( H_{0} : \mu = 140 \)</p></center><br>
+          When setting up the alternate hypothesis, because Mr. Han is interested in seeing if his innovative teaching approach leads to marks greater than 140, we set up a
+          one-sided alternate hypothesis, written mathematically as:
+          <center><p style="font-size: 16px">\( H_{1} : \mu > 140 \)</p></center><br>
+          Mr. Han’s main idea is that we will use our sample of 25 students to determine whether there is evidence to support or reject the null hypothesis.
+        </p>
+        <div class="row">
+          <div class="col-sm-8">
+            <p>
+              <h5><u>How does Mr. Han go about doing this?</u></h5><br>
+              We can use the box model to model the hypothesis test. However, there is a caveat: We do not know all the specific tickets to place in the box. Instead, we
+              will specify the mean and standard deviation to summarise the tickets in the box. From the null hypothesis, we are claiming that the mean of the box is 140.
+              We also know that the population standard deviation (denoted by \(\mu \)) is equal to 7.5. Hence, we place these values into the box.<br><br>
+              Next, we want to turn our attention to the test scores that Mr. Han’s students achieved in the class. Let’s say that the 25 students had an average score of
+              142.843. As there were 25 students, we specify: \(n = 25 \). The average score of 142.843 is referred to as the observed value (OV). With these details drawn,
+              we have completed the box model representation.<br><br>
+            </p>
+          </div>
+          <div class="col-sm-4"><br><div id="intro-example-box-model"></div></div>
+        </div>
+        <p><br>With the box made, Mr. Han can now calculate the test statistic. The calculation is as follows:<br></p>
+        $$\begin{align*} \text{Test-Statistic (TS)} &= \frac{\text{OV} - \text{EV}}{\text{SE}}
+        \\ &= \frac{\text{OV} - \text{EV}}{\frac{\sigma}{\sqrt{n}}}
+        \\ &= \frac{142.843 - 140}{\frac{7.5}{\sqrt{25}}}
+        \\ &= 1.895 \text{ (3 decimal places)} \end{align*}$$
+        <p>With the test statistic found, Mr. Han is ready to find the p-value. Play around with the remainder of this exercise to help Mr. Han find the p-value, and test whether
+           the null hypothesis is supported or rejected.</p>
+      </div>
+      <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button></div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="../shared/js/navbar.js"></script>
+<script src="../shared/js/stats.js"></script>
+<script src="../shared/js/boxmodel.js"></script>
+<script src="../shared/js/plots.js"></script>
+<script src="js/datasets.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

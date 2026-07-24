@@ -4,57 +4,60 @@ The purpose of HTVP is to create bite-sized, interactive experiences that enable
 These webpages are NOT designed to be a replacement for traditional forms of learning (e.g. lectures, textbooks, lab tutorials); instead, they are designed to enhance existing modes of teaching
 by facilitating active learning.
 
-## Accessing HTVP
+## This branch: the JavaScript rewrite
 
-There are three main ways to access the site, each with its own advantages and drawbacks. The table below outlines the primary differences between each approach. The exact installation 
-instructions can be found below.
-  
-| Method | How to Access | Advantages | Disadvantages | Intended Audience |
-|:-------------:|:-------------:|:-------------:|:-------------:|:-------------:|
-| Package Install | R console | • Site is fast. <br> • Site is most up-to-date. | • Technical knowledge needed on how to use the R console. | • Students using R (and RStudio).<br> • People with IT experience |
-| Shinylive | [URL](https://tjelton.github.io/Hypothesis-Tests-Visualised/) | • Simple URL. | • First load is slow (can take around 30 seconds). <br> • Site is slower than the package install option. | • Students studying a course in hypothesis tests without technical experience. |
+This branch (`Javascript-Convert`) is a full rewrite of HTVP as a **dependency-light static website** — plain HTML + hand-written JavaScript, with no webR/shinylive and no build step. Each lesson loads like any normal web page.
 
-### Package Install
+The original **R Shiny / shinylive** implementation is preserved on the [`main`](../../tree/main) and [`shiny_live_version`](../../tree/shiny_live_version) branches (and in git history).
 
-This is the most reliable method of accessing the HTVP site, but this method requires a bit of setup, which can be confusing for people who have never used R or RStudio before.
+### Why the rewrite?
 
-Before you start, you should download R. Below I will have a video tutorial on how to follow these steps, where I will use the RStudio IDE. This is not strictly needed, however, if you want 
-to recreate the exact environment I am using, follow the steps here: https://posit.co/download/rstudio-desktop/
+The shinylive build had a slow cold start (~30s), most of which is the webR/WASM runtime booting R in the browser on every visit. A plain static site removes that floor entirely — the pages load instantly, with no interpreter to boot.
 
-These are the steps to view the site from a package install:
+## Running locally
 
-1. In the console, install the "remotes" package (if you have not previously installed it) by running:
+The site is fully static, so any static file server works. From the repo root:
 
-```
-install.packages("remotes")
+```sh
+python3 -m http.server 8000
+# then open http://localhost:8000/
 ```
 
-2. In the console, run:
+The home page (`index.html`) links to every lesson. (Opening files via `file://` also works, but the CDN assets — Bootstrap and MathJax — need network access either way.)
+
+## Structure
 
 ```
-remotes::install_github("tjelton/Hypothesis-Tests-Visualised")
+/                     -> home page (index.html) + shared site navbar
+/shared/              -> common engine used by every lesson
+    js/stats.js         R-equivalent numerics (pt/qt/dt/pnorm/qnorm, linreg, ...)
+    js/plots.js         SVG re-implementations of the base-R plots
+    js/boxmodel.js      the box-model / sample-cell helpers
+    js/navbar.js        the shared navigation bar (injected on every page)
+    css/style.css       shared theme (Bootswatch Lumen)
+    tests/              stats-accuracy suite (verified against R)
+/t-test-1-sample/     -> one directory per lesson, each with its own
+/t-test-paired/          index.html, js/app.js, js/datasets.js (where needed),
+/box-model-part-1/       and a lesson-chain smoke test in tests/
+...
 ```
 
-3. In the console, run the following to load the package:
+Every lesson references the shared engine with `../shared/…` relative paths, so the same files work both locally and when deployed under a subpath. Edits to `/shared/` affect all lessons at once.
 
+The eleven lessons: box model parts 1–3 and confidence intervals (Fundamentals); 1-sample and proportion z-tests (Z-Tests); t-curve motivation, 1-sample, paired, 2-sample and regression t-tests (T-Tests).
+
+## Fidelity and testing
+
+The JavaScript reproduces R's statistical functions closely (the distribution/quantile routines match R to ~1e-10 or better), and every lesson's displayed numbers were checked against values computed in R.
+
+The `tools/generate_*.R` scripts in `/shared/` and each lesson regenerate the R-computed ground truth used by the tests; they are development tooling and are not needed to run the site. Tests run on stock macOS (no Node required):
+
+```sh
+# shared numeric-accuracy suite
+osascript -l JavaScript shared/tests/run_jxa.js
+# a lesson's end-to-end calculation chain (one per lesson)
+osascript -l JavaScript t-test-1-sample/tests/smoke_jxa.js
 ```
-library(HypothesisTestsVisualised)
-```
-
-4. Finally, to run the app in your console, run:
-
-```
-run_HTVP_app()
-```
-   
-A video showing these steps can be found [here](https://www.youtube.com/watch?v=4BCYAROzi-U)
-
-### Shinylive
-
-Shinylive is a way of using HTVP from your browser. When visiting the URL, it will take a while to load (could take over 30 seconds). It is run through your computer, and so is a good free 
-way of visting the site.
-
-The URL is: [tjelton.github.io/Hypothesis-Tests-Visualised/](https://tjelton.github.io/Hypothesis-Tests-Visualised/)
 
 ## Found an Issue?
 
@@ -68,9 +71,4 @@ Thank you for your interest! At this time, this project is not accepting contrib
 
 ## AI Disclaimer
 
-The project was created with the assistance of generative AI tools. This includes coding and content writing. 
-
-
-
-
-
+The project was created with the assistance of generative AI tools. This includes coding and content writing.
