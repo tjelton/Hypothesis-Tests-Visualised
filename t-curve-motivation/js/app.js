@@ -22,8 +22,15 @@
   const $ = id => document.getElementById(id);
 
   function typeset(el) {
-    if (window.MathJax && window.MathJax.typesetPromise) {
-      window.MathJax.typesetPromise(el ? [el] : undefined).catch(() => {});
+    if (!window.MathJax) return;
+    const nodes = el ? [el] : undefined;
+    const run = () => window.MathJax.typesetPromise(nodes).catch(() => {});
+    // MathJax loads async (deferred script): on first render it may not be ready
+    // yet, so chain onto its startup promise to typeset once it has initialised.
+    if (window.MathJax.startup && window.MathJax.startup.promise) {
+      window.MathJax.startup.promise = window.MathJax.startup.promise.then(run);
+    } else if (window.MathJax.typesetPromise) {
+      run();
     }
   }
 
