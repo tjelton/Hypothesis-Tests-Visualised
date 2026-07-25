@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Chi-Square Goodness of Fit Test — Hypothesis Tests Visualised</title>
+
+  <!-- Bootswatch Lumen (same Bootstrap 5 theme as the Shiny app's bs_theme) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootswatch@5.3.3/dist/lumen/bootstrap.min.css">
+  <link rel="stylesheet" href="../../shared/css/style.css">
+
+  <script>
+    window.MathJax = {
+      tex: { inlineMath: [["\\(", "\\)"]], displayMath: [["$$", "$$"], ["\\[", "\\]"]] },
+      startup: { typeset: true }
+    };
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-chtml.js" defer></script>
+</head>
+<body>
+
+
+<div class="container-fluid px-4">
+
+  <!-- Title strip -->
+  <div class="row">
+    <div class="col-sm-8">
+      <h1>Chi-Square Goodness of Fit Test</h1>
+    </div>
+    <div class="col-sm-4">
+      <button id="learning-text" type="button" class="btn btn-primary w-100" style="color:#fff; font-size:20px; padding:10px 20px;" data-bs-toggle="modal" data-bs-target="#introModal">
+        What is a chi-square goodness of fit test?
+      </button>
+    </div>
+  </div>
+  <br>
+
+  <!-- ############ SECTION: Input Data ############ -->
+  <div class="row">
+    <div class="col-sm-7">
+      <div class="tight-card accent">
+        <div class="tight-card-title">Input Data</div>
+        <div class="tight-card-body">
+          <p>A chi-square goodness of fit test is used with a <b>single qualitative (categorical) variable</b>. It checks whether the
+             counts we observed across the categories are consistent with a hypothesised set of proportions.</p>
+          <div class="accordion" id="data-accordion">
+            <div class="accordion-item">
+              <h2 class="accordion-header">
+                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#data-acc-1">
+                  <b>Step 1) How many categories are there?</b>
+                </button>
+              </h2>
+              <div id="data-acc-1" class="accordion-collapse collapse show" data-bs-parent="#data-accordion">
+                <div class="accordion-body">
+                  <p>Specify how many categories your single qualitative variable has. For example, a six-sided die has <b>6</b> categories
+                     (one for each face).</p>
+                  <div class="row align-items-center">
+                    <div class="col-sm-7"></div>
+                    <div class="col-sm-3">
+                      <p style="font-size: 16px; text-align: right; margin-bottom:0;">Number of categories \( (k) = \)</p>
+                    </div>
+                    <div class="col-sm-2">
+                      <input type="number" class="form-control" id="num-categories" value="6" min="2" step="1">
+                    </div>
+                  </div>
+                  <div id="num-cat-warning" class="d-none">
+                    <br>
+                    <span style="color: red;"><p>Error: The number of categories must be a whole number of at least 2.</p></span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="accordion-item">
+              <h2 class="accordion-header">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#data-acc-2">
+                  <b>Step 2) Enter the observed counts</b>
+                </button>
+              </h2>
+              <div id="data-acc-2" class="accordion-collapse collapse" data-bs-parent="#data-accordion">
+                <div class="accordion-body">
+                  <ul>
+                    <li>For each category, enter the number of observations that fell into it (a whole number \( \geq 0 \)).</li>
+                    <li>The total sample size \( (n) \) is worked out for you as the sum of these counts.</li>
+                  </ul>
+                  <div id="observed-inputs"></div>
+                  <div id="observed-warning" class="d-none">
+                    <br>
+                    <span style="color: red;"><p id="observed-warning-text"></p></span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-5">
+      <div class="tight-card">
+        <div class="tight-card-body" id="data-preview"></div>
+      </div>
+    </div>
+  </div>
+
+  <br><br><br>
+
+  <!-- Rest of the exercise: only displayed once valid data has been entered -->
+  <div id="rest-of-exercise">
+
+    <!-- ############ SECTION: The NULL Hypothesis - Setting up the Box ############ -->
+    <div class="row">
+      <div class="col-sm-7">
+        <div class="tight-card accent">
+          <div class="tight-card-title">The 'NULL' Hypothesis - Setting up the Box</div>
+          <div class="tight-card-body">
+            <p>The null hypothesis states the <b>true proportion</b> we expect in each category. Enter the null proportion for each
+               category below &mdash; these must add up to <b>1</b>. By default they are set to be <b>equal</b> across all categories
+               (i.e. \( \tfrac{1}{k} \) each), which for a die is the "fair die" hypothesis of \( \tfrac{1}{6} \) per face.</p>
+            <div id="null-inputs"></div>
+            <div id="null-sum-warning" class="d-none">
+              <br>
+              <span style="color: red;"><p id="null-sum-warning-text"></p></span>
+            </div>
+            <br>
+            <p>The box model on the right represents this null hypothesis: it holds one labelled ticket per category, arranged so the
+               proportion of each label matches the null proportion you specified.</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-5">
+        <div class="tight-card">
+          <div class="tight-card-body">
+            <center><div id="box-model"></div></center>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <br><br><br>
+
+    <!-- ############ SECTION: The Alternate Hypothesis ############ -->
+    <div class="row">
+      <div class="col-sm-7">
+        <div class="tight-card accent">
+          <div class="tight-card-title">The Alternate Hypothesis</div>
+          <div class="tight-card-body">
+            <p>Unlike some other tests, in a chi-square goodness of fit test there is <b>no choice</b> to make for the alternate
+               hypothesis. The alternate hypothesis is simply that the null hypothesis is wrong &mdash; that is, <b>at least one</b> of
+               the category proportions is not equal to its hypothesised value.</p>
+            <p>We write this as: <i>at least one of the equalities in \( H_0 \) does not hold.</i></p>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-5">
+        <div class="tight-card">
+          <div class="tight-card-body">
+            <p><b>Null Hypothesis</b></p>
+            <div id="null-hyp-out"></div>
+            <p><b>Alternate Hypothesis</b></p>
+            <div id="alt-hyp-out"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <br><br><br>
+
+    <!-- ############ SECTION: Assumptions ############ -->
+    <div class="row">
+      <div class="col-sm-12">
+        <div class="tight-card accent">
+          <div class="tight-card-title">Assumptions</div>
+          <div class="tight-card-body">
+            <p>For the chi-square goodness of fit test to be valid, we need to check the following assumptions:</p>
+            <div class="accordion" id="assumptions-accordion">
+              <div class="accordion-item">
+                <h2 class="accordion-header">
+                  <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#assump-acc-1">
+                    <b>Assumption 1: Independent Observations</b>
+                  </button>
+                </h2>
+                <div id="assump-acc-1" class="accordion-collapse collapse" data-bs-parent="#assumptions-accordion">
+                  <div class="accordion-body">
+                    <p>The first assumption is that the observations are <b>independent</b> of one another. This means that whether one
+                       observation falls into a particular category has <b>no effect</b> on the category any other observation falls into.</p>
+                    <p>For example, if we roll a die 60 times, each roll is independent: the face that comes up on one roll tells us nothing
+                       about the face on the next roll. This assumption would be <b>violated</b> if, say, we counted the same set of
+                       observations twice, or if observations were selected in a way that let one influence another (for instance, asking a
+                       group of friends who tend to agree, rather than a random sample of people).</p>
+                    <p><span style="color: blue;"><b>How do we check?</b></span> <i>We check by investigating the experimental setup</i> &mdash;
+                       how the data was collected &mdash; rather than by looking at the numbers themselves. We ask whether each observation was
+                       gathered separately and at random, so that no observation could influence another.</p>
+                  </div>
+                </div>
+              </div>
+              <div class="accordion-item">
+                <h2 class="accordion-header">
+                  <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#assump-acc-2">
+                    <b>Assumption 2: Expected Counts (Cochran's Rule)</b>
+                  </button>
+                </h2>
+                <div id="assump-acc-2" class="accordion-collapse collapse" data-bs-parent="#assumptions-accordion">
+                  <div class="accordion-body">
+                    <p>The chi-square distribution is only a good approximation when the <b>expected counts</b> are not too small.
+                       <b>Cochran's rule</b> gives a common guideline, which holds when both of the following are true:</p>
+                    <ul>
+                      <li>none of the expected counts are <b>0</b>, and</li>
+                      <li>no more than <b>20%</b> of the expected counts are less than <b>5</b>.</li>
+                    </ul>
+                    <p>The expected count for a category is \( E_i = n \times p_i \), where \( p_i \) is that category's null proportion. The
+                       table below lists them:</p>
+                    <div id="cochran-table"></div>
+                    <div id="cochran-verdict"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <br><br><br>
+
+    <!-- ############ SECTION: Test Statistic ############ -->
+    <div class="row">
+      <div class="col-sm-12">
+        <div class="tight-card accent">
+          <div class="tight-card-title">Test Statistic</div>
+          <div class="tight-card-body">
+            <p>The test statistic measures how far the observed counts are from the counts we would expect under the null hypothesis. It
+               is calculated by working out, for each category, the quantity \( \frac{(O - E)^2}{E} \) (where \( O \) is the observed count
+               and \( E \) is the expected count), and then <b>summing</b> across all categories:</p>
+            $$\chi^2 = \sum_{i=1}^{k} \frac{(O_i - E_i)^2}{E_i}$$
+            <p>The table below carries out this calculation. The final row sums each column; the sum of the last column is the test
+               statistic.</p>
+            <div id="ts-table"></div>
+            <div id="ts-out"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <br><br><br>
+
+    <!-- ############ SECTION: p-value ############ -->
+    <div class="row">
+      <div class="col-sm-6">
+        <div class="tight-card accent">
+          <div class="tight-card-title">p-value</div>
+          <div class="tight-card-body" id="p-value-prelude"></div>
+        </div>
+      </div>
+      <div class="col-sm-6">
+        <div class="tight-card">
+          <div class="tight-card-body">
+            <center><div id="chi-curve-plot" style="width:100%;"></div></center>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <br><br><br>
+
+    <!-- ############ SECTION: Conclusion (p-value) ############ -->
+    <div class="row">
+      <div class="col-sm-12">
+        <div class="tight-card accent">
+          <div class="tight-card-title">Conclusion (p-value)</div>
+          <div class="tight-card-body">
+            <p>One way to tell whether we accept or reject the null hypothesis is to observe whether our p-value is below or above the significance level.</p>
+            <div class="row">
+              <div class="col-sm-6">
+                <p><b>Step 1) What is your significance level</b>?</p>
+                <div class="row align-items-center">
+                  <div class="col-2 col-sm-1">
+                    <p style="font-size: 16px; text-align: right; margin-bottom:0;">\( \alpha = \)</p>
+                  </div>
+                  <div class="col-4 col-sm-3">
+                    <input type="number" class="form-control" id="alpha-input" value="0.05" min="0" max="1" step="any" style="width:100%;">
+                  </div>
+                </div>
+                <div id="alpha-warning" class="d-none">
+                  <span style="color: red;"><p>Error: The value for α must be between 0 and 1.</p></span>
+                </div>
+              </div>
+              <div class="col-sm-6">
+                <p><b>Step 2) Final Conclusion</b></p>
+                <div id="conclusion-out"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <br><br><br><br><br>
+
+  </div><!-- /rest-of-exercise -->
+
+</div><!-- /container -->
+
+<!-- ############ Intro modal ############ -->
+<div class="modal fade" id="introModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">The 'Chi-Square Goodness of Fit Test'</h4>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p>
+          Suppose you have a six-sided die, and you are suspicious that it might not be <b>fair</b>. A fair die should land on each of its
+          six faces with equal probability, that is, a probability of \( \tfrac{1}{6} \) for each face. To investigate, you roll the die
+          <b>60 times</b> and record how many times each face comes up.<br><br>
+          The single qualitative variable here is "the face the die lands on", and it has <b>6 categories</b> (the faces 1 through 6). We
+          set up a <b>null hypothesis</b> that the die is fair &mdash; every face is equally likely:
+        </p>
+        <center><p style="font-size: 16px">\( H_{0} : p_1 = p_2 = p_3 = p_4 = p_5 = p_6 = \tfrac{1}{6} \)</p></center>
+        <p><br>The <b>alternate hypothesis</b> is simply that the die is <i>not</i> fair &mdash; at least one face does not have probability
+           \( \tfrac{1}{6} \):</p>
+        <center><p style="font-size: 16px">\( H_{1} : \) at least one of the above equalities does not hold.</p></center>
+        <div class="row">
+          <div class="col-sm-8">
+            <p><br>
+              We model the null hypothesis with the box on the right. Because a fair die has equal proportions, the box simply holds one
+              ticket for each face: \( 1, 2, 3, 4, 5, 6 \). Drawing a ticket at random is like a single roll of a fair die.<br><br>
+              Now suppose that across the 60 rolls we observed the following counts:
+            </p>
+            <center>
+              <table class="table table-sm table-bordered" style="width:auto; margin:0 auto;">
+                <thead><tr><th>Face</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th></tr></thead>
+                <tbody><tr><td><b>Observed</b></td><td>8</td><td>12</td><td>9</td><td>11</td><td>15</td><td>5</td></tr></tbody>
+              </table>
+            </center>
+          </div>
+          <div class="col-sm-4">
+            <br>
+            <div id="intro-example-box-model"></div>
+          </div>
+        </div>
+        <p><br>
+          If the die were perfectly fair, we would <b>expect</b> each face to appear \( 60 \times \tfrac{1}{6} = 10 \) times. The test
+          statistic measures how far our observed counts are from these expected counts, by summing \( \frac{(O - E)^2}{E} \) over every
+          category:
+        </p>
+        $$\begin{align*} \chi^2 &= \sum_{i=1}^{6} \frac{(O_i - E_i)^2}{E_i}
+        \\ &= \frac{(8-10)^2}{10} + \frac{(12-10)^2}{10} + \frac{(9-10)^2}{10} + \frac{(11-10)^2}{10} + \frac{(15-10)^2}{10} + \frac{(5-10)^2}{10}
+        \\ &= 0.4 + 0.4 + 0.1 + 0.1 + 2.5 + 2.5
+        \\ &= 6 \end{align*}$$
+        <p><br>
+          To turn this into a p-value, we use the <b>chi-square distribution</b>. Its shape is controlled by a single number, the
+          <b>degrees of freedom</b>, which for a goodness of fit test equals the number of categories minus one \( (k - 1) \). Here that is
+          \( 6 - 1 = 5 \). Because a large test statistic means the observed counts are far from the expected counts, we always look at the
+          <b>upper tail</b> &mdash; the area to the right of the test statistic:
+        </p>
+        <center><p style="font-size: 16px">\( p = P(\chi^2_5 > 6) \approx 0.306 \)</p></center>
+        <p><br>
+          This p-value is quite large, so the observed counts are not surprising for a fair die &mdash; we would <b>not</b> reject the null
+          hypothesis. With this example in mind, it is now your turn to use the app to run your own chi-square goodness of fit test. Good
+          luck :)
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="../../shared/js/navbar.js"></script>
+<script src="../../shared/js/stats.js"></script>
+<script src="../../shared/js/boxmodel.js"></script>
+<script src="../../shared/js/plots.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

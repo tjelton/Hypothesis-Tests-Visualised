@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>The Box Model Part 1 — Hypothesis Tests Visualised</title>
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootswatch@5.3.3/dist/lumen/bootstrap.min.css">
+  <link rel="stylesheet" href="../../shared/css/style.css">
+
+  <script>
+    window.MathJax = {
+      tex: { inlineMath: [["\\(", "\\)"]], displayMath: [["$$", "$$"], ["\\[", "\\]"]] },
+      startup: { typeset: true }
+    };
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-chtml.js" defer></script>
+</head>
+<body>
+
+
+<div class="container-fluid px-4">
+
+  <h1>The Box Model Part 1 - What is the Box Model?</h1>
+
+  <!-- ############ SECTION: What is the box model? ############ -->
+  <div class="row">
+    <div class="col-sm-8">
+      <div class="tight-card accent">
+        <div class="tight-card-title">What is the 'box model'?</div>
+        <div class="tight-card-body">
+          <p>
+            The box model, popularised by Freedman, Pisani, and Purves (1978), is a conceptual tool used in statistics to represent chance processes involving
+            random draws. The 'box' contains tickets, each labelled with a possible outcome of a single trial. By imagining drawing tickets at random (with or
+            without replacement), the model helps us simulate and understand the behaviour of random processes.
+            <br><br>
+            This may seem quite abstract, so in this page, we will break down the box model through the lens of flipping a coin. We know that if you flip one coin,
+            that is, we perform one trial of flipping a coin, the coin will land on either a 'head' or a 'tail' (see the box part in the model to the right). Hence,
+            inside the box, we would place two tickets, a 'head' ticket, and a 'tail' ticket. You can think of the box as the population of all possible outcomes of
+            a single trial (in this case, the trial is flipping a coin).
+            <br><br>
+            <i>A sample is where we do more than one trial.</i> For example, if we were flipping a coin, you would flip it multiple times — say, 5 flips — and record
+            the outcome each time. In terms of the box model, this is like drawing 5 tickets at random from the box (with replacement), where each ticket represents
+            either a head or a tail.
+            <br><br>
+            Why use the box model? As we will see soon, it helps us reason about random variation, expected values, and the role of chance in statistics. In particular,
+            examining different hypothesis tests on other pages of this site, where possible, they will be motivated through the lens of the box model. The goal with
+            this is to develop your conceptual understanding of the hypothesis tests we study. However, it is still possible to engage with most of the content in this
+            web app without understanding/studying the box model!
+          </p>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-4">
+      <div class="tight-card"><div class="tight-card-body">
+        <center><div id="example-coin-flip-1"></div></center>
+      </div></div>
+    </div>
+  </div>
+
+  <br><br><br>
+
+  <!-- ############ SECTION: Simulating box-model draws ############ -->
+  <div class="row">
+    <div class="col-sm-5">
+      <div class="tight-card accent">
+        <div class="tight-card-title">Simulating Box-Model Draws</div>
+        <div class="tight-card-body">
+          <p>For the example we are using in this section, consider that our sample involves flipping a coin 5 times and recording the number of heads and tails
+             observed. We could think of our sample as 1 experiment with 5 trials, that is, 5 flips of a coin.
+             <br><br>
+             For example, in one experiment, we might find that after 5 coin flips, we see 3 heads and 2 tails (HHHTT). Perhaps in the next experiment, we got
+             really lucky and had 5 heads (HHHHH).
+             <br><br>
+             Instead of thinking about this as coin flips, another way of thinking about this is that we have a cardboard box with two tickets in it, a 'H' ticket,
+             and a 'T' ticket. Then, the experiment is drawing a ticket from the box, recording whether we saw a 'H' or 'T', placing the ticket back into the box,
+             and then repeating the process until we have drawn from the box 5 times (assuming we are doing 5 trials). This is what we mean by the box model
+             representing a chance process. Each experiment is itself the result of random draws from the box.
+             <br><br>
+             <span style="color: blue;"><b>Your turn!</b></span> In the section to the right, you can simulate taking different samples from the box model that we just
+             described.</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-7">
+      <div class="tight-card accent">
+        <div class="tight-card-title">Demonstration</div>
+        <div class="tight-card-body">
+          <p><b><i>Press 'Simulate' to do 1 experiment of the box-model below.</i></b></p>
+          <div class="row">
+            <div class="col-sm-6">
+              <center>
+                <br><div id="example-coin-flip-2"></div><br><br>
+                <button type="button" class="btn btn-success" style="color:#fff; width:50%;" id="simulate-1">+ Simulate</button>
+                <br><br><br>
+              </center>
+            </div>
+            <div class="col-sm-6"><div id="sim-samples-1"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <br><br><br>
+
+  <!-- ############ SECTION: Representing the problem numerically ############ -->
+  <div class="row">
+    <div class="col-sm-5">
+      <div class="tight-card accent">
+        <div class="tight-card-title">Representing the Problem Numerically</div>
+        <div class="tight-card-body">
+          <p>Using the same box model from before, let's consider that after our experiment, we observed the sample:</p>
+          <div class="row"><div class="col-sm-3"></div><div class="col-sm-6"><center><div id="single-sample-words"></div></center></div><div class="col-sm-3"></div></div>
+          <p>
+            An issue that we will run into is that 'H' and 'T' are not numbers. Ideally, we would like to summarise our sample using a single
+            number, without having to specify the number of heads and tails individually.
+            <br><br>
+            Because of this, let’s change the tickets in our box to the numbers '1' and '0'. We can say that the number '1' represents drawing a head, and the
+            number '0' represents drawing a tail. Under the same example as before, that means we drew 2 x '1' tickets and 3 x '0' tickets:
+          </p>
+          <div class="row"><div class="col-sm-3"></div><div class="col-sm-6"><center><div id="single-sample-numbers"></div></center></div><div class="col-sm-3"></div></div>
+          <p>
+            Now that the tickets are numeric, we can model the sample using the sum or the mean:
+          </p>
+          <ul>
+            <li>Sum: 2 x 1 tickets + 3 x 0 tickets = 2 + 0 = 2</li>
+            <li>Mean: (2 x 1 tickets + 3 x 0 tickets)/5 = (2 + 0)/5 = 0.4</li>
+          </ul>
+          <p>
+            In practice, it doesn’t matter whether we model the sample using the sum or mean, as long as we are consistent throughout.
+            <br><br>
+            <span style="color: blue;"><b>Your turn!</b></span> In the section to the right, you can simulate taking different samples from the
+            box model with numeric tickets. You can choose whether you summarise the samples using the sum or the mean.
+          </p>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-7">
+      <div class="tight-card accent">
+        <div class="tight-card-title">Demonstration</div>
+        <div class="tight-card-body">
+          <div class="row">
+            <div class="col-sm-8"><p><b><i>Press 'Simulate' to do 1 experiment of the box-model below.</i></b></p></div>
+            <div class="col-sm-4">
+              <label class="form-label mb-1">Model using sum or mean:</label>
+              <div class="form-check"><input class="form-check-input" type="radio" name="demo_sum_mean" id="demo-sum" value="Sum" checked><label class="form-check-label" for="demo-sum">Sum</label></div>
+              <div class="form-check"><input class="form-check-input" type="radio" name="demo_sum_mean" id="demo-mean" value="Mean"><label class="form-check-label" for="demo-mean">Mean</label></div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-sm-6">
+              <center>
+                <br><div id="coin-flip-numeric-box"></div><br><br>
+                <button type="button" class="btn btn-success" style="color:#fff; width:50%;" id="simulate-2">+ Simulate</button>
+                <br><br><br>
+              </center>
+            </div>
+            <div class="col-sm-6"><div id="sim-samples-2"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <br><br><br>
+
+  <!-- ############ SECTION: Testing your own box ############ -->
+  <div class="row">
+    <div class="col-sm-5">
+      <div class="tight-card accent">
+        <div class="tight-card-title">Testing Your Own Box</div>
+        <div class="tight-card-body">
+          <p>
+            The example box model that we have been using so far was flipping a coin 5 times, but you can create any box model that you want!
+            <br><br>
+            For example, we might be interested in modelling the number of times a die lands on the '1' face after 20 rolls of a die. If interested in that example,
+            you would have one '1' ticket in the box, and five '0' tickets (to account for the other five sides on the die).
+            <br><br>
+            Below you can experiment with making your own box model and then generating samples from it. This time, we will not show you the actual tickets that were
+            drawn for each sample, but rather the mean or sum of the tickets (depending on whether you are modelling the sample using the mean or sum).
+          </p>
+          <div class="accordion" id="own-box-accordion">
+            <div class="accordion-item">
+              <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#own-step-1"><b>Step 1) Tickets</b></button></h2>
+              <div id="own-step-1" class="accordion-collapse collapse" data-bs-parent="#own-box-accordion"><div class="accordion-body">
+                <p>First, we need to specify the tickets that we will be adding to the box.</p>
+                <p>In the text box below, enter the tickets that you wish to place into the box. Only <i>numbers</i> can be
+                   added, and <i>each ticket should be seperated by a comma</i>. For example, if you want to have 1x1 ticket
+                   and 6x0 tickets in the box, enter <i>1,0,0,0,0,0</i>.</p>
+                <textarea class="form-control" id="box-tickets-entry" style="width:100%;">1,0,0,0,0,0</textarea>
+                <div class="row mt-2"><div class="col-sm-8"></div><div class="col-sm-4"><button type="button" class="btn btn-success w-100" style="color:#fff;" id="submit-tickets">Set Tickets</button></div></div>
+                <div id="tickets-error" class="d-none"><span style="color: red;"><p>Error: One or move values that you added cannot be interpreted. Please carefully check what you entered. You must enter at least 2 valid tickets. Setting contents of the box to 1,0,0,0.</p></span></div>
+              </div></div>
+            </div>
+            <div class="accordion-item">
+              <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#own-step-2"><b>Step 2) Number of Draws</b></button></h2>
+              <div id="own-step-2" class="accordion-collapse collapse" data-bs-parent="#own-box-accordion"><div class="accordion-body">
+                <p>Second, we need to specify the number of draws (with replacement) that we will be taking from the box:</p>
+                <input type="number" class="form-control" id="number-of-draws" value="20" min="1">
+                <div id="draws-error" class="d-none"><span style="color: red;"><p>Error: The value for the 'number of draws' must be an integer greater than or equal to 1. Setting value to 25 until the error is resolved.</p></span></div>
+              </div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-7">
+      <div class="tight-card accent">
+        <div class="tight-card-title">Demonstration</div>
+        <div class="tight-card-body">
+          <div class="row">
+            <div class="col-sm-8"><p><b><i>Press 'Simulate' to do 1 experiment of the box-model below.</i></b></p></div>
+            <div class="col-sm-4">
+              <label class="form-label mb-1">Model using sum or mean:</label>
+              <div class="form-check"><input class="form-check-input" type="radio" name="box_sum_mean" id="box-sum" value="1" checked><label class="form-check-label" for="box-sum">Sum</label></div>
+              <div class="form-check"><input class="form-check-input" type="radio" name="box_sum_mean" id="box-mean" value="2"><label class="form-check-label" for="box-mean">Mean</label></div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-sm-6">
+              <center>
+                <br><div id="own-box-model"></div><br><br>
+                <button type="button" class="btn btn-success" style="color:#fff; width:50%;" id="simulate-own">+ Simulate</button>
+                <br><br><br>
+              </center>
+            </div>
+            <div class="col-sm-6"><div id="sim-samples-own"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <br><br><br>
+
+</div><!-- /container -->
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="../../shared/js/navbar.js"></script>
+<script src="../../shared/js/boxmodel.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
