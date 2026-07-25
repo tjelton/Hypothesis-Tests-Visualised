@@ -7,6 +7,15 @@
 
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootswatch@5.3.3/dist/lumen/bootstrap.min.css">
   <link rel="stylesheet" href="../shared/css/style.css">
+  <style>
+    /* Columns that stack two tight-cards: .tight-card's height:100% (shared/css/style.css)
+       resolves against the column, so each stacked card was independently stretching to the
+       full column height instead of sharing it, doubling the whitespace. Only let the last
+       card grow to absorb the row's stretched height. */
+    .stacked-cards { display: flex; flex-direction: column; gap: 1rem; }
+    .stacked-cards > .tight-card { height: auto; }
+    .stacked-cards > .tight-card:last-child { flex: 1 1 auto; }
+  </style>
 
   <script>
     window.MathJax = {
@@ -144,7 +153,7 @@
         </div>
       </div>
     </div>
-    <div class="col-sm-5">
+    <div class="col-sm-5 stacked-cards">
       <div class="tight-card"><div class="tight-card-body"><center><div id="box-model"></div></center></div></div>
       <div class="tight-card"><div class="tight-card-body"><div id="box-stats"></div></div></div>
     </div>
@@ -175,7 +184,7 @@
         </div>
       </div>
     </div>
-    <div class="col-sm-7">
+    <div class="col-sm-7 stacked-cards">
       <div class="tight-card"><div class="tight-card-body"><center><div id="hist-clt" style="width:100%;"></div></center></div></div>
       <div class="tight-card"><div class="tight-card-body"><div id="clt-satisfied"></div></div></div>
     </div>
@@ -225,7 +234,7 @@
         </div>
       </div>
     </div>
-    <div class="col-sm-6">
+    <div class="col-sm-6 stacked-cards">
       <div class="tight-card"><div class="tight-card-body"><center><div id="shaded-plot" style="width:100%;"></div></center></div></div>
       <div class="tight-card"><div class="tight-card-body"><div id="prob-answer"></div></div></div>
     </div>

@@ -100,6 +100,14 @@ const Stats = (() => {
     return (x < a + 1) ? 1 - gser(a, x) : gcf(a, x);
   }
 
+  // P(a, x) = 1 - Q(a, x), computed directly (never as 1 - gammq) so the far
+  // lower tail stays accurate instead of cancelling against 1.
+  function gammp(a, x) {
+    if (x < 0) return NaN;
+    if (x === 0) return 0;
+    return (x < a + 1) ? gser(a, x) : 1 - gcf(a, x);
+  }
+
   function erfc(x) {
     return x >= 0 ? gammq(0.5, x * x) : 2 - gammq(0.5, x * x);
   }
@@ -206,6 +214,31 @@ const Stats = (() => {
       t = tNew;
     }
     return t;
+  }
+
+  // ---------- chi-square distribution ----------
+  // Density (R's dchisq). At x = 0 the density is 0 for df > 2, 0.5 for df = 2,
+  // and +Inf for df < 2 (a spike the plotting code samples away from).
+  function dchisq(x, df) {
+    if (x < 0) return 0;
+    if (x === 0) return df < 2 ? Infinity : (df === 2 ? 0.5 : 0);
+    const a = df / 2;
+    return Math.exp((a - 1) * Math.log(x) - x / 2 - a * Math.log(2) - lgamma(a));
+  }
+
+  // Lower-tail CDF (R's pchisq(x, df)). Equals the regularized lower incomplete
+  // gamma P(df/2, x/2) = 1 - Q(df/2, x/2). For an upper-tail p-value use
+  // pchisqUpper, which computes Q directly and keeps precision in the far tail.
+  function pchisq(x, df) {
+    if (x <= 0) return 0;
+    return gammp(df / 2, x / 2);
+  }
+
+  // Upper-tail probability P(X > x) = Q(df/2, x/2). The chi-square goodness-of-fit
+  // p-value is this evaluated at the test statistic (df = categories - 1).
+  function pchisqUpper(x, df) {
+    if (x <= 0) return 1;
+    return gammq(df / 2, x / 2);
   }
 
   // ---------- basic sample statistics ----------
@@ -371,7 +404,7 @@ const Stats = (() => {
 
   return {
     lgamma, pbeta, pnorm, dnorm, qnorm, erfc,
-    dt, pt, qt,
+    dt, pt, qt, dchisq, pchisq, pchisqUpper,
     mean, sd, popsd, rnorm, linreg, quantileType7, fivenum, ppoints,
     roundR, formatR, roundStr, prettyBreaks
   };

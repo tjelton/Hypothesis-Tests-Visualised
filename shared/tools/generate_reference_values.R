@@ -25,6 +25,19 @@ dt_cases <- do.call(rbind, lapply(dfs, function(df) {
 }))
 qnorm_cases <- data.frame(p = p_vals, value = qnorm(p_vals))
 
+# chi-square: density (dchisq) and lower/upper tail CDF (pchisq). Degrees of
+# freedom cover the goodness-of-fit range (k - 1 for small k) plus larger df.
+chisq_x <- c(0.001, 0.1, 0.5, 1, 2, 3.841459, 5, 6, 7.5, 10, 15, 20, 30, 50, 80)
+chisq_df <- c(1, 2, 3, 4, 5, 6, 9, 10, 19, 29, 49)
+
+pchisq_cases <- do.call(rbind, lapply(chisq_df, function(df) {
+  data.frame(x = chisq_x, df = df, value = pchisq(chisq_x, df),
+             upper = pchisq(chisq_x, df, lower.tail = FALSE))
+}))
+dchisq_cases <- do.call(rbind, lapply(chisq_df, function(df) {
+  data.frame(x = chisq_x, df = df, value = dchisq(chisq_x, df))
+}))
+
 # Reference sample statistics computed the way the Shiny modules do.
 set.seed(1)
 han <- rnorm(25, mean = 142, sd = 5)
@@ -42,6 +55,7 @@ sample_stats <- list(
 
 out <- list(
   pt = pt_cases, qt = qt_cases, dt = dt_cases, qnorm = qnorm_cases,
+  pchisq = pchisq_cases, dchisq = dchisq_cases,
   sample_stats = sample_stats
 )
 write(toJSON(out, digits = NA, dataframe = "columns", auto_unbox = TRUE),

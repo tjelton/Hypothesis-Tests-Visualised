@@ -31,6 +31,10 @@
       ["t-test-paired", "Paired T-Test"],
       ["t-test-2-sample", "2-Sample T-Test"],
       ["t-test-regression", "Regression T-Test"]
+    ]],
+    ["Chi-Square Tests", [
+      ["chi-square-goodness-of-fit", "Goodness of Fit"],
+      ["chi-square-test-of-independence", "Test of Independence"]
     ]]
   ];
 

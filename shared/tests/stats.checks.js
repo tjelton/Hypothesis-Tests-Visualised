@@ -55,6 +55,25 @@ function runStatsChecks(Stats, ref, hanValues, log) {
                 "qnorm(" + ref.qnorm.p[i] + ")");
   }
 
+  // pchisq: lower-tail CDF and upper-tail p-value (the chi-square goodness-of-fit
+  // p-value is the upper tail evaluated at the test statistic).
+  if (ref.pchisq) {
+    for (let i = 0; i < ref.pchisq.x.length; i++) {
+      assertClose(Stats.pchisq(ref.pchisq.x[i], ref.pchisq.df[i]), ref.pchisq.value[i], 1e-10,
+                  "pchisq(" + ref.pchisq.x[i] + ", df=" + ref.pchisq.df[i] + ")");
+      assertClose(Stats.pchisqUpper(ref.pchisq.x[i], ref.pchisq.df[i]), ref.pchisq.upper[i], 1e-10,
+                  "pchisqUpper(" + ref.pchisq.x[i] + ", df=" + ref.pchisq.df[i] + ")");
+    }
+  }
+
+  // dchisq: density used to draw the plotted chi-square curve.
+  if (ref.dchisq) {
+    for (let i = 0; i < ref.dchisq.x.length; i++) {
+      assertClose(Stats.dchisq(ref.dchisq.x[i], ref.dchisq.df[i]), ref.dchisq.value[i], 1e-12,
+                  "dchisq(" + ref.dchisq.x[i] + ", df=" + ref.dchisq.df[i] + ")");
+    }
+  }
+
   // dnorm: standard-normal density (exact closed form) used to draw the normal
   // reference curve in the t-curve lesson. Spot-checked against R's dnorm().
   assertClose(Stats.dnorm(0), 0.3989422804014327, 1e-14, "dnorm(0)");
