@@ -51,7 +51,8 @@ body {
 #qq-plot svg,
 #assump-boxplot svg,
 #assump-hist svg,
-#t-curve-plot svg {
+#t-curve-plot svg,
+#chi-curve-plot svg {
   display: block;
   max-width: 100%;
   height: auto;

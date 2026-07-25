@@ -440,6 +440,50 @@ const Plots = (() => {
     return shadedCurveSVG(x => Stats.dnorm(x), testStat, altChoice, opts);
   }
 
+  // ---------- shaded chi-square curve (goodness-of-fit p-value) ----------
+  // A chi-square density on [0, hi] for the given df, shading the UPPER tail
+  // above the test statistic (a GoF test is always right-tailed), with a blue
+  // dashed marker + label at the test statistic. The x-range covers the bulk of
+  // the distribution (mean +/- a few sd) and always the test statistic. The
+  // curve is sampled away from x = 0 so the df <= 2 spike doesn't dominate the
+  // vertical scale.
+  function shadedChiSquareCurveSVG(df, testStat, { width = 560, height = 325, cssHeight = null } = {}) {
+    const mean = df, sd = Math.sqrt(2 * df);
+    let hi = Math.max(mean + 4 * sd, 10);
+    if (Number.isFinite(testStat) && testStat > 0) hi = Math.max(hi, testStat * 1.15);
+
+    const N = 1000, x0 = hi / N, xs = [], ys = [];
+    for (let i = 0; i < N; i++) {
+      const xv = x0 + (hi - x0) * i / (N - 1);
+      xs.push(xv);
+      ys.push(Stats.dchisq(xv, df));
+    }
+    const yMax = Math.max(...ys);
+
+    const f = makeFrame(width, height, {
+      xdomain: [0, hi], ydomain: [0, yMax],
+      margins: { top: 10, right: 12, bottom: 40, left: 12 },
+      yAxis: false, xlab: "", ylab: "", main: ""
+    });
+
+    const parts = [];
+    if (Number.isFinite(testStat) && testStat > 0 && testStat < hi) {
+      const pts = [];
+      for (let i = 0; i < N; i++) if (xs[i] >= testStat) pts.push(`${f.sx(xs[i])},${f.sy(ys[i])}`);
+      if (pts.length) {
+        const first = pts[0].split(",")[0], last = pts[pts.length - 1].split(",")[0];
+        parts.push(`<polygon points="${first},${f.sy(0)} ${pts.join(" ")} ${last},${f.sy(0)}" fill="rgba(255,0,0,0.5)" stroke="none"/>`);
+      }
+      parts.push(`<line x1="${f.sx(testStat)}" y1="${f.sy(0)}" x2="${f.sx(testStat)}" y2="${f.sy(yMax)}" stroke="blue" stroke-dasharray="6,5"/>`);
+      parts.push(`<text x="${f.sx(testStat) + 4}" y="${f.sy(yMax * 0.6)}" font-size="13" fill="blue" style="${FONT}">${fmtTick(Stats.roundR(testStat, 2))}</text>`);
+    }
+    const curve = xs.map((xv, i) => `${f.sx(xv)},${f.sy(ys[i])}`).join(" ");
+    parts.push(`<polyline points="${curve}" fill="none" stroke="black" stroke-width="2"/>`);
+
+    f.parts.push(...parts);
+    return svgWrap(width, height, f.parts, cssHeight);
+  }
+
   // ---------- t-curve vs normal overlay (t-curve motivation, Demo 1) ----------
   // Ports the R renderPlot: x in [-4, 4], t-density (black solid), and the
   // standard normal (red dashed) when `showNormal`. Only an x-axis is drawn
@@ -475,8 +519,8 @@ const Plots = (() => {
   }
 
   return { histogramSVG, densityHistogramSVG, boxplotSVG, boxplotPairSVG, scatterSVG, qqPlotSVG,
-           shadedCurveSVG, shadedTCurveSVG, shadedNormalCurveSVG, shadedNormalRegionSVG,
-           densityOverlaySVG, ciPlotSVG, boxplotStats };
+           shadedCurveSVG, shadedTCurveSVG, shadedNormalCurveSVG, shadedChiSquareCurveSVG,
+           shadedNormalRegionSVG, densityOverlaySVG, ciPlotSVG, boxplotStats };
 })();
 
 if (typeof module !== "undefined" && module.exports) module.exports = Plots;
