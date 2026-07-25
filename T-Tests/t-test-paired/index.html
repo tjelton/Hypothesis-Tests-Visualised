@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Paired t-Test — Hypothesis Tests Visualised</title>
+
+  <!-- Bootswatch Lumen (same Bootstrap 5 theme as the Shiny app's bs_theme) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootswatch@5.3.3/dist/lumen/bootstrap.min.css">
+  <link rel="stylesheet" href="../../shared/css/style.css">
+
+  <script>
+    window.MathJax = {
+      tex: { inlineMath: [["\\(", "\\)"]], displayMath: [["$$", "$$"], ["\\[", "\\]"]] },
+      startup: { typeset: true }
+    };
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-chtml.js" defer></script>
+</head>
+<body>
+
+
+<div class="container-fluid px-4">
+
+  <!-- Title strip -->
+  <div class="row">
+    <div class="col-sm-8">
+      <h1>Paired t-Test</h1>
+    </div>
+    <div class="col-sm-4">
+      <button id="learning-text" type="button" class="btn btn-primary w-100" style="color:#fff; font-size:20px; padding:10px 20px;" data-bs-toggle="modal" data-bs-target="#introModal">
+        What is a paired t-test?
+      </button>
+    </div>
+  </div>
+  <br>
+
+  <!-- ############ SECTION: Input Data ############ -->
+  <div class="row">
+    <div class="col-sm-7">
+      <div class="tight-card accent">
+        <div class="tight-card-title">Input Sample Data</div>
+        <div class="tight-card-body">
+          <p>In a paired t-test, we are dealing with paired data. This is where each element in our study has a measurement recorded under two different
+             conditions. We can then find the difference between the paired data to reduce the values into a single data sample. But before doing this, we first
+             have to choose a data set to analyse.</p>
+          <br>
+          <p><b>What data source will you be using?</b></p>
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="data_upload_choice" id="choice-pre" value="pre_uploaded">
+            <label class="form-check-label" for="choice-pre">Pre-uploaded Data</label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="data_upload_choice" id="choice-manual" value="manually_specified">
+            <label class="form-check-label" for="choice-manual">Manually Specified Data</label>
+          </div>
+
+          <!-- Pre-uploaded data controls -->
+          <div id="pre-uploaded-block" class="d-none">
+            <br>
+            <div class="mb-2">
+              <label class="form-label" for="dataset-select"><b>Which data set would you like to analyse?</b></label>
+              <select class="form-select" id="dataset-select"></select>
+            </div>
+            <p><i>Warning: Other than the 'SleepStudy' data set, the other data sets are synthetic (made up) data.</i></p>
+            <p>Now we need to select what data we want to be in condition 1, and what to be in condition 2. The paired difference will be condition 2 - condition 1.</p>
+            <br>
+            <div class="row">
+              <div class="col-sm-6 mb-3">
+                <label class="form-label" for="condition-1-select"><b>Condition 1:</b></label>
+                <select class="form-select" id="condition-1-select"></select>
+              </div>
+              <div class="col-sm-6 mb-3">
+                <label class="form-label" for="condition-2-select"><b>Condition 2:</b></label>
+                <select class="form-select" id="condition-2-select"></select>
+              </div>
+            </div>
+            <div id="condition-same-warning" class="d-none">
+              <span style="color: red;"><p>Warning: Condition 1 and condition 2 should be different.</p></span>
+            </div>
+          </div>
+
+          <!-- Manual entry controls -->
+          <div id="manual-block" class="d-none">
+            <br>
+            <p><b>Enter data into the text box below for each sample.</b></p>
+            <ul>
+              <li>All values must be numeric, and numbers should contain no spaces or any characters other than a '.' for a decimal place.</li>
+              <li>Each value must be on it's own line, or comma seperated.</li>
+              <li>As this is paired data, there must be the same number of values in each textbox.</li>
+              <li>Don't forget to press 'Upload' once you are finished!</li>
+            </ul>
+            <br>
+            <p><b>Condition 1:</b></p>
+            <textarea class="form-control" id="manual-textarea-1" rows="3" style="width:100%;"></textarea>
+            <p class="mt-2"><b>Condition 2:</b></p>
+            <textarea class="form-control" id="manual-textarea-2" rows="3" style="width:100%;"></textarea>
+            <div class="row mt-2">
+              <div class="col-sm-8"></div>
+              <div class="col-sm-4">
+                <button type="button" class="btn btn-success w-100" style="color:#fff;" id="upload-btn">Upload</button>
+              </div>
+            </div>
+            <div id="manual-unequal-warning" class="d-none">
+              <br>
+              <span style="color: red;"><p id="manual-unequal-warning-text"></p></span>
+            </div>
+            <div id="manual-unique-warning" class="d-none">
+              <br>
+              <span style="color: red;"><p>Warning: You must have at least two unique values in your manually specified data.</p></span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-5">
+      <div class="tight-card">
+        <div class="tight-card-body">
+          <!-- Radio to choose which series to plot (only shown once data exists) -->
+          <div id="plot-choice-block" class="d-none mb-2">
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="radio" name="data_to_plot" id="plot-diff" value="Paired_Difference" checked>
+              <label class="form-check-label" for="plot-diff">Paired Difference</label>
+            </div>
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="radio" name="data_to_plot" id="plot-c1" value="Condition_1">
+              <label class="form-check-label" for="plot-c1">Condition 1</label>
+            </div>
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="radio" name="data_to_plot" id="plot-c2" value="Condition_2">
+              <label class="form-check-label" for="plot-c2">Condition 2</label>
+            </div>
+          </div>
+          <div id="data-preview">
+            <span style="color: blue;"><p>In order to proceed, you must select some data to act as your sample.</p></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <br><br><br>
+
+  <!-- Rest of the exercise: only displayed once data has been specified -->
+  <div id="rest-of-exercise" class="d-none">
+
+    <!-- ############ SECTION: The NULL Hypothesis - Setting up the Box ############ -->
+    <div class="row">
+      <div class="col-sm-7">
+        <div class="tight-card accent">
+          <div class="tight-card-title">The 'NULL' Hypothesis - Setting up the Box</div>
+          <div class="tight-card-body">
+            <p>We are going to use the box model to represent our null hypothesis.</p>
+            <div class="accordion" id="null-accordion">
+              <div class="accordion-item">
+                <h2 class="accordion-header">
+                  <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#null-acc-1">
+                    <b>Step 1) Specify NULL Hypothesis</b>
+                  </button>
+                </h2>
+                <div id="null-acc-1" class="accordion-collapse collapse show" data-bs-parent="#null-accordion">
+                  <div class="accordion-body">
+                    <p>
+                      The only things we need to do to set up the box in this test is to specify the sample data (which we have already done) and specify
+                      the null hypothesis.<br><br>
+
+                      For a paired t-test, the null hypothesis is that the difference between the average of condition 2 (\(\mu_2\)) and condition 1
+                      (\(\mu_1\)) is equal to some value we specify. We write \(\mu_2 - \mu_1 \) as \(\mu_d\), where \(d\) stands for
+                      difference.<br><br>
+
+                      Hence, the null hypothesis is that the average population mean difference between condition 2 and condition 1 is equal to
+                      some value which we set below.
+                    </p>
+                    <div class="row">
+                      <div class="col-sm-7"></div>
+                      <div class="col-sm-2">
+                        <p style="font-size: 16px; text-align: right;">\( H_0: \) \(\mu_d = \)</p>
+                      </div>
+                      <div class="col-sm-3">
+                        <input type="number" class="form-control" id="null-mu" value="0" step="any">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="accordion-item">
+                <h2 class="accordion-header">
+                  <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#null-acc-2">
+                    <b>Extra Points</b>
+                  </button>
+                </h2>
+                <div id="null-acc-2" class="accordion-collapse collapse" data-bs-parent="#null-accordion">
+                  <div class="accordion-body">
+                    <p>In case you are confused about where all the values in the diagram have come from, these come from the sample data that you previously
+                       specified. In particular:</p>
+                    <ul>
+                      <li>\(s \) represents the sample standard deviation. Unlike the 1-sample z-test which requires that the population standard
+                          deviation is known, the 1-sample t-test removes this assumption, instead using the standard deviation of the sample and then later
+                          the t-distribution to determine the p-value.</li>
+                      <li>The value for \(n \) comes from the number of values in the sample chosen above.</li>
+                      <li>The observed value (\(\text{OV} \)) comes from the mean of the sample chosen above.</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-5">
+        <div class="tight-card">
+          <div class="tight-card-body">
+            <center><div id="box-model"></div></center>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <br><br><br>
+
+    <!-- ############ SECTION: The Alternate Hypothesis ############ -->
+    <div class="row">
+      <div class="col-sm-7">
+        <div class="tight-card accent">
+          <div class="tight-card-title">The Alternate Hypothesis</div>
+          <div class="tight-card-body">
+            <p>Specify what type of alternate hypothesis you will be using below:</p>
+            <br>
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="alternate_hypothesis_choice" id="alt-1" value="1" checked>
+              <label class="form-check-label" for="alt-1">Two Sided</label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="alternate_hypothesis_choice" id="alt-2" value="2">
+              <label class="form-check-label" for="alt-2">One Sided (greater than)</label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="alternate_hypothesis_choice" id="alt-3" value="3">
+              <label class="form-check-label" for="alt-3">One Sided (less than)</label>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-5">
+        <div class="tight-card">
+          <div class="tight-card-body">
+            <p><b>Null Hypothesis</b></p>
+            <div id="null-hyp-out"></div>
+            <p><b>Alternate Hypothesis</b></p>
+            <div id="alt-hyp-out"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <br><br><br>
+
+    <!-- ############ SECTION: Assumptions ############ -->
+    <div class="row">
+      <div class="col-sm-12">
+        <div class="tight-card accent">
+          <div class="tight-card-title">Assumptions</div>
+          <div class="tight-card-body">
+            <p>For the hypothesis test to be valid, we need to check the following assumptions:</p>
+            <div class="accordion" id="assumptions-accordion">
+              <div class="accordion-item">
+                <h2 class="accordion-header">
+                  <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#assump-acc-1">
+                    <b>Assumption 1: Independent and Randomly Chosen Sample</b>
+                  </button>
+                </h2>
+                <div id="assump-acc-1" class="accordion-collapse collapse" data-bs-parent="#assumptions-accordion">
+                  <div class="accordion-body">
+                    <p>The first assumption is that our sample is <b>independent and randomly chosen</b>.</p>
+                    <p><span style="color: blue;"><b>How do we check?</b></span> <i>We check by investigating the experimental setup.</i><br><br>
+                       For example, consider we were investigating data for a sample involving human participants. We could read the accompanying scientific
+                       publication to understand the methodology they used to gather the people in the sample.</p>
+                  </div>
+                </div>
+              </div>
+              <div class="accordion-item">
+                <h2 class="accordion-header">
+                  <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#assump-acc-2">
+                    <b>Assumption 2: Normality</b>
+                  </button>
+                </h2>
+                <div id="assump-acc-2" class="accordion-collapse collapse" data-bs-parent="#assumptions-accordion">
+                  <div class="accordion-body">
+                    <p>The second assumption is that the sample means follow a normal distribution.</p>
+                    <p><span style="color: blue;"><b>How do we check?</b></span>
+                       <br><br>
+                       <b>Idea 1: Large n</b><br>
+                       Recall that the central limit theorem tells us that if we take a sufficiently large number of draws from the box, then the sample
+                       means will approximately follow a normal distribution. If confused, please do the exerice at Fundamentals &gt; Box Model Part 2.
+                    </p>
+                    <ul>
+                      <li>Recall that the central limit theorem tells us that if we take a sufficiently large number of draws from the box, then the sample
+                          means will approximately follow a normal distribution. If confused, please do the exerice at Fundamentals &gt; Box Model Part 2.</li>
+                      <li>One way to gauge whether the central limit theorem holds or not is to see how large our sample is (this is indicated by the "n" in
+                          the box model above).</li>
+                      <li>Many textbooks will say that you can say that you can use the rule of thumb that the central limit theorem will apply if we have 30
+                          or more draws. BEWARE - this is not always true! If the distribution of the values is very skewed, you will need much more than 30 draws!</li>
+                    </ul>
+                    <br>
+                    <p>
+                      <b>Idea 2: QQ-plot, Boxplot and Histogram</b><br>
+                      We learnt that if our data has some specific properties, then required a smaller value for n for the CLT to apply. In particular...
+                    </p>
+                    <ul>
+                      <li>(QQ-plot) If the sample closely follows the QQ line, it suggests the data is normally distribued. Data that is normally distributed
+                          requires far less point for the CLT to apply.</li>
+                      <li>(Boxplot and Histogram) If the data is symmetric, less points are required for the CLT. These plots can also be used to indicate whether the
+                          data appears to be normally distributed.</li>
+                    </ul>
+                    <div class="row">
+                      <div class="col-sm-4"><div id="qq-plot"></div></div>
+                      <div class="col-sm-4"><div id="assump-boxplot"></div></div>
+                      <div class="col-sm-4"><div id="assump-hist"></div></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <br><br><br>
+
+    <!-- ############ SECTION: Test Statistic ############ -->
+    <div class="row">
+      <div class="col-sm-12">
+        <div class="tight-card accent">
+          <div class="tight-card-title">Test Statistic</div>
+          <div class="tight-card-body">
+            <div class="row">
+              <div class="col-sm-6">
+                <p><b>Step 1) Calculate Expected Value (SE) and Standard Error (SE)</b></p>
+                <div id="ev-se-out"></div>
+              </div>
+              <div class="col-sm-6">
+                <p><b>Step 2) Test Statistic Calculation</b></p>
+                <div id="ts-out"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <br><br><br>
+
+    <!-- ############ SECTION: p-value ############ -->
+    <div class="row">
+      <div class="col-sm-6">
+        <div class="tight-card accent">
+          <div class="tight-card-title">p-value</div>
+          <div class="tight-card-body" id="p-value-prelude"></div>
+        </div>
+      </div>
+      <div class="col-sm-6">
+        <div class="tight-card">
+          <div class="tight-card-body">
+            <center><div id="t-curve-plot" style="width:100%;"></div></center>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <br><br><br>
+
+    <!-- ############ SECTION: Conclusion (p-value) ############ -->
+    <div class="row">
+      <div class="col-sm-12">
+        <div class="tight-card accent">
+          <div class="tight-card-title">Conclusion (p-value)</div>
+          <div class="tight-card-body">
+            <p>One way to tell whether we accept or reject the null hypothesis is to observe whether our p-value is below or above the significance level.</p>
+            <div class="row">
+              <div class="col-sm-6">
+                <p><b>Step 1) What is your significance level</b>?</p>
+                <div class="row align-items-center">
+                  <div class="col-2 col-sm-1">
+                    <p style="font-size: 16px; text-align: right; margin-bottom:0;">\( \alpha = \)</p>
+                  </div>
+                  <div class="col-4 col-sm-3">
+                    <input type="number" class="form-control" id="alpha-input" value="0.05" min="0" max="1" step="any" style="width:100%;">
+                  </div>
+                </div>
+                <div id="alpha-warning" class="d-none">
+                  <span style="color: red;"><p>Error: The value for α must be between 0 and 1.</p></span>
+                </div>
+              </div>
+              <div class="col-sm-6">
+                <p><b>Step 2) Final Conclusion</b></p>
+                <div id="conclusion-out"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <br><br><br>
+
+    <!-- ############ SECTION: Conclusion (Confidence Interval) ############ -->
+    <div class="row">
+      <div class="col-sm-12">
+        <div class="tight-card accent">
+          <div class="tight-card-title">Conclusion (Confidence Interval)</div>
+          <div class="tight-card-body">
+            <p>
+              A confidence interval in a 1-sample z-test shows the range of population means that are plausible at the chosen confidence level, and if the
+              hypothesized mean falls outside this range, the null hypothesis is rejected.
+              <br><br>
+              We can also use a confidence interval to tell us whether we should accept or reject the null hypothesis. If the expected value DOES NOT lie within the
+              confidence interval, then we reject the null hypothesis.
+            </p>
+            <div class="row">
+              <div class="col-sm-6">
+                <p><b>Step 1) What is your confidence level</b>?</p>
+                <div class="row align-items-center">
+                  <div class="col-2 col-sm-1">
+                    <p style="font-size: 16px; text-align: right; margin-bottom:0;">\( \alpha = \)</p>
+                  </div>
+                  <div class="col-4 col-sm-3">
+                    <input type="number" class="form-control" id="conf-input" value="0.95" min="0" max="1" step="any" style="width:100%;">
+                  </div>
+                </div>
+                <div id="conf-warning" class="d-none">
+                  <span style="color: red;"><p>Error: The value for confidence level must be between 0 and 1.</p></span>
+                </div>
+              </div>
+              <div class="col-sm-6">
+                <p><b>Step 2) Final Conclusion</b></p>
+                <div id="ci-out"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <br><br><br><br><br>
+
+  </div><!-- /rest-of-exercise -->
+
+</div><!-- /container -->
+
+<!-- ############ Intro modal ############ -->
+<div class="modal fade" id="introModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">The 'paired t-test'</h4>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p>
+          When evaluating the effect of a treatment or intervention, it is often helpful to measure outcomes both <i>before</i> and <i>after</i> the treatment on the same
+          individuals. This kind of design is called a <b>paired sample</b> because each person contributes two related measurements: one before and one after treatment.
+          <br><br>
+          To explore this, we are going to be using the example of a new medicine (which we will refer simply to as Drug A), which was developed to alter
+          someone's blood pressure. This is important as some people may have elevated blood pressure, meaning they could be at risk of serious health implications.
+          <br><br>
+          Why use a paired sample? A paired design helps control for individual differences. For example, some people naturally have higher or lower blood pressure than
+          others. By comparing each person’s blood pressure to their own baseline, we reduce variability and increase the ability to detect a real effect of the drug.
+          <br><br>
+          The paired t-test is used to determine whether the average difference between the paired measurements is significantly different from some hypothesised value. More
+          formally, let \(\mu_1\) be the average blood pressure before taking the drug, and let \(\mu_1\) be the average blood pressure after taking the drug. We define
+          the difference \(\mu_d = \mu_2 - \mu_1 \).
+          <br><br>
+          In this example, we are simply interested in whether the drug causes a change to someone's blood pressure. Hence, the null hypothesis is:
+        </p>
+        <center><p style="font-size: 16px">\( H_{0} : \mu_d = 0 \)</p></center><br>
+        <p>We set up the alternate hypothesis to be that the drug does cause a change in blood pressure. Hence, the alternate hypothesis is:</p>
+        <center><p style="font-size: 16px">\( H_{1} : \mu_d \neq 0 \)</p></center><br>
+        <p>
+          <b><span style="color: blue;">KEY TAKEAWAY:</span></b> Now that we have defined \(\mu_d\) to be \(\mu_2 - \mu_1 \), we can see that we actually now only
+          have a <b>single sample</b>. Hence, a paired t-test is actually just a 1-sample t-test that we learnt previously (you should do that exercise first if you have
+          not already completed it).
+          Regardless, let's continue with this example to work out if we see a blood pressure change when our sample takes the drug.
+        </p>
+        <div class="row">
+          <div class="col-sm-8">
+            <p>
+              <h5><u>Investigating the change in blood pressure:</u></h5><br>
+              Identical to the 1-sample t-test exercise, we can use the box model to model the hypothesis test. We first find the sample standard deviation.
+              To do this, we subtract the blood pressure values from before taking the drug from the measured values after taking the drug. We find that the sample standard
+              deviation is equal to 17.346. Additionally, from this data, we know that the observed value (OV) is -4.373. This means that from our sample, on average, blood
+              pressure decreases by 4.373 mmHg (we still have to investigate whether this is statistically different from 0).
+              <br><br>
+              We also have that \(n = 30\) as there are 30 people in the sample, and \(\mu = 0\), which comes from the null hypothesis.
+            </p>
+          </div>
+          <div class="col-sm-4">
+            <br><br>
+            <div id="intro-example-box-model"></div>
+          </div>
+        </div>
+        <p><br>With the box made, we can now calculate the test statistic.<br></p>
+        $$\begin{align*} \text{Test-Statistic (TS)} &= \frac{\text{OV} - \text{EV}}{\hat{\text{SE}}}
+        \\ &= \frac{\text{OV} - \text{EV}}{\frac{s}{\sqrt{n}}}
+        \\ &= \frac{4.373 - 0}{\frac{17.346}{\sqrt{30}}}
+        \\ &= -1.381 \text{ (3 decimal places)} \end{align*}$$
+        <p>With the test-statistic found, you can now find the p-value. Scroll down in the lesson to see how this is done!</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="../../shared/js/navbar.js"></script>
+<script src="../../shared/js/stats.js"></script>
+<script src="../../shared/js/boxmodel.js"></script>
+<script src="../../shared/js/plots.js"></script>
+<script src="js/datasets.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
