@@ -120,11 +120,13 @@ const Plots = (() => {
   // Used by the CLT (box model part 2) lesson. `breaks` may be a bin COUNT
   // (equal-width bins over [min, max], as R's seq(range, length.out = n+1)) or
   // the string "sturges" (R's default nclass.Sturges -> pretty breaks). With no
-  // data it draws the empty placeholder axes (xlim 0..10, ylim 0..0.25).
+  // data it draws the empty placeholder axes (ylim 0..0.25, xlim `emptyXDomain`,
+  // which callers set to the range the data will actually occupy).
   function densityHistogramSVG(values, { width = 460, height = 430, main = "", xlab = "", ylab = "Density",
-      col = "lightgreen", breaks = "sturges", curve = null, cssHeight = null } = {}) {
+      col = "lightgreen", breaks = "sturges", curve = null, cssHeight = null,
+      emptyXDomain = [0, 10] } = {}) {
     if (!values || values.length === 0) {
-      const f = makeFrame(width, height, { xdomain: [0, 10], ydomain: [0, 0.25], main, xlab, ylab, padY: false });
+      const f = makeFrame(width, height, { xdomain: emptyXDomain, ydomain: [0, 0.25], main, xlab, ylab, padY: false });
       return svgWrap(width, height, f.parts, cssHeight);
     }
     const n = values.length;
