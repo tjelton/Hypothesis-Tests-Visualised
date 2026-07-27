@@ -63,8 +63,12 @@
                 repeatedly drawing samples and building up a histogram of their sums.</li>
             <li><b>Modelling Using a Normal Distribution</b> — pin down <i>which</i> normal curve to use. A normal distribution needs a mean and a standard
                 deviation, so we use the <b>expected value (EV)</b> of the sample sum as the mean, and its <b>standard error (SE)</b> as the standard
-                deviation (we will learn how to calculate EV and SE below)</li>
-            <li><b>Finding Probabilities</b> — read the probability off that curve as an <b>area underneath it</b>.</li>
+                deviation (we will learn how to calculate EV and SE below). <i>(For our coin question this gives EV = 50 and SE = 5, so we model the sample
+                sum as \(N(50, 5^2)\).)</i></li>
+            <li><b>Finding Probabilities</b> — read the probability off that curve as an <b>area underneath it</b>. <i>(For '60 or more heads', we shade the
+                area to the right of 60, because values above 60 mean more than 60 heads. So we set the <b>lower boundary</b> to 60, and tick the
+                \(\infty\) checkbox for the <b>upper boundary</b> — there is no upper limit on the number of heads we are counting. That area is 0.02275,
+                so the chance of flipping 60 or more heads from 100 coins is 2.275%.)</i></li>
           </ol>
           <p>
             Don't worry if some of this still feels vague — each of the four sections below explains its own step in much more depth, and updates itself
