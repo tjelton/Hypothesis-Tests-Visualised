@@ -39,25 +39,37 @@
         <div class="tight-card-title">Modelling Using a Normal Distribution</div>
         <div class="tight-card-body">
           <p>
-            In part 2, we learnt that the central limit theorem tells us that if we take a sufficiently large number of draws from a box, then the sample means (or sums)
-            will follow a normal distribution. We also demonstrated how to verify whether the number of draws is sufficiently large by repeatedly forming samples,
-            calculating the mean (or sum) of each, and observing whether the samples are normally distributed.
-            <br><br>
-            Why do we care about whether the samples are normally distributed? If they are, we can start to answer probability-based questions.
-            <br><br>
-            For example, consider we were interested in the probability of flipping 60 or more heads from 100 coins. To do this, we first construct a box model with the
-            ticket '1', which represents landing on a head, and the ticket '0', which represents landing on a tail. As we flip 100 coins, that is equivalent to drawing
-            100 times from the box. We will represent this sample using the sum (this box model is pictured to the right).
-            <br><br>
-            Here is a very brief overview of how you can use the normal distribution to answer probability questions. The first step is to actually specify the normal
-            distribution that we are using to model the box model to the right. We do this by calculating the expected value (which acts as the mean for the normal
-            distribution) and standard error (which acts as the standard deviation for the normal distribution). Then, to actually find the probabilities we are
-            interested in, we use the normal distribution we just specified and calculate areas under the curve (the area represents the probability). For example,
-            if we wanted to find the probability that you flip 60 or more heads from 100 coins, we would calculate the area under the curve above 60 (values to the right
-            of 60 indicate more than 60 heads). We find that this area is 0.02275, meaning the chance of flipping 60 or more heads from 100 coins is 2.275%.
-            <br><br>
-            This concludes the brief introduction. It may all seem vague at the moment, but the steps below go into much more depth! The best way to learn more about
-            this is to experiment with the 'Box Model Playground' below. To help you learn, read below for suggested tasks.
+            In Part 2, we met the central limit theorem: if each sample is made up of a <b>sufficiently large number of draws</b> from a box, then the
+            <b>sample means (or sums) will follow an approximately normal distribution</b>. We also saw how to check whether the number of draws is large
+            enough — repeatedly form samples, calculate the mean (or sum) of each one, and see whether the histogram of those values looks normal.
+          </p>
+          <p>
+            Why do we care about that shape? Because once we know the sample sums (or means) follow a normal distribution, we can start to answer
+            <b>probability-based questions</b> about them.
+          </p>
+          <p>
+            For example: what is the probability of flipping <b>60 or more heads out of 100 coins</b>? We start by writing this as a box model. We put a '1'
+            ticket in the box (representing a head) and a '0' ticket (representing a tail). Flipping 100 coins is the same as drawing 100 times from that
+            box, and the number of heads is simply the <i>sum</i> of the 100 tickets we draw. This box model is pictured to the right.
+          </p>
+          <p>
+            To turn that box into a probability, we work through <b>four steps</b>. These four steps are exactly the four sections of the
+            <b>Box Model Playground</b> below, in the order they appear:
+          </p>
+          <ol>
+            <li><b>Box Parameters</b> — describe the box: which tickets go in it, how many draws make up a sample, and whether we summarise a sample by its
+                sum or its mean. <i>(For our coin question: tickets 1 and 0, n = 100 draws, and the sum.)</i></li>
+            <li><b>Central Limit Theorem</b> — check that n = 100 draws really is enough for the sample sums to look normal. We do this empirically, by
+                repeatedly drawing samples and building up a histogram of their sums.</li>
+            <li><b>Modelling Using a Normal Distribution</b> — pin down <i>which</i> normal curve to use. A normal distribution needs a mean and a standard
+                deviation, so we use the <b>expected value (EV)</b> of the sample sum as the mean, and its <b>standard error (SE)</b> as the standard
+                deviation (we will learn how to calculate EV and SE below)</li>
+            <li><b>Finding Probabilities</b> — read the probability off that curve as an <b>area underneath it</b>.</li>
+          </ol>
+          <p>
+            Don't worry if some of this still feels vague — each of the four sections below explains its own step in much more depth, and updates itself
+            automatically for whatever box you set up. The playground already starts configured for the coin question above, so the best first move is to
+            scroll down and follow the four sections through in order.
           </p>
           <div class="accordion" id="ex-accordion">
             <div class="accordion-item">
@@ -185,7 +197,7 @@
       </div>
     </div>
     <div class="col-sm-7 stacked-cards">
-      <div class="tight-card"><div class="tight-card-body"><center><div id="hist-clt" style="width:100%;"></div></center></div></div>
+      <div class="tight-card"><div class="tight-card-body"><center><div id="hist-clt" style="width:75%;"></div></center></div></div>
       <div class="tight-card"><div class="tight-card-body"><div id="clt-satisfied"></div></div></div>
     </div>
   </div>
@@ -201,7 +213,7 @@
       </div>
     </div>
     <div class="col-sm-7">
-      <div class="tight-card"><div class="tight-card-body"><center><div id="normal-curve-plot" style="width:100%;"></div></center></div></div>
+      <div class="tight-card"><div class="tight-card-body"><center><div id="normal-curve-plot" style="width:75%;"></div></center></div></div>
     </div>
   </div>
 
