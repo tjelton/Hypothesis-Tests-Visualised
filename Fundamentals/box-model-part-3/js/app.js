@@ -47,6 +47,16 @@
   function modeWord() { return state.mode === "2" ? "mean" : "sum"; }
   function sampleLabel() { return state.mode === "2" ? "Sample Mean" : "Sample Sum"; }
 
+  // True while the playground is still on the coin example the page's introduction
+  // walks through (tickets 1,0 / n = 100 / sum -- also the starting defaults). The
+  // "Finding Probabilities" text uses this to name the exact boundaries for that
+  // question, so a student following the intro is never left guessing, while anyone
+  // who has changed the box only sees the general instructions.
+  function isCoinExample() {
+    return state.mode === "1" && state.draws === 100 && state.tickets.length === 2 &&
+           state.tickets.includes(0) && state.tickets.includes(1);
+  }
+
   // EV/SE for the current box + sum/mean choice.
   function evse() {
     const mu = mean(state.tickets), sigma = S.popsd(state.tickets), n = state.draws;
@@ -143,12 +153,21 @@
     function renderProbText() {
       const w = modeWord();
       const { ev, se } = evse();
+      const hint = isCoinExample()
+        ? "<p><b><span style=\"color: blue;\">Following the coin example from the top of the page?</span></b> To find the chance of flipping " +
+          "<b>60 or more heads</b>, set the <b>lower boundary</b> to 60 and tick the \\(\\infty\\) checkbox for the <b>upper boundary</b> (there is no " +
+          "upper limit on the number of heads we are counting). You should get <b>0.02275</b>, or 2.275%.</p>"
+        : "";
       $("prob-text").innerHTML =
         "<p>Now that we are modelling the sample " + w + "s using a normal curve with mean " + S.roundStr(ev, 5) + " and standard deviation " +
-        S.roundStr(se, 5) + ", we can start to ask probability based questions like, <br>" +
+        S.roundStr(se, 5) + ", we can start to ask probability based questions like,</p>" +
         "<ul><li>What is the chance that we see a value greater than \\(x\\)?</li>" +
         "<li>What is the chance that we see a value between \\(y\\) and \\(z\\)?</li></ul>" +
-        "Use the controls below to find the the probabilities that values lie within the ranges you set.</p>";
+        "<p>Use the controls below to set the range you are interested in. The probability is the area under the curve between the two boundaries:</p>" +
+        "<ul><li>For a <b>" + w + " of \\(x\\) or more</b>: set the lower boundary to \\(x\\), and tick \\(\\infty\\) for the upper boundary.</li>" +
+        "<li>For a <b>" + w + " of \\(x\\) or less</b>: tick \\(-\\infty\\) for the lower boundary, and set the upper boundary to \\(x\\).</li>" +
+        "<li>For a <b>" + w + " between \\(y\\) and \\(z\\)</b>: set the lower boundary to \\(y\\), and the upper boundary to \\(z\\).</li></ul>" +
+        hint;
     }
 
     // ---------- finding probabilities ----------
