@@ -20,14 +20,19 @@
   function sampleStat(box, n, mode) { const d = drawWithReplacement(box, n); return mode === "2" ? mean(d) : sum(d); }
 
   // ----- Sections 1 & 2: accumulate sample means, redraw the histogram -----
-  function makeMeanDemo(box, n, histId, binFn) {
+  // The SVG is drawn at half the previous viewBox size and its container is set
+  // to 50% width in the HTML, so the plot occupies half the page width while the
+  // labels keep roughly their old on-screen size.
+  const MEAN_DEMO_BINS = 14;
+  function makeMeanDemo(box, n, histId) {
     let data = [];
     function render() {
-      const title = "Empiricial Distribution of Sample Means (n = " + data.length + ")";
-      const opts = { width: 540, height: 430, main: title, xlab: "Sample Mean Value", ylab: "Density", col: "lightgreen" };
+      const title = "Empirical Distribution of Sample Means (n = " + data.length + ")";
+      // Sample means of a 0/1 box always sit in [0, 1], so the empty placeholder
+      // axes use that range (ticks land on 0, 0.2, ..., 1) rather than 0..10.
+      const opts = { width: 460, height: 360, main: title, xlab: "Sample Mean Value", ylab: "Density", col: "lightgreen", emptyXDomain: [0, 1] };
       if (data.length === 0) { $(histId).innerHTML = Plots.densityHistogramSVG([], opts); return; }
-      const uniqueCount = new Set(data).size;
-      opts.breaks = Math.max(1, binFn(uniqueCount));
+      opts.breaks = MEAN_DEMO_BINS;
       $(histId).innerHTML = Plots.densityHistogramSVG(data, opts);
     }
     function repeat(k) { for (let i = 0; i < k; i++) data.push(mean(drawWithReplacement(box, n))); render(); }
@@ -40,9 +45,8 @@
     $("box-model-n25").innerHTML = boxModelHTML("1, 0, 0, 0", "Sample Mean", "n = 25");
     $("box-model-n5").innerHTML = boxModelHTML("1, 0, 0, 0", "Sample Mean", "n = 5");
 
-    // n = 25: bins = unique/3, capped at 15 (R). n = 5: bins = unique - 1 (R).
-    const demo25 = makeMeanDemo([1, 0, 0, 0], 25, "hist-n25", u => Math.min(15, Math.round(u / 3)));
-    const demo5 = makeMeanDemo([1, 0, 0, 0], 5, "hist-n5", u => u - 1);
+    const demo25 = makeMeanDemo([1, 0, 0, 0], 25, "hist-n25");
+    const demo5 = makeMeanDemo([1, 0, 0, 0], 5, "hist-n5");
 
     $("rep1-n25").addEventListener("click", () => demo25.repeat(1));
     $("rep10-n25").addEventListener("click", () => demo25.repeat(10));
@@ -69,7 +73,7 @@
       "2": "When looking from the perspective of sample sums, we see that at a sample size of n = 25, the distribution of sample means appears very close to being normally distributed. Hence, for this box, values of n greater than or equal to 25 are sufficient.",
       "3": "When looking from the perspective of sample sums, we see that at a sample size of n = 50, the distribution of sample means appears very close to being normally distributed. We need a larger sample size for this box, as there is a large imbalance between the '0' and '1' tickets.",
       "4": "When looking from the perspective of sample sums, we see that at a sample size of n = 5, the distribution of sample means appears very close to being normally distributed. A small sample size for this box is sufficient, as the tickets are nearly symmetric.",
-      "5": "Even at n = 100, the sample sums or means do not appear to be normally distributed. This is because the tickets are incredibly asymmetric This is a classic example where assuming that if n is large, the CLT must apply (such as n greater than 35 or 50) can be misleading."
+      "5": "Even at n = 100, the sample sums or means do not appear to be normally distributed. This is because the tickets are incredibly asymmetric. This is a classic example where assuming that if n is large, the CLT must apply (such as n greater than 35 or 50) can be misleading."
     };
 
     let tickets = EXAMPLES["1"].slice();
