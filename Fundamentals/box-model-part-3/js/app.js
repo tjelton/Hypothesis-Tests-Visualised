@@ -94,9 +94,13 @@
         "<p>Recall that the central limit theorem tells us that if we take a <b>sufficiently large number of draws</b> " +
         "from the box, then the <b>sample " + w + "s will follow an approximately normal distribution</b>.<br><br>Now we will empirically " +
         "test whether n = " + state.draws + " is a sufficient number of draws for the central limit theorem to " +
-        "apply.<br><br>To do this, press the button below to repeat the process of drawing from the box " + state.draws +
-        " and finding the " + w + ". These will be added to the histogram. If we have taken enough draws from the box, then the " +
-        "histogram should look normally distributed.</p>";
+        "apply.<br><br>To do this, press the buttons below to repeat the process of drawing from the box " + state.draws +
+        " times and finding the " + w + ". These will be added to the histogram. If we have taken enough draws from the box, then the " +
+        "histogram should look normally distributed.</p>" +
+        "<p><b>You can press these buttons as many times as you like.</b> Each press <i>adds</i> to the histogram rather than starting it " +
+        "over, so pressing '+ Repeat 100' five times builds up a histogram of 500 sample " + w + "s. Keep going until the shape of the " +
+        "histogram stops changing much — the more repeats, the clearer the shape becomes. Press 'Reset' if you want to empty the histogram " +
+        "and start again.</p>";
       $("clt-satisfied").innerHTML =
         "<p>Does the data in the histogram above look normally distributed? Ensure that you have repeated the process of " +
         "drawing from the box, and finding the sample " + w + " many times. If it does not, scroll back above and update the " +
