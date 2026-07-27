@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>The Box Model Part 3 - Modelling Using a Normal Distribution — Guiding Questions</title>
+  <link rel="stylesheet" href="../../css/worksheet.css">
+</head>
+<body data-depth="2" data-folder="Fundamentals" data-slug="box-model-part-3">
+
+<header class="page-head">
+  <div class="page">
+    <p class="eyebrow">Fundamentals · Guiding Questions</p>
+    <h1 class="page-title">The Box Model Part 3 - Modelling Using a Normal Distribution</h1>
+
+    <!-- Relative, so it works locally and under /Hypothesis-Tests-Visualised/ on Pages. -->
+    <a class="launch" href="../../../Fundamentals/box-model-part-3/" target="_blank" rel="noopener">
+      <span class="launch-label">Keep the Interface Page Open in Another Tab</span>
+      <span class="launch-path">/Fundamentals/box-model-part-3/</span>
+    </a>
+  </div>
+</header>
+
+<main class="page">
+
+  <p class="lede">
+    This page is about turning a box model into a probability. Work through the
+    tasks with the interactive page open beside you.
+  </p>
+
+  <!-- ############ Recommended Task 1 ############ -->
+  <section class="task task--recommended" id="task-1">
+    <div class="task-head">
+      <span class="task-badge">Recommended Task 1</span>
+      <h2 class="task-title">Getting Familiar</h2>
+    </div>
+    <div class="task-body">
+      <p>
+        Before doing anything else, get familiar with the theory here and with
+        what the visualisations are trying to communicate.
+      </p>
+
+      <ol class="steps">
+        <li>
+          <p>
+            Read the <b>Modelling Using a Normal Distribution</b> card at the top
+            of the interactive page.
+          </p>
+        </li>
+
+        <li>
+          <p>
+            That card poses a question: <b>what is the probability of flipping 60
+            or more heads out of 100 coins?</b> It gives brief steps for answering
+            it. You are now going to actually follow those steps in the
+            <b>Box Model Playground</b>.
+          </p>
+        </li>
+
+        <li>
+          <p>
+            Scroll down to the <b>Box Model Playground</b>. Its default values are
+            already set up for that exact question — tickets <code>1,0</code>, 100
+            draws, summarised by the sum.
+          </p>
+          <div class="tip">
+            <span class="note-label">Tip</span>
+            If you have already changed some of the values, don't worry — just
+            refresh the page and it reloads with these defaults.
+          </div>
+        </li>
+
+        <li>
+          <p>
+            Work down through the four sections in order, reading each one. You
+            should not have to click many buttons yet, since this is the default
+            example. The two exceptions:
+          </p>
+          <ul>
+            <li>
+              <b>Central Limit Theorem</b> — press the blue repeat buttons many
+              times to verify that the distribution appears normally distributed.
+              You can click them as often as you like and the histogram keeps
+              building up. It <i>should</i> look normal, and if it does not, you
+              have likely not pressed enough (hint: spam <kbd>+ Repeat 100</kbd>).
+            </li>
+            <li>
+              <b>Finding Probabilities</b> — set the <b>Lower Boundary</b> to
+              <code>60</code>, and tick the checkbox next to the ∞ symbol for the
+              <b>Upper Boundary</b>. This says we want the area over [60,&nbsp;∞).
+            </li>
+          </ul>
+        </li>
+
+        <li>
+          <p>
+            Check that the area you get is <b>0.02275</b> — a 2.275% chance of
+            flipping 60 or more heads. That matches the number quoted in the card
+            you read in step 1.
+          </p>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- ############ Recommended Task 2 ############ -->
+  <section class="task task--recommended" id="task-2">
+    <div class="task-head">
+      <span class="task-badge">Recommended Task 2</span>
+      <h2 class="task-title">Observing 70 Heads</h2>
+    </div>
+    <div class="task-body">
+      <p>
+        On the interactive site, the motivating example finds the probability of
+        flipping 60 or more heads. What if we changed it to <b>70 or more</b>?
+        Nothing about the box changes — only the boundary we ask about.
+      </p>
+
+      <ol class="steps">
+        <li>
+          <p>
+            In the <b>Box Parameters</b> section, ensure the tickets are still set
+            to <code>1,0</code>, the number of draws is still <code>100</code>, and
+            that we are representing the sample using the <b>Sum</b> of the draws.
+            If you've done it correctly, it should look like the screenshot below.
+          </p>
+          <figure class="shot">
+            <img src="img/task2-box-parameters.png"
+                 alt="The Box Parameters section with the tickets text box reading 1,0. The panel on the right shows a box containing '1, 0', an arrow labelled n = 100 pointing down to an oval reading 'Sample Sum', and beneath it the mean of the box as 0.5 and the population SD of the box as 0.5.">
+            <figcaption>
+              Figure 1 — Box Parameters set up for 100 coin flips. The quickest
+              way to check all three settings at once is the summary on the
+              right: the box should read <code>1, 0</code>, the arrow
+              <code>n = 100</code>, and the outcome <b>Sample Sum</b>.
+            </figcaption>
+          </figure>
+          <div class="note">
+            <span class="note-label">Note</span>
+            If you retype the tickets, you must press <b>Set Tickets</b> for the
+            change to take effect.
+          </div>
+        </li>
+
+        <li>
+          <p>
+            Scroll down to the <b>Central Limit Theorem</b> section. Keep pressing
+            the repeat buttons to verify the distribution looks normal (tip: press
+            <kbd>+ Repeat 100</kbd> many, many times). It should look similar to
+            the screenshot below — but not identical, since there is randomness
+            involved.
+          </p>
+          <figure class="shot">
+            <img src="img/task2-clt-histogram.png"
+                 alt="The Central Limit Theorem section. Its histogram, built from 4,900 sample sums, is a clean symmetric bell shape centred near 50 and spanning roughly 30 to 70.">
+            <figcaption>
+              Figure 2 — the distribution of sample sums after 4,900 repeats.
+              Note the count in the plot title: that is how many times the repeat
+              buttons have been pressed in total.
+            </figcaption>
+          </figure>
+        </li>
+
+        <li>
+          <p>
+            Scroll down and note how, in the <b>Modelling Using a Normal
+            Distribution</b> section, we can model the distribution using the EV
+            and SE calculated with the formulas shown. For this box:
+          </p>
+          <ul>
+            <li>EV = 100 × 0.5 = <b>50</b></li>
+            <li>SE = √100 × 0.5 = <b>5</b></li>
+          </ul>
+          <p>
+            So the sample sum is modelled by a normal distribution centred at 50
+            with a standard deviation of 5. Do you see how the red normal curve
+            closely follows the histogram you built up in step 2?
+          </p>
+          <figure class="shot">
+            <img src="img/task2-normal-curve.png"
+                 alt="The Modelling Using a Normal Distribution section, showing EV = n × μ = 100 × 0.5 = 50, SE = √n × σ = √100 × 0.5 = 5, and the sample sum modelled as N(50, 5²). The plot beside it shows a red normal curve lying almost exactly on top of the green histogram.">
+            <figcaption>
+              Figure 3 — the fitted normal curve tracking the simulated
+              histogram. The page shows the working for both formulas, so you can
+              check the EV and SE quoted above.
+            </figcaption>
+          </figure>
+        </li>
+
+        <li>
+          <p>
+            Remember that we want the probability of flipping 70 or more heads out
+            of 100. To find it, set the <b>Lower Boundary</b> to <code>70</code>
+            and tick the checkbox next to the ∞ symbol for the <b>Upper
+            Boundary</b>.
+          </p>
+          <figure class="shot">
+            <img src="img/task2-prob-70-inf.png"
+                 alt="The Finding Probabilities section with the lower boundary set to 70 and the infinity checkbox ticked for the upper boundary. The normal curve beside it shows no visible shading. The answer below reads: the probability that a value lies within the range [70, infinity] is 3e-05.">
+            <figcaption>Figure 4 — finding the area over [70, ∞).</figcaption>
+          </figure>
+          <div class="note">
+            <span class="note-label">Note</span>
+            Unlike the other boundaries you will set, <b>no red shading appears on
+            the curve here</b>. Nothing has gone wrong — the region really is that
+            small. At 70 the curve has already flattened onto the axis, so there
+            is nothing left to shade. Read the answer from the text below the
+            plot instead.
+          </div>
+          <details class="answer">
+            <summary>What area should I be seeing?</summary>
+            <div class="answer-body">
+              <p>
+                <b>3e-05</b>, which means 0.00003 — about a <b>0.003%</b> chance.
+                Flipping 70 heads out of 100 fair coins is extraordinarily
+                unlikely: it sits four standard errors above the expected value.
+              </p>
+            </div>
+          </details>
+        </li>
+
+        <li>
+          <p>
+            As an extension, what if we wanted the probability of flipping
+            <b>50 to 70 heads (inclusive)</b>? Set the <b>Lower Boundary</b> to
+            <code>50</code> and the <b>Upper Boundary</b> to <code>70</code> —
+            untick the ∞ checkbox if it is still ticked.
+          </p>
+          <figure class="shot">
+            <img src="img/task2-prob-50-70.png"
+                 alt="The Finding Probabilities section with the lower boundary set to 50 and the upper boundary set to 70, neither infinity checkbox ticked. The curve is shaded red from 50 rightwards. The answer reads: the probability that a value lies within the range [50, 70] is 0.49997.">
+            <figcaption>
+              Figure 5 — the area over [50, 70] comes out at 0.49997. This time
+              the shaded region is plainly visible: it is the entire right half of
+              the curve.
+            </figcaption>
+          </figure>
+          <details class="answer">
+            <summary>What area should I be seeing?</summary>
+            <div class="answer-body">
+              <p>
+                About <b>0.5</b>. That should feel reasonable: 50 is the expected
+                value, so half the distribution sits above it, and almost all of
+                that half falls below 70.
+              </p>
+            </div>
+          </details>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- ############ Recommended Task 3 ############ -->
+  <section class="task task--recommended" id="task-3">
+    <div class="task-head">
+      <span class="task-badge">Recommended Task 3</span>
+      <h2 class="task-title">Rolling a Dice (Part 1)</h2>
+    </div>
+    <div class="task-body">
+      <p>
+        You have one ice cream left at home, and you and your brother desperately
+        want it. Your brother turns to you and says, <i>"Let's play a little game.
+        I want you to roll a 6-sided die 50 times. Every time you roll it, write
+        down the face that the die landed on, and at the end, add up the 50 numbers
+        you recorded from the 50 rolls. If the sum is greater than 150, then you
+        can have the ice cream, and otherwise, I get to eat it."</i> You agree to
+        his little game.
+      </p>
+      <p>Should you be happy with that deal? Work it out with the playground.</p>
+
+      <ol class="steps">
+        <li>
+          <p>
+            In the <b>Box Parameters</b> section, describe this new box. The
+            tickets are the six faces of the die, so enter
+            <code>1,2,3,4,5,6</code> and press <b>Set Tickets</b>. Set the number
+            of draws to <code>50</code>, and leave the sample represented by the
+            <b>Sum</b> — the sum is what your brother asked for.
+          </p>
+          <figure class="shot">
+            <img src="img/task3-box-parameters.png"
+                 alt="Box Parameters with the tickets text box reading 1,2,3,4,5,6. The panel on the right shows a box containing 1, 2, 3, 4, 5, 6, an arrow labelled n = 50 pointing to 'Sample Sum', the mean of the box as 3.5 and the population SD of the box as 1.70783.">
+            <figcaption>
+              Figure 6 — Box Parameters set up for 50 rolls of a die. Take note of
+              the two numbers on the right, μ = 3.5 and σ = 1.70783 — they are what
+              the EV and SE get built from in the next step.
+            </figcaption>
+          </figure>
+        </li>
+
+        <li>
+          <p>
+            Go to the <b>Central Limit Theorem</b> section and press
+            <kbd>+ Repeat 100</kbd> many times again, verifying that 50 draws is
+            enough for the sums to look normal. Notice that it works even though
+            the box itself looks nothing like a normal distribution — it is six
+            equally likely values. That is the point of the central limit theorem.
+          </p>
+          <figure class="shot">
+            <img src="img/task3-clt-histogram.png"
+                 alt="The Central Limit Theorem section for the dice box. The histogram, built from 1,900 sample sums, is bell-shaped and centred near 175, spanning roughly 140 to 220.">
+            <figcaption>
+              Figure 7 — sums of 50 dice rolls are approximately normal, even
+              though the box itself is six flat, equally likely values.
+            </figcaption>
+          </figure>
+        </li>
+
+        <li>
+          <p>
+            In the <b>Modelling Using a Normal Distribution</b> section, read off
+            the EV and SE the page has calculated. The average ticket is 3.5, so:
+          </p>
+          <ul>
+            <li>EV = 50 × 3.5 = <b>175</b></li>
+            <li>SE = √50 × 1.708 ≈ <b>12.08</b></li>
+          </ul>
+          <p>Check that the red curve again sits neatly on the histogram.</p>
+        </li>
+
+        <li>
+          <p>
+            In the <b>Finding Probabilities</b> section, set the <b>Lower
+            Boundary</b> to <code>150</code> and tick the ∞ checkbox for the
+            <b>Upper Boundary</b>. Read off the area — that is your chance of
+            getting the ice cream.
+          </p>
+          <figure class="shot">
+            <img src="img/task3-prob-150-inf.png"
+                 alt="The Finding Probabilities section, now modelling with mean 175 and standard deviation 12.07615. The lower boundary is 150 and the infinity checkbox is ticked for the upper boundary. Almost the entire curve is shaded red. The answer reads: the probability that a value lies within the range [150, infinity] is 0.98078.">
+            <figcaption>
+              Figure 8 — the probability of rolling a total of 150 or more. Almost
+              the whole curve is shaded, which is the visual version of "your
+              brother made a bad deal".
+            </figcaption>
+          </figure>
+          <details class="answer">
+            <summary>Am I in the right ballpark?</summary>
+            <div class="answer-body">
+              <p>
+                You should get something <b>above 90%</b> — roughly 0.98. Your
+                brother has made a bad deal: 150 sits about two standard errors
+                <i>below</i> the expected total of 175, so you win the ice cream
+                the large majority of the time.
+              </p>
+            </div>
+          </details>
+        </li>
+
+        <li>
+          <p>
+            <b>Extension.</b> For the game to be fairer, there should be a 50%
+            chance that either you or your brother wins. Keeping everything else
+            the same, what should the sum be changed to instead of 150?
+          </p>
+          <details class="answer">
+            <summary>Show the answer</summary>
+            <div class="answer-body">
+              <p>
+                <b>175</b> — the expected value. A normal distribution is symmetric
+                about its centre, so exactly half the area lies on each side of the
+                EV. Confirm it in the playground: set the lower boundary to 175
+                with ∞ above, and the area comes out at 0.5.
+              </p>
+            </div>
+          </details>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- ############ Coding Task 1 ############ -->
+  <section class="task task--coding" id="coding-1">
+    <div class="task-head">
+      <span class="task-badge">Coding Task 1</span>
+      <h2 class="task-title">Implementing Task 2 in R</h2>
+    </div>
+    <div class="task-body">
+      <p>
+        The steps we follow in the Box Model Playground are easy to do in R
+        yourself. Doing so is the best way to see that the visualisation is not
+        doing anything mysterious. You'll need the tidyverse loaded, as we will be
+        using ggplot2:
+      </p>
+
+      <pre class="code" data-lang="R">library(tidyverse)
+set.seed(1)   # so your numbers match the ones printed below</pre>
+
+      <h3>Step 1 — build the box and take one sample</h3>
+      <p>
+        The box holds one '1' ticket (a head) and one '0' ticket (a tail). Drawing
+        100 times with replacement is the same as flipping 100 coins.
+      </p>
+
+      <pre class="code" data-lang="R">box &lt;- c(1, 0)
+
+one_sample &lt;- sample(box, size = 100, replace = TRUE)
+head(one_sample, 20)
+sum(one_sample)</pre>
+
+      <pre class="code output" data-lang="output"> [1] 1 0 1 1 0 1 1 1 0 0 1 1 1 1 1 0 0 0 0 1
+[1] 49</pre>
+
+      <p>
+        So that particular set of 100 flips gave 49 heads. A single sample tells us
+        very little on its own — which is exactly why the next step repeats it.
+      </p>
+
+      <h3>Step 2 — repeat it, and check the shape</h3>
+      <p>
+        This is the <b>Central Limit Theorem</b> section in code.
+        <code>replicate()</code> is the equivalent of hammering the
+        <kbd>+ Repeat 100</kbd> button: here we build 10,000 samples and keep the
+        sum of each one.
+      </p>
+
+      <pre class="code" data-lang="R">sums &lt;- replicate(10000, sum(sample(box, size = 100, replace = TRUE)))
+head(sums)</pre>
+
+      <pre class="code output" data-lang="output">[1] 53 44 55 55 52 46</pre>
+
+      <pre class="code" data-lang="R">ggplot(tibble(sums), aes(x = sums)) +
+  geom_histogram(binwidth = 1, fill = "grey80", colour = "white") +
+  labs(title = "Sums of 100 coin flips, repeated 10,000 times",
+       x = "Sum of the sample", y = "Count") +
+  theme_minimal()</pre>
+
+      <figure class="shot">
+        <img src="img/coding1-histogram.png"
+             alt="A ggplot histogram titled 'Sums of 100 coin flips, repeated 10,000 times'. Grey bars form a bell shape peaking near a sum of 50 at a count of about 790, spanning roughly 34 to 65.">
+        <figcaption>Figure 9 — the same bell shape the Central Limit Theorem section builds up.</figcaption>
+      </figure>
+
+      <h3>Step 3 — calculate the EV and SE</h3>
+      <p>
+        For a sum of <i>n</i> draws: EV = <i>n</i> × (average ticket), and
+        SE = √<i>n</i> × (SD of the tickets).
+      </p>
+
+      <pre class="code" data-lang="R">n &lt;- 100
+
+ev &lt;- n * mean(box)
+ev
+
+sd_box &lt;- sqrt(mean((box - mean(box))^2))   # population SD -- see the warning below
+sd_box
+
+se &lt;- sqrt(n) * sd_box
+se</pre>
+
+      <pre class="code output" data-lang="output">[1] 50
+[1] 0.5
+[1] 5</pre>
+
+      <div class="warn">
+        <span class="note-label">Watch out</span>
+        <p>
+          Do <b>not</b> use <code>sd(box)</code> here. R's <code>sd()</code>
+          divides by <i>n</i>−1, because it is estimating a population SD from a
+          <i>sample</i>. The box is not a sample — it is the whole population, and
+          we know it exactly. For our two tickets:
+        </p>
+        <pre class="code output" data-lang="output">&gt; sd(box)
+[1] 0.7071068</pre>
+        <p>
+          That is 0.707 instead of 0.5, which would give SE = 7.07 instead of 5 — a
+          completely different answer. Hence the longhand
+          <code>sqrt(mean((box - mean(box))^2))</code>.
+        </p>
+      </div>
+
+      <p>
+        Worth a sanity check: the simulated sums should have roughly this mean and
+        spread.
+      </p>
+
+      <pre class="code" data-lang="R">mean(sums)
+sd(sums)</pre>
+
+      <pre class="code output" data-lang="output">[1] 50.055
+[1] 5.019611</pre>
+
+      <p>
+        Close to 50 and 5, as promised. (Here <code>sd()</code> <i>is</i> the right
+        function — <code>sums</code> genuinely is a sample.)
+      </p>
+
+      <h3>Step 4 — overlay the normal curve</h3>
+      <p>This is the <b>Modelling Using a Normal Distribution</b> section in code.</p>
+
+      <pre class="code" data-lang="R">ggplot(tibble(sums), aes(x = sums)) +
+  geom_histogram(aes(y = after_stat(density)),
+                 binwidth = 1, fill = "grey80", colour = "white") +
+  stat_function(fun = dnorm, args = list(mean = ev, sd = se),
+                colour = "red", linewidth = 1) +
+  labs(title = "Simulated sums with the fitted normal curve",
+       x = "Sum of the sample", y = "Density") +
+  theme_minimal()</pre>
+
+      <figure class="shot">
+        <img src="img/coding1-normal-curve.png"
+             alt="The same histogram rescaled to density, with a red normal curve for mean 50 and standard deviation 5 drawn over it. The curve follows the tops of the bars closely.">
+        <figcaption>Figure 10 — the same red curve the Modelling section draws, from your own code.</figcaption>
+      </figure>
+
+      <div class="note">
+        <span class="note-label">Note</span>
+        <code>after_stat(density)</code> rescales the histogram so its total area
+        is 1. Without it, the bars are counts in the thousands and the curve is
+        invisible along the bottom of the plot.
+      </div>
+
+      <h3>Step 5 — read off the probabilities</h3>
+      <p>
+        This is the <b>Finding Probabilities</b> section in code.
+        <code>pnorm()</code> gives the area under a normal curve to the
+        <i>left</i> of a value. For [70, ∞) we want the area to the right, so pass
+        <code>lower.tail = FALSE</code>:
+      </p>
+
+      <pre class="code" data-lang="R">pnorm(70, mean = ev, sd = se, lower.tail = FALSE)</pre>
+
+      <pre class="code output" data-lang="output">[1] 3.167124e-05</pre>
+
+      <p>
+        For the interval [50, 70], subtract the area below 50 from the area below
+        70:
+      </p>
+
+      <pre class="code" data-lang="R">pnorm(70, mean = ev, sd = se) - pnorm(50, mean = ev, sd = se)</pre>
+
+      <pre class="code output" data-lang="output">[1] 0.4999683</pre>
+
+      <p>
+        Both match what the playground displayed in Task 2 — 3e-05, and about 0.5.
+        The interactive page is running this same calculation for you.
+      </p>
+
+      <details class="answer">
+        <summary>Bonus: how well does the simulation agree with the curve?</summary>
+        <div class="answer-body">
+          <p>
+            You can also estimate the probability straight from the 10,000
+            simulated sums, without the normal curve at all:
+          </p>
+          <pre class="code" data-lang="R">mean(sums &gt;= 70)</pre>
+          <pre class="code output" data-lang="output">[1] 0</pre>
+          <p>
+            Zero — not because it is impossible, but because a 0.003% event is not
+            expected to turn up in only 10,000 tries. This is precisely why we
+            model with the normal curve rather than simulating: the curve still
+            gives sensible answers far out in the tails, where simulation runs out
+            of data.
+          </p>
+        </div>
+      </details>
+    </div>
+  </section>
+
+  <!-- ############ Extension Task 1 ############ -->
+  <section class="task task--extension" id="extension-1">
+    <div class="task-head">
+      <span class="task-badge">Extension Task 1</span>
+      <h2 class="task-title">Rolling a Dice (Part 2)</h2>
+    </div>
+    <div class="task-body">
+      <p>
+        Remember your brother from before? Well, next week, you and your brother
+        are in the same predicament. One ice cream left — who gets it? Your brother
+        proposes a new game. You roll a 6-sided die 50 times and take the sum, just
+        as you did last time. If the sum is <b>between 145 and 175 (inclusive)</b>,
+        you get the ice cream. Otherwise, your brother gets it.
+      </p>
+      <p>
+        <b>What is the probability that you get the ice cream?</b> No step-by-step
+        this time — you have already done every part of this in Task 3.
+      </p>
+
+      <details class="answer">
+        <summary>Show the answer</summary>
+        <div class="answer-body">
+          <p>
+            About <b>0.49</b>, so slightly under half. The box is unchanged from
+            Task 3 (tickets <code>1,2,3,4,5,6</code>, 50 draws, sum), giving
+            EV = 175 and SE ≈ 12.08. This time set the <b>Lower Boundary</b> to
+            <code>145</code> and the <b>Upper Boundary</b> to <code>175</code>,
+            with neither ∞ checkbox ticked.
+          </p>
+          <p>In R:</p>
+          <pre class="code" data-lang="R">box &lt;- c(1, 2, 3, 4, 5, 6)
+n   &lt;- 50
+ev  &lt;- n * mean(box)
+se  &lt;- sqrt(n) * sqrt(mean((box - mean(box))^2))
+
+pnorm(175, mean = ev, sd = se) - pnorm(145, mean = ev, sd = se)</pre>
+          <pre class="code output" data-lang="output">[1] 0.4935085</pre>
+          <p>
+            Notice the asymmetry that works in his favour. The upper boundary is
+            exactly the expected value, so the interval captures only the bottom
+            half of the distribution, and 145 is far enough below the centre that
+            it cuts off very little. Your brother has learned from last week.
+          </p>
+        </div>
+      </details>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-foot">
+  <div class="page">
+    <a href="../../">All worksheets</a>
+    <a href="../../../Fundamentals/box-model-part-3/" target="_blank" rel="noopener">This page on the interactive site</a>
+  </div>
+</footer>
+
+<script src="../../js/catalogue.js"></script>
+<script src="../../js/worksheet.js"></script>
+</body>
+</html>

@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Style guide — Guiding Questions</title>
+  <link rel="stylesheet" href="../css/worksheet.css">
+</head>
+<body data-depth="1">
+
+<header class="page-head">
+  <div class="page">
+    <p class="eyebrow">Authoring reference</p>
+    <h1 class="page-title">Worksheet building blocks</h1>
+    <p class="lede">
+      Every component available when writing a worksheet, rendered next to the
+      markup that produces it. Copy from here rather than inventing new classes,
+      so the pages stay consistent. This page is for whoever is writing the
+      worksheets — students have no reason to visit it.
+    </p>
+  </div>
+</header>
+
+<main class="page">
+
+  <!-- ############ Task containers ############ -->
+  <section class="task task--recommended" id="demo-recommended">
+    <div class="task-head">
+      <span class="task-badge">Recommended Task 1</span>
+      <h2 class="task-title">A recommended task — the core path</h2>
+    </div>
+    <div class="task-body">
+      <p>
+        The default task type. Teal accent. Use for the tasks every student
+        should do, in the order they should do them.
+      </p>
+      <pre class="code" data-lang="html">&lt;section class="task task--recommended" id="task-1"&gt;
+  &lt;div class="task-head"&gt;
+    &lt;span class="task-badge"&gt;Recommended Task 1&lt;/span&gt;
+    &lt;h2 class="task-title"&gt;Getting Familiar&lt;/h2&gt;
+  &lt;/div&gt;
+  &lt;div class="task-body"&gt;
+    …
+  &lt;/div&gt;
+&lt;/section&gt;</pre>
+      <div class="note">
+        <span class="note-label">Note</span>
+        The <code>id</code> is the task's link anchor, so keep it stable once a
+        page is published — anyone who linked to
+        <code>…/box-model-part-3/#task-2</code> would otherwise land at the top
+        of the page instead.
+      </div>
+    </div>
+  </section>
+
+  <section class="task task--coding" id="demo-coding">
+    <div class="task-head">
+      <span class="task-badge">Coding Task 1</span>
+      <h2 class="task-title">A coding task — do it again in R</h2>
+    </div>
+    <div class="task-body">
+      <p>Violet accent. Class <code>task--coding</code>.</p>
+
+      <pre class="code" data-lang="R">library(tidyverse)
+
+# 100 coin flips, repeated 10,000 times, keeping the sum each time.
+sums &lt;- replicate(10000, sum(sample(c(0, 1), size = 100, replace = TRUE)))
+mean(sums)</pre>
+
+      <p>Console output uses the same block with <code>class="code output"</code>:</p>
+
+      <pre class="code output" data-lang="output">[1] 49.9852</pre>
+    </div>
+  </section>
+
+  <section class="task task--extension" id="demo-extension">
+    <div class="task-head">
+      <span class="task-badge">Extension Task 1</span>
+      <h2 class="task-title">An extension task — for the keen</h2>
+    </div>
+    <div class="task-body">
+      <p>Amber accent. Class <code>task--extension</code>.</p>
+    </div>
+  </section>
+
+  <!-- ############ Inner components ############ -->
+  <section class="task" id="demo-steps">
+    <div class="task-head">
+      <span class="task-badge">Component</span>
+      <h2 class="task-title">Numbered steps</h2>
+    </div>
+    <div class="task-body">
+      <p>
+        The workhorse of a worksheet: <code>&lt;ol class="steps"&gt;</code>. The
+        number circles pick up the task's accent colour automatically.
+      </p>
+      <ol class="steps">
+        <li>
+          In the <b>Box Parameters</b> section, set the tickets to
+          <code>1,0</code> and the number of draws to <code>100</code>.
+        </li>
+        <li>
+          Scroll to <b>Central Limit Theorem</b> and press
+          <kbd>+ repeat 100</kbd> many times, until the histogram looks normal.
+        </li>
+        <li>
+          Set the <b>Lower Boundary</b> to <code>70</code> and tick the ∞ box for
+          the upper boundary.
+        </li>
+      </ol>
+      <pre class="code" data-lang="html">&lt;ol class="steps"&gt;
+  &lt;li&gt;In the &lt;b&gt;Box Parameters&lt;/b&gt; section, set …&lt;/li&gt;
+&lt;/ol&gt;</pre>
+    </div>
+  </section>
+
+  <section class="task" id="demo-shots">
+    <div class="task-head">
+      <span class="task-badge">Component</span>
+      <h2 class="task-title">Screenshots</h2>
+    </div>
+    <div class="task-body">
+      <p>
+        Screenshots live in an <code>img/</code> folder next to the worksheet's
+        <code>index.html</code>. Until one is taken, drop in a placeholder that
+        says exactly what to capture:
+      </p>
+
+      <figure class="shot shot--todo">
+        <div class="shot-frame">
+          <span><b>Screenshot needed:</b> the Box Parameters section with tickets
+          <code>1,0</code>, draws <code>100</code>, summarised by sum.</span>
+        </div>
+        <figcaption>Figure 1 — the Box Parameters section, set up correctly.</figcaption>
+      </figure>
+
+      <pre class="code" data-lang="html">&lt;!-- placeholder --&gt;
+&lt;figure class="shot shot--todo"&gt;
+  &lt;div class="shot-frame"&gt;&lt;span&gt;&lt;b&gt;Screenshot needed:&lt;/b&gt; …&lt;/span&gt;&lt;/div&gt;
+  &lt;figcaption&gt;Figure 1 — …&lt;/figcaption&gt;
+&lt;/figure&gt;
+
+&lt;!-- the real thing --&gt;
+&lt;figure class="shot"&gt;
+  &lt;img src="img/box-parameters.webp" alt="The Box Parameters section …"&gt;
+  &lt;figcaption&gt;Figure 1 — …&lt;/figcaption&gt;
+&lt;/figure&gt;</pre>
+
+      <div class="warn">
+        <span class="note-label">Before committing</span>
+        Compress screenshots first. A raw retina PNG is 2–5&nbsp;MB; the same
+        image as WebP is around 150&nbsp;KB, and git history keeps every version
+        of it forever.
+      </div>
+    </div>
+  </section>
+
+  <section class="task" id="demo-callouts">
+    <div class="task-head">
+      <span class="task-badge">Component</span>
+      <h2 class="task-title">Callouts and answers</h2>
+    </div>
+    <div class="task-body">
+
+      <div class="note">
+        <span class="note-label">Note</span>
+        Neutral aside — <code>class="note"</code>.
+      </div>
+
+      <div class="tip">
+        <span class="note-label">Tip</span>
+        Helpful nudge — <code>class="tip"</code>. Good for "spam the repeat 100
+        button" style hints.
+      </div>
+
+      <div class="warn">
+        <span class="note-label">Watch out</span>
+        Common mistake — <code>class="warn"</code>.
+      </div>
+
+      <p>Answers stay hidden until the student asks for them:</p>
+
+      <details class="answer">
+        <summary>Show the answer</summary>
+        <div class="answer-body">
+          <p>The area is 3e-05, which means 0.00003 (0.003%).</p>
+        </div>
+      </details>
+
+      <pre class="code" data-lang="html">&lt;details class="answer"&gt;
+  &lt;summary&gt;Show the answer&lt;/summary&gt;
+  &lt;div class="answer-body"&gt;&lt;p&gt;The area is 3e-05 …&lt;/p&gt;&lt;/div&gt;
+&lt;/details&gt;</pre>
+    </div>
+  </section>
+
+  <section class="task" id="demo-todo">
+    <div class="task-head">
+      <span class="task-badge">Scaffolding</span>
+      <h2 class="task-title">Marking what is not written yet</h2>
+    </div>
+    <div class="task-body">
+      <p>
+        Skeleton pages are full of these. They are meant to be deleted as the
+        page gets written, and they are styled loudly enough that a leftover one
+        is obvious in a published page.
+      </p>
+      <div class="todo">
+        Task 3 — a dice-rolling scenario, same four-step shape as Task 2.
+      </div>
+      <pre class="code" data-lang="html">&lt;div class="todo"&gt;Task 3 — a dice-rolling scenario …&lt;/div&gt;</pre>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-foot">
+  <div class="page">
+    <span>Authoring reference — not linked from student-facing pages.</span>
+    <a href="../">All worksheets</a>
+  </div>
+</footer>
+
+<script src="../js/catalogue.js"></script>
+<script src="../js/worksheet.js"></script>
+</body>
+</html>
