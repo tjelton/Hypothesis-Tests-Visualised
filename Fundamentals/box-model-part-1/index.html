@@ -43,8 +43,8 @@
             the outcome each time. In terms of the box model, this is like drawing 5 tickets at random from the box (with replacement), where each ticket represents
             either a head or a tail.
             <br><br>
-            Why use the box model? As we will see soon, it helps us reason about random variation, expected values, and the role of chance in statistics. In particular,
-            examining different hypothesis tests on other pages of this site, where possible, they will be motivated through the lens of the box model. The goal with
+            Why use the box model? As we will soon see, it helps us reason about random variation, expected values, and the role of chance in statistics. In particular,
+            when learning about different hypothesis tests on this website, where it makes conceptual sense, the hypothesis test will be motivated through the lens of the box model. The goal with
             this is to develop your conceptual understanding of the hypothesis tests we study. However, it is still possible to engage with most of the content in this
             web app without understanding/studying the box model!
           </p>
@@ -78,7 +78,7 @@
              representing a chance process. Each experiment is itself the result of random draws from the box.
              <br><br>
              <span style="color: blue;"><b>Your turn!</b></span> In the section to the right, you can simulate taking different samples from the box model that we just
-             described.</p>
+             described. Just keep clicking on the "+ SIMULATE" button to draw a new sample. Remember, each yellow box represents a different sample!</p>
         </div>
       </div>
     </div>
@@ -113,6 +113,7 @@
           <p>Using the same box model from before, let's consider that after our experiment, we observed the sample:</p>
           <div class="row"><div class="col-sm-3"></div><div class="col-sm-6"><center><div id="single-sample-words"></div></center></div><div class="col-sm-3"></div></div>
           <p>
+            <br>
             An issue that we will run into is that 'H' and 'T' are not numbers. Ideally, we would like to summarise our sample using a single
             number, without having to specify the number of heads and tails individually.
             <br><br>
@@ -121,6 +122,7 @@
           </p>
           <div class="row"><div class="col-sm-3"></div><div class="col-sm-6"><center><div id="single-sample-numbers"></div></center></div><div class="col-sm-3"></div></div>
           <p>
+            <br>
             Now that the tickets are numeric, we can model the sample using the sum or the mean:
           </p>
           <ul>
@@ -131,7 +133,8 @@
             In practice, it doesn’t matter whether we model the sample using the sum or mean, as long as we are consistent throughout.
             <br><br>
             <span style="color: blue;"><b>Your turn!</b></span> In the section to the right, you can simulate taking different samples from the
-            box model with numeric tickets. You can choose whether you summarise the samples using the sum or the mean.
+            box model with numeric tickets. You can choose whether you summarise the samples using the sum or the mean. What changes when we model using the sum or mean? Experiment
+            to find out! 
           </p>
         </div>
       </div>
@@ -146,6 +149,7 @@
               <label class="form-label mb-1">Model using sum or mean:</label>
               <div class="form-check"><input class="form-check-input" type="radio" name="demo_sum_mean" id="demo-sum" value="Sum" checked><label class="form-check-label" for="demo-sum">Sum</label></div>
               <div class="form-check"><input class="form-check-input" type="radio" name="demo_sum_mean" id="demo-mean" value="Mean"><label class="form-check-label" for="demo-mean">Mean</label></div>
+              <br>
             </div>
           </div>
           <div class="row">
@@ -178,7 +182,7 @@
             you would have one '1' ticket in the box, and five '0' tickets (to account for the other five sides on the die).
             <br><br>
             Below you can experiment with making your own box model and then generating samples from it. This time, we will not show you the actual tickets that were
-            drawn for each sample, but rather the mean or sum of the tickets (depending on whether you are modelling the sample using the mean or sum).
+            drawn for each sample, but rather the sum or mean of the tickets (depending on whether you are modelling the sample using the mean or sum).
           </p>
           <div class="accordion" id="own-box-accordion">
             <div class="accordion-item">
