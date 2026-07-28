@@ -24,98 +24,41 @@
 <main class="page">
 
   <p class="lede">
-    <span class="tag-skeleton">skeleton</span>
-    Questions for this page have not been written yet — the structure below is a
-    placeholder showing the shape each worksheet will take.
+    This page builds an intuition for what a confidence interval actually means.
+    It is a read-and-play page rather than a problem-solving one, so this
+    worksheet is deliberately short.
   </p>
 
-  <!-- ############ Recommended Task 1 ############ -->
-  <section class="task task--recommended" id="task-1">
-    <div class="task-head">
-      <span class="task-badge">Recommended Task 1</span>
-      <h2 class="task-title">Getting Familiar</h2>
-    </div>
-    <div class="task-body">
-      <div class="todo">
-        Orientation task. Point the student at the explanatory card at the top of
-        the interactive page, then walk them through the default example already
-        loaded there, section by section, noting the few controls they need to
-        touch.
-      </div>
-      <ol class="steps">
-        <li><div class="todo">Read the opening card on the interactive page.</div></li>
-        <li><div class="todo">Work down the page, section by section.</div></li>
-        <li><div class="todo">The one or two controls worth pressing on a first pass.</div></li>
-      </ol>
-    </div>
-  </section>
-
-  <!-- ############ Recommended Task 2 ############ -->
-  <section class="task task--recommended" id="task-2">
-    <div class="task-head">
-      <span class="task-badge">Recommended Task 2</span>
-      <h2 class="task-title">Task title</h2>
-    </div>
-    <div class="task-body">
-      <div class="todo">
-        A guided variation on the default example: change one thing, then follow
-        the same steps through and read the new answer off the page.
-      </div>
-
-      <ol class="steps">
-        <li>
-          <div class="todo">Step 1 — set up the inputs.</div>
-          <figure class="shot shot--todo">
-            <div class="shot-frame">
-              <span><b>Screenshot needed:</b> the inputs set to the correct state.</span>
-            </div>
-            <figcaption>Figure 1 — what the inputs should look like.</figcaption>
-          </figure>
-        </li>
-        <li><div class="todo">Step 2 — what to check before moving on.</div></li>
-        <li><div class="todo">Step 3 — where to read the result.</div></li>
-      </ol>
-
-      <details class="answer">
-        <summary>Show the answer</summary>
-        <div class="answer-body">
-          <div class="todo">The expected value, and a sentence on how to read it.</div>
-        </div>
-      </details>
-    </div>
-  </section>
-
-  <!-- ############ Coding Task 1 ############ -->
-  <section class="task task--coding" id="coding-1">
-    <div class="task-head">
-      <span class="task-badge">Coding Task 1</span>
-      <h2 class="task-title">Reproducing it in R</h2>
-    </div>
-    <div class="task-body">
-      <p>The steps above can be done directly in R. Load the tidyverse first:</p>
-
-      <pre class="code" data-lang="R">library(tidyverse)</pre>
-
-      <div class="todo">
-        One code chunk per step of the recommended task above, each with its
-        console output, so the student can match the numbers to what the
-        interactive page showed them.
-      </div>
-    </div>
-  </section>
-
-  <!-- ############ Extension Task 1 ############ -->
-  <section class="task task--extension" id="extension-1">
-    <div class="task-head">
-      <span class="task-badge">Extension Task 1</span>
-      <h2 class="task-title">Task title</h2>
-    </div>
-    <div class="task-body">
-      <div class="todo">
-        A harder variation with less scaffolding — same tools, no step-by-step.
-      </div>
-    </div>
-  </section>
+  <!-- This lesson has no worksheet tasks of its own on purpose -- the interactive
+       page already carries two "Your Task:" prompts, and they are enough. -->
+  <div class="note">
+    <span class="note-label">What to do</span>
+    <p>
+      There are <b>no recommended tasks</b> for this lesson beyond the
+      interactive page itself. Work down the page from top to bottom, reading all
+      of the material, and complete each <b>Your Task:</b> section — the prompts
+      written in blue — as you reach it.
+    </p>
+    <p>There are two of them:</p>
+    <ul>
+      <li><b>Simulating Confidence Intervals</b> — generate 100 intervals and see
+          how many of them capture the true population mean.</li>
+      <li><b>How Does The Size of a Confidence Interval Vary?</b> — change the
+          confidence level and the sample size, and watch what happens to the
+          width of the intervals.</li>
+    </ul>
+    <p>
+      The second task has its explanation in the drop-downs directly above it.
+      Have a genuine go at the task first, using the sliders to see the effect
+      for yourself, then open the drop-downs to check your reasoning.
+    </p>
+    <p>
+      The most important idea on this page is what the 95% actually refers to. If
+      you take only one thing away, make it this: the 95% describes how often the
+      <i>procedure</i> succeeds across many samples, not the chance that any one
+      particular interval contains the true population mean.
+    </p>
+  </div>
 
 </main>
 
