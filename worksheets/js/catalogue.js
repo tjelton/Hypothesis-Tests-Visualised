@@ -21,10 +21,10 @@ window.WORKSHEETS = [
     menu: "Fundamentals",
     folder: "Fundamentals",
     items: [
-      { slug: "box-model-part-1",  title: "The Box Model Part 1 - What is the Box Model?",                 status: "skeleton" },
-      { slug: "box-model-part-2",  title: "The Box Model Part 2 - Central Limit Theorem",                  status: "skeleton" },
+      { slug: "box-model-part-1",  title: "The Box Model Part 1 - What is the Box Model?",                 status: "ready" },
+      { slug: "box-model-part-2",  title: "The Box Model Part 2 - Central Limit Theorem",                  status: "ready" },
       { slug: "box-model-part-3",  title: "The Box Model Part 3 - Modelling Using a Normal Distribution",  status: "ready" },
-      { slug: "confidence-intervals", title: "Confidence Intervals",                                       status: "skeleton" }
+      { slug: "confidence-intervals", title: "Confidence Intervals",                                       status: "ready" }
     ]
   },
   {
