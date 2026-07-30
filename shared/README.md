@@ -1,6 +1,6 @@
-# shared — common engine for the JavaScript ports
+# shared — common engine
 
-Code shared by every JS-port lesson (`t-test-1-sample/`, `t-test-paired/`, …).
+Code shared by every lesson (`t-test-1-sample/`, `t-test-paired/`, …).
 Each lesson is deployed as its own top-level directory on the `gh-pages`
 branch; `shared/` sits alongside them, so pages reference it with `../shared/…`
 (which resolves both locally under `python3 -m http.server` from the repo root
@@ -10,10 +10,10 @@ and on GitHub Pages).
 
 | File | Purpose |
 |---|---|
-| `js/stats.js` | R-equivalent numerics: `pt`/`qt`/`dt`/`qnorm`, `sd`, quantile type 7, `fivenum`, `ppoints`, R-style `round()`/`as.character()`. Verified against R to ~1e-15. |
-| `js/plots.js` | SVG re-implementations of the base-R plots (histogram, boxplot, QQ plot, shaded t-curve). Depends on the global `Stats`. |
-| `js/boxmodel.js` | Port of the Shiny `box_model_html()` helper (blue box → arrow → yellow oval). |
-| `css/style.css` | `tight_card()` look, body zoom, wide modal — mirrors the Shiny bslib theme. |
+| `js/stats.js` | Numerics matching R: `pt`/`qt`/`dt`/`qnorm`, `sd`, quantile type 7, `fivenum`, `ppoints`, R-style `round()`/`as.character()`. Verified against R to ~1e-15. |
+| `js/plots.js` | SVG implementations of the plots (histogram, boxplot, QQ plot, shaded t-curve). Depends on the global `Stats`. |
+| `js/boxmodel.js` | The box-model diagram helper (blue box → arrow → yellow oval). |
+| `css/style.css` | `tight_card()` look, body zoom, wide modal. |
 | `tests/stats.checks.js` | Runner-agnostic assertion suite for `stats.js`. |
 | `tests/reference_values.json` | R-computed ground truth (generated). Also embeds the seeded sample fixture (`sample_stats.han_input`) so the suite needs no lesson data. |
 | `tests/run_jxa.js` | Runs the suite on stock macOS (no Node). |
@@ -34,8 +34,9 @@ In the lesson's `index.html`:
 <script src="js/app.js"></script>          <!-- lesson-specific -->
 ```
 
-A lesson supplies only its own `datasets.js` (its data), `app.js` (its reactive
-wiring), teaching content (`index.html`), and a lesson-chain smoke test.
+A lesson supplies only its own `datasets.js` (its data), `app.js` (its
+interactive wiring), teaching content (`index.html`), and a lesson-chain smoke
+test.
 
 ## Tests
 

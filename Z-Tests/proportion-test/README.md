@@ -1,7 +1,4 @@
-# Proportion Test (z-test) — pure JavaScript port
-
-A dependency-light static-page rewrite of the Shiny "Proportion Test (z-test)"
-lesson (`R/ztest_proportion_test_*.R`). No webR/shinylive: plain HTML + JS.
+# Proportion Test (z-test)
 
 Tests whether an observed proportion is consistent with a hypothesised
 proportion `p0`. Inputs are entered manually (no dataset): the null proportion,
@@ -27,7 +24,7 @@ The numeric engine, plots, box-model helper and CSS live in **`../../shared/`**.
 
 | File | Purpose |
 |---|---|
-| `index.html` | Static teaching content (ported verbatim from the R UI file) |
+| `index.html` | Static teaching content |
 | `js/app.js` | Inputs + proportion box model + normal chain + Wilson CI |
 | `../../shared/js/{stats,plots,boxmodel}.js`, `../../shared/css/style.css` | Shared engine |
 
@@ -44,23 +41,23 @@ its normal-curve overlay) already existed.
 * Assumption 3 shows a 10,000-sample empirical distribution (random) with the
   fitted normal curve overlaid — demonstrating the CLT for the chosen box.
 
-## Fidelity to the Shiny version
+## Reference values
 
-* Default inputs (p0 = 0.7, n = 30, OV = 0.73, mean): EV = 0.7, SE = 0.08367,
-  TS = 0.3586, p (two-sided) = 0.71989, Wilson CI = (0.5521, 0.8557) — confirmed
-  against R. Since 0.7 lies inside the CI and p > 0.05, both conclude "fail to
-  reject", consistent with each other.
-* The confidence interval is the **Wilson score interval** (not the naïve
-  Wald interval), matching the R source.
-* Teaching text is verbatim, including the R source's typos ("Hypotheis",
-  "porportion" in input ids, and the "Model Using Sum or Sample" heading).
+Default inputs (p0 = 0.7, n = 30, OV = 0.73, mean): EV = 0.7, SE = 0.08367,
+TS = 0.3586, p (two-sided) = 0.71989, Wilson CI = (0.5521, 0.8557) — confirmed
+against R. Since 0.7 lies inside the CI and p > 0.05, both routes conclude "fail
+to reject", consistent with each other.
 
-### Faithful quirk
+The confidence interval is the **Wilson score interval**, not the naïve Wald
+interval.
 
-The observed-value input is bounded to `[0, 1]` even in "sum" mode (where a sum
-could exceed 1), exactly as the R app constrains it. In sum mode the test
-statistic is therefore only meaningful for small `EV`; the default "mean" mode
-is the sensible one.
+## Known issues
+
+* **The observed-value input is bounded to `[0, 1]` even in "sum" mode**, where a
+  sum can legitimately exceed 1. In sum mode the test statistic is therefore only
+  meaningful for small `EV`; the default "mean" mode is the sensible one.
+* Unfixed typos: "Hypotheis", "porportion" (in input ids), and the "Model Using
+  Sum or Sample" heading.
 
 ## Tests
 

@@ -1,8 +1,4 @@
-# Regression t-Test — pure JavaScript port
-
-A dependency-light static-page rewrite of the Shiny "Regression t-Test" lesson
-(`R/ttest_regression_*.R` and `R/utility_load_data_regression_2_variable_*.R`).
-No webR/shinylive: the page is plain HTML + hand-written JS.
+# Regression t-Test
 
 The lesson fits a simple linear regression `y ~ x` (OLS) and tests
 **H₀: β₁ = 0** (no linear relationship). All quantities come from
@@ -24,7 +20,7 @@ The numeric engine, plots and CSS live in the sibling **`../../shared/`** direct
 
 | File | Purpose |
 |---|---|
-| `index.html` | All static teaching content (ported verbatim from the R UI file) |
+| `index.html` | All static teaching content |
 | `js/datasets.js` | Generated — the 6 datasets the loader offers (`tools/generate_datasets.R`) |
 | `js/app.js` | Reactive wiring: loader, OLS fit, four residual plots, test stat, p-value, conclusion, CI |
 | `../../shared/js/{stats,plots}.js`, `../../shared/css/style.css` | Shared engine |
@@ -49,30 +45,28 @@ a y numeric column, with an optional split by a categorical variable (only
   the residual plots (`hline` at 0), the ordered-residual line plot
   (`connect`), and the intro horizontal-line plot (`xlim`/`ylim`).
 
-## Fidelity to the Shiny version
+## Reference values
 
-* Default view (study_data, Minutes_Studied → Test_Score, two-sided):
-  β̂₁ = 0.07, s = 3.411, SE = 0.004, TS = 17.877, df = 23, p ≈ 0,
-  CI = (0.0623, 0.0786) — confirmed against R. The iris Sepal.Length →
-  Sepal.Width fit gives TS = −1.44 overall but 7.681 within setosa (a nice
-  Simpson's-paradox illustration), both matching R.
+Default view (study_data, Minutes_Studied → Test_Score, two-sided): β̂₁ = 0.07,
+s = 3.411, SE = 0.004, TS = 17.877, df = 23, p ≈ 0, CI = (0.0623, 0.0786) —
+confirmed against R. The iris Sepal.Length → Sepal.Width fit gives TS = −1.44
+overall but 7.681 within setosa (a nice Simpson's-paradox illustration), both
+matching R.
+
+## Behaviour notes
+
 * The displayed test statistic is `round(t, 3)`; the p-value uses that rounded
-  value with `df = n − 2`, while the CI uses the full-precision slope and SE —
-  matching the R module's exact chain.
+  value with `df = n − 2`, while the CI uses the full-precision slope and SE.
+* The analysis requires ≥ 3 complete `(x, y)` pairs and non-constant `x` before
+  it will render, since a degenerate fit would otherwise produce `NaN`.
 
-### Reproduced R quirks (documented so both versions can be fixed together)
+## Known issues
 
-* The p-value **t-curve plot** is drawn with `df − 1` (the R code passes
-  `df = df() - 1` to the plotting helper, while the p-value uses the full `df`).
-  Visual only.
-* Teaching text is verbatim, including "constant varaince" and the Assumption 4
-  text mislabelling itself "The second assumption".
-
-### Deliberate deviation
-
-* Requires ≥ 3 complete `(x, y)` pairs and non-constant `x` before showing the
-  analysis (a degenerate fit would otherwise produce `NaN`). The R app does not
-  guard this.
+* **The p-value t-curve plot is drawn with `df − 1`** while the p-value uses the
+  full `df`, so the shaded curve does not quite match the number beside it.
+* **Assumption 4's text mislabels itself** "The second assumption".
+* The conclusion says "accept the null hypothesis" rather than "fail to reject".
+* Typo: "constant varaince".
 
 ## Tests
 
@@ -86,7 +80,7 @@ The shared `stats.js` (including `linreg`) is verified by `../../shared/tests/`.
 
 ## Deploying
 
-Per the migration plan in `CLAUDE.md`: copy `T-Tests/t-test-regression/` to the
+Per `CLAUDE.md`: copy `T-Tests/t-test-regression/` to the
 **`gh-pages` branch as a top-level dir**, alongside `shared/` and the other
 lessons, served at
 `https://tjelton.github.io/Hypothesis-Tests-Visualised/T-Tests/t-test-regression/`.

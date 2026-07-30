@@ -1,8 +1,4 @@
-# Introducing the t-Distribution (Motivation) — pure JavaScript port
-
-A dependency-light static-page rewrite of the Shiny "Introducing the
-t-Distribution (Motivation)" lesson (`R/ttest_t_curve_motivation_*.R`). No
-webR/shinylive: the page is plain HTML + hand-written JS.
+# Introducing the t-Distribution (Motivation)
 
 Unlike the t-test lessons, this one has **no data upload and no hypothesis-test
 chain** — it is a conceptual explainer built around two independent interactive
@@ -10,8 +6,8 @@ demos:
 
 * **Demo 1 (overlay):** a degrees-of-freedom slider (1–25) and a "display
   normal curve" checkbox drive a t-density curve, with an optional standard
-  normal overlay. Matching the R *code* (not its prose), the t-curve is drawn
-  as a black solid line and the normal as a red dashed line.
+  normal overlay. The t-curve is drawn as a black solid line and the normal as a
+  red dashed line.
 * **Demo 2 (p-values):** a test-statistic input and a df slider (1–50) drive two
   side-by-side two-sided shaded plots — a standard normal (z-test) and a t-curve
   (t-test) — with each distribution's p-value shown below. This shows the
@@ -31,7 +27,7 @@ The numeric engine, plots and CSS live in the sibling **`../../shared/`** direct
 
 | File | Purpose |
 |---|---|
-| `index.html` | All static teaching content (ported verbatim from the R UI file) |
+| `index.html` | All static teaching content |
 | `js/app.js` | Wiring for the two demos (no data, no test chain) |
 | `../../shared/js/stats.js` | `pnorm`/`dnorm`/`pt`/`dt`, etc. |
 | `../../shared/js/plots.js` | `densityOverlaySVG` (Demo 1) and `shadedNormalCurveSVG`/`shadedTCurveSVG` (Demo 2) |
@@ -47,17 +43,28 @@ its formulas use `\color{red}{…}` to highlight σ vs s.
 * `plots.js` gained `densityOverlaySVG` and `shadedNormalCurveSVG`, and its
   existing shaded-curve logic was generalised into `shadedCurveSVG(density, …)`
   (with `shadedTCurveSVG` now a thin wrapper — the t-test lessons are
-  unaffected). The renderer also now draws just the curve, with no shading, for
-  a blank/NaN test statistic (matching the R app).
+  unaffected). The renderer draws just the curve, with no shading, for a
+  blank/NaN test statistic.
 
-## Fidelity to the Shiny version
+## Behaviour notes
 
-* Demo 2 p-values follow R exactly: `2 * (1 - pnorm(|ts|))` and
-  `2 * (1 - pt(|ts|, df))`, displayed as `as.character(round(p, 5))`.
-* Teaching text is verbatim, including the R prose's quirk of calling the
-  t-curve "red" and the normal "dashed" while the code actually draws the
-  t-curve black and the normal red-dashed. Fix here and in the R source
-  together, so the two versions stay in sync.
+Demo 2 p-values are `2 * (1 - pnorm(|ts|))` and `2 * (1 - pt(|ts|, df))`,
+displayed rounded to 5 dp, and confirmed against R.
+
+## Known issues
+
+Worth prioritising: `../t-test-1-sample/` opens by telling students it is "highly
+recommended" to read this page first, so both of these are hit early.
+
+* **The prose describes the wrong curve colours.** The "T-Distribution and
+  P-Values" section twice refers to "the red t-curve" above "the dashed normal
+  curve", but Demo 1 draws the t-curve **black solid** and the normal **red
+  dashed**. A student told to look at the red curve is looking at the normal.
+* The prose in "When we don't know the population sd!" has its central sentence
+  inverted both ways: it says we "substitute the population standard deviation
+  **for** the sample standard deviation" (it is the other way round) and that we
+  "now write SE instead of ŜE" (again reversed — the estimate is ŜE). The
+  displayed formulas either side are correct.
 
 ## Tests
 
@@ -73,7 +80,7 @@ shared `stats.js` accuracy (including the new `dnorm`) is verified by
 
 ## Deploying
 
-Per the migration plan in `CLAUDE.md`: copy `T-Tests/t-curve-motivation/` to the
+Per `CLAUDE.md`: copy `T-Tests/t-curve-motivation/` to the
 **`gh-pages` branch as a top-level dir**, alongside `shared/` and the other
 lessons, served at
 `https://tjelton.github.io/Hypothesis-Tests-Visualised/T-Tests/t-curve-motivation/`.

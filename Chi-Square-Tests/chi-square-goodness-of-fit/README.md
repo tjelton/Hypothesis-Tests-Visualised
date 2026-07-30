@@ -1,8 +1,7 @@
-# Chi-Square Goodness of Fit Test — pure JavaScript lesson
+# Chi-Square Goodness of Fit Test
 
 A dependency-light static-page lesson in the same style as the other JS ports
-(no webR/shinylive; plain HTML + JS). There is no Shiny predecessor — this
-lesson is new.
+(plain HTML + JS).
 
 Tests whether the counts observed across the categories of a single qualitative
 variable are consistent with a hypothesised set of proportions. Inputs are
