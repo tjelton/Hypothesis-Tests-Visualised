@@ -51,20 +51,21 @@ its formulas use `\color{red}{…}` to highlight σ vs s.
 Demo 2 p-values are `2 * (1 - pnorm(|ts|))` and `2 * (1 - pt(|ts|, df))`,
 displayed rounded to 5 dp, and confirmed against R.
 
-## Known issues
+Demo 2's two plots share an x-range but are each scaled to their own curve's
+peak density, so the curves cannot be compared by height across the pair — only
+the printed p-values (and each plot's own shaded fraction) are comparable. The
+prose says so.
 
-Worth prioritising: `../t-test-1-sample/` opens by telling students it is "highly
-recommended" to read this page first, so both of these are hit early.
+Demo 1's y-range is fixed by the taller of the two densities whether or not the
+normal overlay is shown, so the t-curve does not jump scale when the checkbox is
+toggled.
 
-* **The prose describes the wrong curve colours.** The "T-Distribution and
-  P-Values" section twice refers to "the red t-curve" above "the dashed normal
-  curve", but Demo 1 draws the t-curve **black solid** and the normal **red
-  dashed**. A student told to look at the red curve is looking at the normal.
-* The prose in "When we don't know the population sd!" has its central sentence
-  inverted both ways: it says we "substitute the population standard deviation
-  **for** the sample standard deviation" (it is the other way round) and that we
-  "now write SE instead of ŜE" (again reversed — the estimate is ŜE). The
-  displayed formulas either side are correct.
+## Content notes
+
+The lesson deliberately leaves two things for later exercises (the conclusion
+says so): how the degrees-of-freedom value is chosen (`df = n - 1` for the
+1-sample case), and the normality assumption under which the test statistic
+follows a t-distribution exactly.
 
 ## Tests
 
