@@ -38,7 +38,7 @@
       <div class="tight-card accent">
         <div class="tight-card-title">Input Sample Data</div>
         <div class="tight-card-body">
-          <p>In order to do a 1-sample z-test , we first need to proivde our single (one) sample that we will be analysing. Below you can
+          <p>In order to do a 1-sample z-test, we first need to provide our single (one) sample that we will be analysing. Below you can
              choose pre-uploaded data to analyse, or you can manually enter data.</p>
           <br>
           <p><b>What data source will you be using?</b></p>
@@ -59,7 +59,7 @@
               <select class="form-select" id="dataset-select"></select>
             </div>
             <div class="mb-3" id="column-block">
-              <label class="form-label" for="column-select">Which column containing numeric deata would you like to analyse?</label>
+              <label class="form-label" for="column-select">Which column containing numeric data would you like to analyse?</label>
               <select class="form-select" id="column-select"></select>
             </div>
             <div class="mb-3 d-none" id="factor-block">
@@ -78,7 +78,7 @@
             <p><b>Enter data into the text box below.</b></p>
             <ul>
               <li>All values must be numeric, and numbers should contain no spaces or any characters other than a . for a decimal place.</li>
-              <li>Each value must be on it's own line, or comma seperated.</li>
+              <li>Each value must be on its own line, or comma separated.</li>
               <li>Don't forget to press 'Upload' once you are finished!</li>
             </ul>
             <textarea class="form-control" id="manual-textarea" rows="3" style="width:100%;"></textarea>
@@ -117,12 +117,13 @@
                 <h2 class="accordion-header"><button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#null-acc-1"><b>Step 1) Specify Population Standard Deviation (σ)</b></button></h2>
                 <div id="null-acc-1" class="accordion-collapse collapse show" data-bs-parent="#null-accordion"><div class="accordion-body">
                   <p>
-                    An assumption for the 1-sample z-test is that the standard deviation of the population (denoted \(\sigma\)) in which our sample is drawn is
-                    known. For example, a prior research paper may have estimated the population standard deviation, and you could use the value they discovered.<br><br>
-                    For this exercise, you can manually set the population standard deviation. However, for the most part, it is likely that the population standard
-                    deviation is unknown. Hence, for the purposes of this exercise, you can set the population standard deviation to be equal to the sample standard
-                    deviation (this has been automatically done below, but you are free to change the value). In practice, this is far from ideal, and in a future
-                    exercise, we will use the 1-sample t-test when the population standard deviation is unknown.
+                    An assumption for the 1-sample z-test is that the standard deviation of the population (denoted \(\sigma\)) from which our sample is drawn is
+                    known. For example, a prior research paper may have estimated the population standard deviation, and you could use the value they discovered.
+                    In Mr. Han’s case study, \(\sigma = 7.5\) was known from years of exam results, and that is the value loaded below.<br><br>
+                    If you switch to one of the other data sets, no such value exists, and that is the realistic situation — most of the time \(\sigma\) is simply
+                    unknown. The button below lets you plug in the sample standard deviation so you can keep exploring, but it is only a stand-in for a value this
+                    test assumes we already know. When \(\sigma\) is genuinely unknown, the right tool is the
+                    <a href="../../T-Tests/t-test-1-sample/">1-sample t-test</a>, which is built to handle exactly that.
                   </p>
                   <br>
                   <div class="row align-items-center">
@@ -136,8 +137,9 @@
                 <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#null-acc-2"><b>Step 2) Specify NULL Hypothesis</b></button></h2>
                 <div id="null-acc-2" class="accordion-collapse collapse" data-bs-parent="#null-accordion"><div class="accordion-body">
                   <p>Next we need to specify the 'null' hypothesis. In this test we are focusing on the mean, so the null hypothesis is that the population mean
-                     is equal to some value which we set below.</p>
-                  <p style="font-size: 16px; text-align: right;">Given \(\mu \), where \(\mu \) is the mean of some variable:</p>
+                     is equal to some value which we set below. Note that this is the mean of the population our sample was drawn from — a quantity we cannot
+                     observe — and not the mean of the sample itself, which we can simply calculate.</p>
+                  <p style="font-size: 16px; text-align: right;">Given \(\mu \), where \(\mu \) is the population mean of the variable being analysed:</p>
                   <div class="row">
                     <div class="col-sm-7"></div>
                     <div class="col-sm-2"><p style="font-size: 16px; text-align: right;">\( H_0: \) \(\mu = \)</p></div>
@@ -171,10 +173,12 @@
         <div class="tight-card accent">
           <div class="tight-card-title">The Alternate Hypothesis</div>
           <div class="tight-card-body">
-            <p>Specify what type of alternate hypothesis you will be using below:</p>
+            <p>Specify what type of alternate hypothesis you will be using below. This starts on <b>one sided (greater than)</b> to match Mr. Han’s case study, where
+               the question was specifically whether his students average <i>above</i> 140. Choose the two-sided option when the question is whether the mean differs
+               from the null value in <i>either</i> direction, which is the more common situation.</p>
             <br>
-            <div class="form-check"><input class="form-check-input" type="radio" name="alternate_hypothesis_choice" id="alt-1" value="1" checked><label class="form-check-label" for="alt-1">Two Sided</label></div>
-            <div class="form-check"><input class="form-check-input" type="radio" name="alternate_hypothesis_choice" id="alt-2" value="2"><label class="form-check-label" for="alt-2">One Sided (greater than)</label></div>
+            <div class="form-check"><input class="form-check-input" type="radio" name="alternate_hypothesis_choice" id="alt-1" value="1"><label class="form-check-label" for="alt-1">Two Sided</label></div>
+            <div class="form-check"><input class="form-check-input" type="radio" name="alternate_hypothesis_choice" id="alt-2" value="2" checked><label class="form-check-label" for="alt-2">One Sided (greater than)</label></div>
             <div class="form-check"><input class="form-check-input" type="radio" name="alternate_hypothesis_choice" id="alt-3" value="3"><label class="form-check-label" for="alt-3">One Sided (less than)</label></div>
           </div>
         </div>
@@ -199,37 +203,51 @@
             <div class="accordion-item">
               <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#assump-1"><b>Assumption 1: Independent Sample</b></button></h2>
               <div id="assump-1" class="accordion-collapse collapse" data-bs-parent="#assump-accordion"><div class="accordion-body">
-                <p>The first assumption is that our sample is <b>independent and randomly chosen</b>.</p>
-                <p><span style="color: blue;"><b>How do we check?</b></span> <i>We check by investigating the experimental setup.</i><br><br>
-                   For example, consider we were investigating data for a proportion test involving human participants. We could read the accompanying scientific
-                   publication to understand the methodology they used to gather the people in the sample.</p>
+                <p>The first assumption is that our sample is <b>independent and randomly chosen</b> from the population we want to draw a conclusion about. This is
+                   what licenses us to treat the sample mean as evidence about the population mean at all.</p>
+                <p><span style="color: blue;"><b>How do we check?</b></span> <i>We check by investigating the experimental setup.</i> There is no plot or number on this
+                   page that can tell us whether this assumption holds — it is a question about how the data was collected, so we have to look at how the study was
+                   run.<br><br>
+                   In Mr. Han’s case study the assumption is <b>satisfied</b>, and it is worth seeing why. The board handed him 25 papers drawn <i>at random</i> from
+                   across the country, so every student who sat the exam was equally likely to be in his pile, and one paper landing in it tells us nothing about which
+                   others did. That is exactly what the box model assumes: 25 independent draws from the box.<br><br>
+                   Contrast this with what would happen if Mr. Han had instead marked the 25 papers from his own class. That is also 25 marks, and the arithmetic on
+                   this page would run just the same, but they would be one class taught by one teacher, quite possibly streamed by ability. Nothing in the calculation
+                   would warn us; the conclusion would simply not be about the country’s students any more. When you work with real data, you would read the methodology
+                   section of the accompanying publication and ask exactly this question of it.</p>
               </div></div>
             </div>
             <div class="accordion-item">
               <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#assump-2"><b>Assumption 2: Normality</b></button></h2>
               <div id="assump-2" class="accordion-collapse collapse" data-bs-parent="#assump-accordion"><div class="accordion-body">
-                <p>The second assumption is that the sample means follow a normal distribution.</p>
+                <p>The second assumption is that the <b>sample mean</b> follows a normal distribution — that is, if we kept drawing fresh samples of this size from
+                   the box and recorded each sample mean, those means would form a normal curve. This is what lets us read the p-value off a normal curve further down
+                   the page. Note that the assumption is about the sample <i>mean</i>, not about the individual values.</p>
+                <p>There are two separate routes to it, and it is worth knowing which one you are relying on.</p>
                 <p><span style="color: blue;"><b>How do we check?</b></span><br><br>
-                   <b>Idea 1: Large n</b><br>
-                   Recall that the central limit theorem tells us that if we take a sufficiently large number of draws from the box, then the sample
-                   means will approximately follow a normal distribution. If confused, please do the exerice at Fundamentals &gt; Box Model Part 2.</p>
+                   <b>Idea 1: Large n</b></p>
                 <ul>
                   <li>Recall that the central limit theorem tells us that if we take a sufficiently large number of draws from the box, then the sample
-                      means will approximately follow a normal distribution. If confused, please do the exerice at Fundamentals &gt; Box Model Part 2.</li>
+                      means will approximately follow a normal distribution, <b>whatever shape the values in the box have</b>. If confused, please do the exercise at
+                      Fundamentals &gt; Box Model Part 2.</li>
                   <li>One way to gauge whether the central limit theorem holds or not is to see how large our sample is (this is indicated by the "n" in
                       the box model above).</li>
-                  <li>Many textbooks will say that you can say that you can use the rule of thumb that the central limit theorem will apply if we have 30
+                  <li>Many textbooks will say that you can use the rule of thumb that the central limit theorem will apply if we have 30
                       or more draws. BEWARE - this is not always true! If the distribution of the values is very skewed, you will need much more than 30 draws!</li>
                 </ul>
                 <br>
                 <p><b>Idea 2: QQ-plot, Boxplot and Histogram</b><br>
-                   We learnt that if our data has some specific properties, then required a smaller value for n for the CLT to apply. In particular...</p>
+                   The other route is the shape of the data itself. The central limit theorem is what rescues us when the values in the box are <i>not</i> normal. If
+                   they are already normal, we do not need it at all: the sample mean is then exactly normal for <i>any</i> sample size, even a very small one. So the
+                   closer our data looks to normal, the less we are leaning on a large n.</p>
                 <ul>
-                  <li>(QQ-plot) If the sample closely follows the QQ line, it suggests the data is normally distribued. Data that is normally distributed
-                      requires far less point for the CLT to apply.</li>
-                  <li>(Boxplot and Histogram) If the data is symmetric, less points are required for the CLT. These plots can also be used to indicate whether the
-                      data appears to be normally distributed.</li>
+                  <li>(QQ-plot) If the sample closely follows the QQ line, it suggests the data is normally distributed, and the assumption is on firm ground
+                      regardless of n.</li>
+                  <li>(Boxplot and Histogram) If the data is symmetric, fewer points are needed for the central limit theorem to do its job. These plots can also be
+                      used to indicate whether the data appears to be normally distributed.</li>
                 </ul>
+                <p><i>Be careful about the direction of this reasoning: these plots show us the shape of the sample, and we are using that as a clue about the shape of
+                   the box. A small sample can look non-normal by chance even when the box is normal, and vice versa.</i></p>
                 <div class="row">
                   <div class="col-sm-4"><div id="qq-plot"></div></div>
                   <div class="col-sm-4"><div id="assump-boxplot"></div></div>
@@ -240,7 +258,14 @@
             <div class="accordion-item">
               <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#assump-3"><b>Assumption 3: Known Population Standard Deviation</b></button></h2>
               <div id="assump-3" class="accordion-collapse collapse" data-bs-parent="#assump-accordion"><div class="accordion-body">
-                <p>As mentioned previously in "The NULL Hypothesis - Setting up the Box" section, it is assumed that the population standard deviation is known.</p>
+                <p>As mentioned previously in "The NULL Hypothesis - Setting up the Box" section, it is assumed that the population standard deviation is known. This
+                   is the assumption that makes this a <i>z</i>-test: because \(\sigma\) is treated as a known constant, the test statistic sits on a standard normal
+                   curve and there are no degrees of freedom to worry about.</p>
+                <p><span style="color: blue;"><b>How do we check?</b></span> <i>Like Assumption 1, this is not something the data can answer.</i> We ask where the value
+                   of \(\sigma\) came from. A value established from a large body of prior results satisfies the assumption, and Mr. Han’s case study is a rare example
+                   of this genuinely holding: the exam has run for years, so the spread of marks across the country is already known to be 7.5, and Mr. Han is marking
+                   papers from that same population. A value computed from the sample we are about to test does <b>not</b> satisfy the assumption — in that case it is
+                   violated, and the <a href="../../T-Tests/t-test-1-sample/">1-sample t-test</a> is the appropriate test instead.</p>
               </div></div>
             </div>
           </div>
@@ -255,7 +280,7 @@
       <div class="tight-card accent">
         <div class="tight-card-title">Test Statistic</div>
         <div class="tight-card-body"><div class="row">
-          <div class="col-sm-6"><p><b>Step 1) Calculate Expected Value (SE) and Standard Error (SE)</b></p><div id="ev-se-out"></div></div>
+          <div class="col-sm-6"><p><b>Step 1) Calculate Expected Value (EV) and Standard Error (SE)</b></p><div id="ev-se-out"></div></div>
           <div class="col-sm-6"><p><b>Step 2) Test Statistic Calculation</b></p><div id="ts-out"></div></div>
         </div></div>
       </div>
@@ -283,7 +308,7 @@
       <div class="tight-card accent">
         <div class="tight-card-title">Conclusion (p-value)</div>
         <div class="tight-card-body">
-          <p>One way to tell whether we accept or reject the null hypothesis is to observe whether our p-value is below or above the significance level.</p>
+          <p>One way to tell whether we reject the null hypothesis is to observe whether our p-value is below or above the significance level.</p>
           <div class="row">
             <div class="col-sm-6">
               <p><b>Step 1) What is your significance level</b>?</p>
@@ -291,7 +316,7 @@
                 <div class="col-2 col-sm-1"><p style="font-size: 16px; text-align: right; margin-bottom:0;">\( \alpha = \)</p></div>
                 <div class="col-4 col-sm-3"><input type="number" class="form-control" id="alpha-input" value="0.05" min="0" max="1" step="any" style="width:100%;"></div>
               </div>
-              <div id="alpha-warning" class="d-none"><span style="color: red;"><p>Error: The value for α must be between 0 and 1.</p></span></div>
+              <div id="alpha-warning" class="d-none"><span style="color: red;"><p>Error: The value for α must be strictly between 0 and 1. Reverted to 0.05.</p></span></div>
             </div>
             <div class="col-sm-6"><p><b>Step 2) Final Conclusion</b></p><div id="conclusion-out"></div></div>
           </div>
@@ -307,20 +332,25 @@
         <div class="tight-card-title">Conclusion (Confidence Interval)</div>
         <div class="tight-card-body">
           <p>
-            A confidence interval in a 1-sample z-test shows the range of population means that are plausible at the chosen confidence level, and if the
-            hypothesized mean falls outside this range, the null hypothesis is rejected.
-            <br><br>
-            We can also use a confidence interval to tell us whether we should accept or reject the null hypothesis. If the expected value DOES NOT lie within the
-            confidence interval, then we reject the null hypothesis.
+            A confidence interval gives us a second route to the same decision. It is built around our observed sample mean and gives a plausible range for the
+            unknown population mean. If the null hypothesis value falls outside that range, the null value is not among the plausible ones, and we reject the
+            null hypothesis.
           </p>
           <div class="row">
             <div class="col-sm-6">
-              <p><b>Step 1) What is your confidence level</b>?</p>
-              <div class="row align-items-center">
-                <div class="col-2 col-sm-1"><p style="font-size: 16px; text-align: right; margin-bottom:0;">\( \alpha = \)</p></div>
-                <div class="col-4 col-sm-3"><input type="number" class="form-control" id="conf-input" value="0.95" min="0" max="1" step="any" style="width:100%;"></div>
-              </div>
-              <div id="conf-warning" class="d-none"><span style="color: red;"><p>Error: The value for confidence level must be between 0 and 1.</p></span></div>
+              <p><b>Step 1) Where does the confidence level come from?</b></p>
+              <p>
+                There is nothing to set here. The confidence level is not a free choice alongside \(\alpha\) — it is determined by it:
+              </p>
+              <p style="font-size: 16px; text-align: center;">\( \text{confidence level} = 1 - \alpha \)</p>
+              <div id="conf-level-out"></div>
+              <p>
+                This matters. The confidence interval and the p-value are two ways of reading the <i>same</i> calculation, so they always reach the same verdict — but
+                only when they are set up to describe the same test. That means using \(1 - \alpha\) as the level, and matching the interval to the alternate
+                hypothesis: a two-sided interval for a two-sided test, and a one-sided interval for a one-sided test. Both are done for you below. If you change
+                \(\alpha\) or the alternate hypothesis above, the interval here follows.
+              </p>
+              <p><i>So if the two conclusions ever disagreed, that would be a sign we had described two different tests, not a genuine statistical puzzle.</i></p>
             </div>
             <div class="col-sm-6"><p><b>Step 2) Final Conclusion</b></p><div id="ci-out"></div></div>
           </div>
@@ -344,28 +374,33 @@
       </div>
       <div class="modal-body">
         <p>
-          Suppose that in a made-up country, there is a statistics exam that all high school students take. If a student received a mark in the exam of 140 or over,
-          it means that they are demonstrating a satisfactory level of statistical knowledge as deemed by the education board. Based on data from multiple years, it’s
-          known that the population standard deviation in test scores is 7.5.<br><br>
-          Mr. Han is a statistics teacher who has been testing some new innovative teaching methods. In particular, he wants to test whether the average exam grade for
-          the 25 students in his class is statistically greater than a mark of 140.<br><br>
-          To do this, Mr. Han sets up a hypothesis test. He lets the symbol \(\mu \) represent the average of his class. He sets up the null hypothesis that his class’s
-          average grade is 140. Mathematically, this is written as:<br>
+          Suppose that in a made-up country, there is a statistics exam that all high school students take. The education board considers a year group to be
+          demonstrating a satisfactory level of statistical knowledge if it averages a mark of 140 or more. Based on data from multiple years, it’s known that the
+          population standard deviation in test scores is 7.5.<br><br>
+          The exam is marked by hand, so the full results take weeks to come in. Mr. Han is a statistics teacher who also marks exams for the education board, and
+          this year the board wants an early indication of whether the country’s students have met the standard. Mr. Han is given a random sample of 25 papers,
+          drawn from across the country, and marks those.<br><br>
+          He lets the symbol \(\mu \) represent the average mark of <b>every</b> student who sat the exam. This is the number the board wants, and the number nobody
+          has: only 25 papers out of many thousands have been marked so far. Mr. Han’s null hypothesis is the cautious position — that the country’s students sit
+          exactly at the board’s standard of 140, and no higher. Mathematically, this is written as:<br>
           <center><p style="font-size: 16px">\( H_{0} : \mu = 140 \)</p></center><br>
-          When setting up the alternate hypothesis, because Mr. Han is interested in seeing if his innovative teaching approach leads to marks greater than 140, we set up a
+          When setting up the alternate hypothesis, because the board is interested in whether the standard has been exceeded, we set up a
           one-sided alternate hypothesis, written mathematically as:
           <center><p style="font-size: 16px">\( H_{1} : \mu > 140 \)</p></center><br>
-          Mr. Han’s main idea is that we will use our sample of 25 students to determine whether there is evidence to support or reject the null hypothesis.
+          Mr. Han’s main idea is that we will use his sample of 25 papers to determine whether there is evidence against the null hypothesis. Notice how the two
+          quantities here differ: the average of his 25 marks is something he can simply calculate, whereas \(\mu \) is a fixed number he will never see. The whole
+          purpose of the hypothesis test is to use the first to learn about the second.
         </p>
         <div class="row">
           <div class="col-sm-8">
             <p>
               <h5><u>How does Mr. Han go about doing this?</u></h5><br>
-              We can use the box model to model the hypothesis test. However, there is a caveat: We do not know all the specific tickets to place in the box. Instead, we
-              will specify the mean and standard deviation to summarise the tickets in the box. From the null hypothesis, we are claiming that the mean of the box is 140.
-              We also know that the population standard deviation (denoted by \(\mu \)) is equal to 7.5. Hence, we place these values into the box.<br><br>
-              Next, we want to turn our attention to the test scores that Mr. Han’s students achieved in the class. Let’s say that the 25 students had an average score of
-              142.843. As there were 25 students, we specify: \(n = 25 \). The average score of 142.843 is referred to as the observed value (OV). With these details drawn,
+              We can use the box model to model the hypothesis test. The box holds one ticket for every student who sat the exam, and Mr. Han’s 25 marks are 25 draws
+              from it. However, there is a caveat: We do not know all the specific tickets to place in the box. Instead, we will specify the mean and standard deviation
+              to summarise the tickets in the box. From the null hypothesis, we are claiming that the mean of the box is 140. We also know that the population standard
+              deviation (denoted by \(\sigma \)) is equal to 7.5. Hence, we place these values into the box.<br><br>
+              Next, we want to turn our attention to the marks on the 25 papers Mr. Han was given. Let’s say those 25 papers had an average mark of
+              142.843. As there were 25 papers, we specify: \(n = 25 \). The average mark of 142.843 is referred to as the observed value (OV). With these details drawn,
               we have completed the box model representation.<br><br>
             </p>
           </div>
@@ -376,8 +411,10 @@
         \\ &= \frac{\text{OV} - \text{EV}}{\frac{\sigma}{\sqrt{n}}}
         \\ &= \frac{142.843 - 140}{\frac{7.5}{\sqrt{25}}}
         \\ &= 1.895 \text{ (3 decimal places)} \end{align*}$$
-        <p>With the test statistic found, Mr. Han is ready to find the p-value. Play around with the remainder of this exercise to help Mr. Han find the p-value, and test whether
-           the null hypothesis is supported or rejected.</p>
+        <p><i>The exercise below carries the sample average through the calculation without rounding it to 142.843 first, so it reports a test statistic of 1.8956. The
+           small difference is rounding alone.</i></p>
+        <p>With the test statistic found, Mr. Han is ready to find the p-value. This exercise opens with Mr. Han’s data already loaded, his hypotheses already set, and
+           \(\sigma = 7.5\) already entered, so you can work straight down the page to find the p-value and test whether the null hypothesis should be rejected.</p>
       </div>
       <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button></div>
     </div>

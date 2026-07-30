@@ -4,16 +4,14 @@
 // with two independent demos:
 //
 //   Demo 1 (overlay): a df slider (1-25) and a "display normal curve" checkbox
-//     drive a t-density curve (black) with an optional dashed standard-normal
-//     overlay (red). Ports the `changing_df_graph` renderPlot.
+//     drive a t-density curve (black solid) with an optional standard-normal
+//     overlay (red dashed) -- the colours the page's prose refers to.
+//     Ports the `changing_df_graph` renderPlot.
 //
 //   Demo 2 (p-values): a test-statistic input and a df slider (1-50) drive two
 //     side-by-side two-sided shaded plots -- a standard normal (z-test) and a
 //     t-curve (t-test) -- with the corresponding p-values shown below each.
 //     Ports the `test_stat_*_plot` / `p_value_*` outputs.
-//
-// Note: matching the R code (not its prose), Demo 1 draws the t-curve as a
-// black solid line and the normal as a red dashed line.
 
 "use strict";
 

@@ -1,8 +1,4 @@
-# 2-Sample t-Test — pure JavaScript port
-
-A dependency-light static-page rewrite of the Shiny "2-Sample t-Test" lesson
-(`R/ttest_2_sample_*.R` and `R/utility_load_data_2_sample_*.R`). No
-webR/shinylive: the page is plain HTML + hand-written JS.
+# 2-Sample t-Test
 
 The test compares two independent samples. A "Same Spread" toggle switches
 between a **pooled-variance** 2-sample t-test and a **Welch** t-test, which
@@ -27,7 +23,7 @@ The numeric engine, plots and CSS live in the sibling **`../../shared/`** direct
 
 | File | Purpose |
 |---|---|
-| `index.html` | All static teaching content (ported verbatim from the R UI file) |
+| `index.html` | All static teaching content |
 | `js/datasets.js` | Generated — the 6 datasets the loader offers (`tools/generate_datasets.R`) |
 | `js/app.js` | Reactive wiring: the data loader, both box models, pooled/Welch chain, p-value, conclusion, CI |
 | `../../shared/js/{stats,plots,boxmodel}.js`, `../../shared/css/style.css` | Shared engine |
@@ -36,11 +32,11 @@ External assets (CDN): Bootstrap 5 (Bootswatch Lumen) and MathJax 3.
 
 ## Datasets
 
-Copied from the R loader: the synthetic `blood_pressure` set
-(`set.seed(1)`, two `rnorm` groups of 50), plus `iris`, `InsectSprays`, `CO2`,
-`ToothGrowth`, `PlantGrowth` from R's `datasets` package. The loader splits a
-chosen numeric (dependent) variable by a chosen categorical variable into two
-samples. `tools/generate_datasets.R` reproduces the exact values.
+The synthetic `blood_pressure` set (`set.seed(1)`, two `rnorm` groups of 50),
+plus `iris`, `InsectSprays`, `CO2`, `ToothGrowth`, `PlantGrowth` from R's
+`datasets` package. The loader splits a chosen numeric (dependent) variable by a
+chosen categorical variable into two samples. `tools/generate_datasets.R`
+reproduces the exact values.
 
 ## Shared-code additions made for this lesson
 
@@ -50,26 +46,31 @@ samples. `tools/generate_datasets.R` reproduces the exact values.
   horizontal-box drawing was factored into a shared helper — the other lessons
   are unaffected.
 
-## Fidelity to the Shiny version
+## Reference values
 
-* Default view (blood_pressure, Drug_A vs Drug_B, equal variance, two-sided):
-  TS = 2.6759, df = 98, p = 0.00874, CI = (1.2483, 8.4141) — confirmed against
-  R. (Because n1 = n2 = 50, the pooled and Welch SEs coincide, but the df and
-  hence the p-values differ slightly, as expected.)
-* The test statistic uses the **full-precision** SE and means (rounded only at
-  the final step to 4 dp); the p-value then uses that rounded TS string with
-  the **full-precision** df — matching the R module's exact chain.
+Default view (blood_pressure, Drug_A vs Drug_B, equal variance, two-sided):
+TS = 2.6759, df = 98, p = 0.00874, CI = (1.2483, 8.4141) — confirmed against R.
+(Because n1 = n2 = 50 the pooled and Welch SEs coincide, but the df and hence the
+p-values differ slightly, as expected.)
 
-### Reproduced R quirks (documented so both versions can be fixed together)
+## Behaviour notes
 
-* The p-value **t-curve plot** is drawn with `df − 1` (the R code passes
-  `df = df() - 1` to the plotting helper, while the p-value itself uses the
-  full `df`). Visual only.
-* The intro modal's **Sample 2 box mislabels** its stats with subscript 1
-  (s₁/OV₁/n₁) — a copy-paste from the Sample 1 box in the R source. The
-  main-page Sample 2 box is correctly subscripted (s₂/OV₂/n₂).
-* Teaching text is verbatim, including the typo "eqaul variance" in the spread
-  decision message and "vlaues"/"obervation" in the assumption text.
+The test statistic uses the **full-precision** SE and means, rounded only at the
+final step to 4 dp; the p-value then uses that rounded TS string with the
+**full-precision** df.
+
+## Known issues
+
+* **The p-value t-curve plot is drawn with `df − 1`** while the p-value itself
+  uses the full `df`, so the shaded curve does not quite match the number beside
+  it. Visual only, but it is the plot students read.
+* **The intro modal's Sample 2 box mislabels its stats with subscript 1**
+  (s₁/OV₁/n₁). The main-page Sample 2 box is correctly subscripted.
+* The conclusion says "accept the null hypothesis" rather than "fail to reject".
+* The p-value section's last paragraph says the test statistic falls on a
+  "standard normal curve" rather than a t-curve.
+* Typos: "eqaul variance" in the spread decision message, "vlaues" and
+  "obervation" in the assumption text.
 
 ## Tests
 
@@ -85,7 +86,7 @@ verified by `../../shared/tests/`.
 
 ## Deploying
 
-Per the migration plan in `CLAUDE.md`: copy `T-Tests/t-test-2-sample/` to the
+Per `CLAUDE.md`: copy `T-Tests/t-test-2-sample/` to the
 **`gh-pages` branch as a top-level dir**, alongside `shared/` and the other
 lessons, served at
 `https://tjelton.github.io/Hypothesis-Tests-Visualised/T-Tests/t-test-2-sample/`.

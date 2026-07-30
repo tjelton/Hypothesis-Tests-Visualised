@@ -41,7 +41,7 @@
       <div class="tight-card accent">
         <div class="tight-card-title">Input Sample Data</div>
         <div class="tight-card-body">
-          <p>In order to do a 1-sample t-test , we first need to proivde our single (one) sample that we will be analysing. Below you can
+          <p>In order to do a 1-sample t-test, we first need to provide our single (one) sample that we will be analysing. Below you can
              choose pre-uploaded data to analyse, or you can manually enter data.</p>
           <br>
           <p><b>What data source will you be using?</b></p>
@@ -62,7 +62,7 @@
               <select class="form-select" id="dataset-select"></select>
             </div>
             <div class="mb-3" id="column-block">
-              <label class="form-label" for="column-select">Which column containing numeric deata would you like to analyse?</label>
+              <label class="form-label" for="column-select">Which column containing numeric data would you like to analyse?</label>
               <select class="form-select" id="column-select"></select>
             </div>
             <div class="mb-3 d-none" id="factor-block">
@@ -81,7 +81,7 @@
             <p><b>Enter data into the text box below.</b></p>
             <ul>
               <li>All values must be numeric, and numbers should contain no spaces or any characters other than a . for a decimal place.</li>
-              <li>Each value must be on it's own line, or comma seperated.</li>
+              <li>Each value must be on its own line, or comma separated.</li>
               <li>Don't forget to press 'Upload' once you are finished!</li>
             </ul>
             <textarea class="form-control" id="manual-textarea" rows="3" style="width:100%;"></textarea>
@@ -139,7 +139,7 @@
                       hypothesis. In this test we are focusing on the mean, so the null hypothesis is that the population mean is equal to some value which
                       we set below.
                     </p>
-                    <p style="font-size: 16px; text-align: right;">Given \(\mu \), where \(\mu \) is the mean of some variable:</p>
+                    <p style="font-size: 16px; text-align: right;">Given \(\mu \), where \(\mu \) is the population mean of the variable being analysed:</p>
                     <div class="row">
                       <div class="col-sm-7"></div>
                       <div class="col-sm-2">
@@ -163,9 +163,11 @@
                     <p>In case you are confused about where all the values in the diagram have come from, these come from the sample data that you previously
                        specified. In particular:</p>
                     <ul>
-                      <li>\(s \) represents the sample standard deviation. Unlike the 1-sample z-test which requires that the population standard
-                          deviation is known, the 1-sample t-test removes this assumption, instead using the standard deviation of the sample and then later
-                          the t-distribution to determine the p-value.</li>
+                      <li>The box is labelled \(\sigma \approx s \). Read this as: the box's real spread \(\sigma \) is unknown, so we are standing the
+                          sample's standard deviation \(s \) in for it. Unlike the 1-sample z-test, which requires that \(\sigma \) is genuinely known, the
+                          1-sample t-test drops that requirement — it uses \(s \) and then compensates by finding the p-value from the t-distribution rather
+                          than the normal. The \(\approx \) is doing real work: \(s \) is an estimate, not the true value, and everything that follows is
+                          arranged around that.</li>
                       <li>The value for \(n \) comes from the number of values in the sample chosen above.</li>
                       <li>The observed value (\(\text{OV} \)) comes from the mean of the sample chosen above.</li>
                     </ul>
@@ -240,10 +242,12 @@
                 </h2>
                 <div id="assump-acc-1" class="accordion-collapse collapse" data-bs-parent="#assumptions-accordion">
                   <div class="accordion-body">
-                    <p>The first assumption is that our sample is <b>independent and randomly chosen</b>.</p>
-                    <p><span style="color: blue;"><b>How do we check?</b></span> <i>We check by investigating the experimental setup.</i><br><br>
-                       For example, consider we were investigating data for a sample involving human participants. We could read the accompanying scientific
-                       publication to understand the methodology they used to gather the people in the sample.</p>
+                    <p>The first assumption is that our sample is <b>independent and randomly chosen</b> from the population we want to draw a conclusion about.</p>
+                    <p><span style="color: blue;"><b>How do we check?</b></span> <i>We check by investigating the experimental setup.</i> No plot or number on this
+                       page can tell us whether this holds — it is a question about how the data was collected.<br><br>
+                       In Mr. Han's case study the assumption is <b>satisfied</b>: the board handed him 25 papers drawn at random from across the country, so every
+                       student who sat the exam was equally likely to be in his pile, and one paper landing there tells us nothing about which others did. With real
+                       data you would read the methodology section of the accompanying publication and ask exactly this question of it.</p>
                   </div>
                 </div>
               </div>
@@ -255,32 +259,37 @@
                 </h2>
                 <div id="assump-acc-2" class="accordion-collapse collapse" data-bs-parent="#assumptions-accordion">
                   <div class="accordion-body">
-                    <p>The second assumption is that the sample means follow a normal distribution.</p>
-                    <p><span style="color: blue;"><b>How do we check?</b></span>
-                       <br><br>
-                       <b>Idea 1: Large n</b><br>
-                       Recall that the central limit theorem tells us that if we take a sufficiently large number of draws from the box, then the sample
-                       means will approximately follow a normal distribution. If confused, please do the exerice at Fundamentals &gt; Box Model Part 2.
-                    </p>
+                    <p>The second assumption is that the <b>sample mean</b> follows a normal distribution — that is, if we kept drawing fresh samples of this size
+                       from the box and recorded each sample mean, those means would form a normal curve. Note that the assumption is about the sample
+                       <i>mean</i>, not about the individual values.</p>
+                    <p><span style="color: blue;"><b>How do we check?</b></span></p>
+                    <p><b>Idea 1: Large n</b></p>
                     <ul>
                       <li>Recall that the central limit theorem tells us that if we take a sufficiently large number of draws from the box, then the sample
-                          means will approximately follow a normal distribution. If confused, please do the exerice at Fundamentals &gt; Box Model Part 2.</li>
+                          means will approximately follow a normal distribution, <b>whatever shape the values in the box have</b>. If confused, please do the
+                          exercise at Fundamentals &gt; Box Model Part 2.</li>
                       <li>One way to gauge whether the central limit theorem holds or not is to see how large our sample is (this is indicated by the "n" in
                           the box model above).</li>
-                      <li>Many textbooks will say that you can say that you can use the rule of thumb that the central limit theorem will apply if we have 30
+                      <li>Many textbooks will say that you can use the rule of thumb that the central limit theorem will apply if we have 30
                           or more draws. BEWARE - this is not always true! If the distribution of the values is very skewed, you will need much more than 30 draws!</li>
                     </ul>
                     <br>
                     <p>
                       <b>Idea 2: QQ-plot, Boxplot and Histogram</b><br>
-                      We learnt that if our data has some specific properties, then required a smaller value for n for the CLT to apply. In particular...
+                      The other route is the shape of the data itself. The central limit theorem is what rescues us when the values in the box are <i>not</i>
+                      normal. If they are already normal, we do not need it at all: the sample mean is then exactly normal for <i>any</i> sample size. So the
+                      closer our data looks to normal, the less we are leaning on a large n.
                     </p>
                     <ul>
-                      <li>(QQ-plot) If the sample closely follows the QQ line, it suggests the data is normally distribued. Data that is normally distributed
-                          requires far less point for the CLT to apply.</li>
-                      <li>(Boxplot and Histogram) If the data is symmetric, less points are required for the CLT. These plots can also be used to indicate whether the
-                          data appears to be normally distributed.</li>
+                      <li>(QQ-plot) If the sample closely follows the QQ line, it suggests the data is normally distributed, and the assumption is on firm
+                          ground regardless of n.</li>
+                      <li>(Boxplot and Histogram) If the data is symmetric, fewer points are needed for the central limit theorem to do its job. These plots can
+                          also be used to indicate whether the data appears to be normally distributed.</li>
                     </ul>
+                    <p><i>You might reasonably ask: if the sample mean is normal, why does this test not use a normal curve? The answer is the one difference
+                       between this test and the z-test. There, the population standard deviation \(\sigma \) was known, so the standard error was a known
+                       quantity too. Here \(\sigma \) is unknown and the sample's own standard deviation \(s \) stands in for it. That substitution is what the
+                       t-curve below exists to account for.</i></p>
                     <div class="row">
                       <div class="col-sm-4"><div id="qq-plot"></div></div>
                       <div class="col-sm-4"><div id="assump-boxplot"></div></div>
@@ -305,7 +314,7 @@
           <div class="tight-card-body">
             <div class="row">
               <div class="col-sm-6">
-                <p><b>Step 1) Calculate Expected Value (SE) and Standard Error (SE)</b></p>
+                <p><b>Step 1) Calculate Expected Value (EV) and Standard Error (SE)</b></p>
                 <div id="ev-se-out"></div>
               </div>
               <div class="col-sm-6">
@@ -345,7 +354,7 @@
         <div class="tight-card accent">
           <div class="tight-card-title">Conclusion (p-value)</div>
           <div class="tight-card-body">
-            <p>One way to tell whether we accept or reject the null hypothesis is to observe whether our p-value is below or above the significance level.</p>
+            <p>One way to tell whether we reject the null hypothesis is to observe whether our p-value is below or above the significance level.</p>
             <div class="row">
               <div class="col-sm-6">
                 <p><b>Step 1) What is your significance level</b>?</p>
@@ -358,7 +367,7 @@
                   </div>
                 </div>
                 <div id="alpha-warning" class="d-none">
-                  <span style="color: red;"><p>Error: The value for α must be between 0 and 1.</p></span>
+                  <span style="color: red;"><p>Error: The value for α must be strictly between 0 and 1. Reverted to 0.05.</p></span>
                 </div>
               </div>
               <div class="col-sm-6">
@@ -380,26 +389,24 @@
           <div class="tight-card-title">Conclusion (Confidence Interval)</div>
           <div class="tight-card-body">
             <p>
-              A confidence interval in a 1-sample z-test shows the range of population means that are plausible at the chosen confidence level, and if the
-              hypothesized mean falls outside this range, the null hypothesis is rejected.
-              <br><br>
-              We can also use a confidence interval to tell us whether we should accept or reject the null hypothesis. If the expected value DOES NOT lie within the
-              confidence interval, then we reject the null hypothesis.
+              A confidence interval gives us a second route to the same decision. It is built around our observed sample mean and gives a plausible range for the
+              unknown population mean. If the null hypothesis value falls outside that range, the null value is not among the plausible ones, and we reject the
+              null hypothesis.
             </p>
             <div class="row">
               <div class="col-sm-6">
-                <p><b>Step 1) What is your confidence level</b>?</p>
-                <div class="row align-items-center">
-                  <div class="col-2 col-sm-1">
-                    <p style="font-size: 16px; text-align: right; margin-bottom:0;">\( \alpha = \)</p>
-                  </div>
-                  <div class="col-4 col-sm-3">
-                    <input type="number" class="form-control" id="conf-input" value="0.95" min="0" max="1" step="any" style="width:100%;">
-                  </div>
-                </div>
-                <div id="conf-warning" class="d-none">
-                  <span style="color: red;"><p>Error: The value for confidence level must be between 0 and 1.</p></span>
-                </div>
+                <p><b>Step 1) Where does the confidence level come from?</b></p>
+                <p>
+                  There is nothing to set here. The confidence level is not a free choice alongside \(\alpha\) — it is determined by it:
+                </p>
+                <p style="font-size: 16px; text-align: center;">\( \text{confidence level} = 1 - \alpha \)</p>
+                <div id="conf-level-out"></div>
+                <p>
+                  This matters. The confidence interval and the p-value are two ways of reading the <i>same</i> calculation, so they always reach the same verdict
+                  — but only when they are set up to describe the same test. That means using \(1 - \alpha\) as the level, and matching the interval to the
+                  alternate hypothesis: a two-sided interval for a two-sided test, and a one-sided interval for a one-sided test. Both are done for you below. If
+                  you change \(\alpha\) or the alternate hypothesis above, the interval here follows.
+                </p>
               </div>
               <div class="col-sm-6">
                 <p><b>Step 2) Final Conclusion</b></p>
@@ -419,10 +426,10 @@
 
 <!-- ############ Intro modal ############ -->
 <div class="modal fade" id="introModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog">
+  <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header">
-        <h4 class="modal-title">The '1-sample s-test'</h4>
+        <h4 class="modal-title">The '1-sample t-test'</h4>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
@@ -434,11 +441,13 @@
           <div class="col-sm-1"></div>
           <div class="col-sm-10">
             <p>
-              <i>"Suppose that in a made-up country, there is a statistics exam that all high school students take. If a student received a mark in the exam of 140 or over,
-              it means that they are demonstrating a satisfactory level of statistical knowledge as deemed by the education board. <span style="color: red;">Based on data from
+              <i>"Suppose that in a made-up country, there is a statistics exam that all high school students take. The education board considers a year group to be
+              demonstrating a satisfactory level of statistical knowledge if it averages a mark of 140 or more. <span style="color: red;">Based on data from
               multiple years, it’s known that the population standard deviation in test scores is 7.5.</span><br><br>
-              Mr. Han is a statistics teacher who has been testing some new innovative teaching methods. In particular, he wants to test whether the average exam grade for the
-              25 students in his class is statistically greater than a mark of 140."</i><br><br>
+              The exam is marked by hand, so the full results take weeks to come in. Mr. Han is a statistics teacher who also marks exams for the education board, and
+              this year the board wants an early indication of whether the country’s students have met the standard. Mr. Han is given a random sample of 25 papers,
+              drawn from across the country, and marks those. He lets the symbol \(\mu \) represent the average mark of every student who sat the exam, and tests
+              whether it is greater than 140."</i><br><br>
             </p>
           </div>
           <div class="col-sm-1"></div>
@@ -449,25 +458,26 @@
           As mentioned in the ‘t-curve motivation’ exercise, we can address this issue by approximating the population standard deviation using the sample standard deviation.
           We can easily get the sample standard deviation by using the sample data!<br><br>
           With this in mind, the remainder of this hypothesis test should be familiar! Firstly, Mr. Han's hypotheses are the same as in the ‘1-sample z-test’ exercise. As a
-          reminder, Mr. Han uses the symbol \(\mu \) to represent the average mark of his class. He sets up the null hypothesis that his class’s average grade is 140.
+          reminder, Mr. Han uses the symbol \(\mu \) to represent the average mark of every student who sat the exam — a fixed number that nobody can see, since only his
+          25 papers have been marked. He sets up the null hypothesis that this average sits exactly at the board’s standard of 140.
           Mathematically, this is written as:<br>
         </p>
         <center><p style="font-size: 16px">\( H_{0} : \mu = 140 \)</p></center><br>
         <p>
-          When setting up the alternate hypothesis, because Mr. Han is interested in seeing if his innovative teaching approach leads to marks greater than 140, we set up a
+          When setting up the alternate hypothesis, because the board is interested in whether the standard has been exceeded, we set up a
           one-sided alternate hypothesis, written mathematically as:<br>
         </p>
         <center><p style="font-size: 16px">\( H_{1} : \mu > 140 \)</p></center><br>
         <p>
-          Once again, the main idea is that Mr. Han will use his sample of 25 students to determine whether there is evidence to support or reject the null hypothesis.
+          Once again, the main idea is that Mr. Han will use his sample of 25 papers to determine whether there is evidence against the null hypothesis.
         </p>
         <div class="row">
           <div class="col-sm-8">
             <p>
               <b><u>How does Mr. Han go about doing this?</u></b><br><br>
-              Similar to before, we can use the box model to model the hypothesis test. This time, let’s first turn our attention to the test scores that Mr. Han’s students
-              achieved in the class. Let’s say that the 25 students had an average score of 142.843. As there were 25 students, we specify \(n = 25 \). The average score of
-              142.843 is called the observed value (OV). Also, using the scores, Mr. Han found that the sample standard deviation equals 4.751 (\(s = 4.751\)).<br><br>
+              Similar to before, we can use the box model to model the hypothesis test. This time, let’s first turn our attention to the marks on the 25 papers Mr. Han
+              was given. Let’s say those 25 papers had an average mark of 142.843. As there were 25 papers, we specify \(n = 25 \). The average mark of
+              142.843 is called the observed value (OV). Also, using the marks, Mr. Han found that the sample standard deviation equals 4.751 (\(s = 4.751\)).<br><br>
               Using these values and \(\mu = 140\) from the null hypothesis, we have all the information needed to create the box model, which is shown on the right.
             </p>
           </div>
@@ -484,6 +494,8 @@
         \\ &= \frac{\text{OV} - \text{EV}}{\frac{s}{\sqrt{n}}}
         \\ &= \frac{142.843 - 140}{\frac{4.751}{\sqrt{25}}}
         \\ &= 2.992 \text{ (3 decimal places)} \end{align*}$$
+        <p><i>The exercise below carries the sample average and standard deviation through the calculation without rounding them first, so it reports a test
+           statistic of 2.9926. The small difference is rounding alone.</i></p>
         <p><br>
           With the test statistic found, Mr. Han is ready to calculate the p-value. However, this represents a big difference between the ‘1-sample
           <span style="color: red;">z</span>-test’ and the ‘1-sample <span style="color: red;">t</span>-test’. These hypothesis tests get the last part of their names from

@@ -4,15 +4,9 @@ The purpose of HTVP is to create bite-sized, interactive experiences that enable
 These webpages are NOT designed to be a replacement for traditional forms of learning (e.g. lectures, textbooks, lab tutorials); instead, they are designed to enhance existing modes of teaching
 by facilitating active learning.
 
-## This branch: the JavaScript rewrite
+## The site
 
-This branch (`Javascript-Convert`) is a full rewrite of HTVP as a **dependency-light static website** — plain HTML + hand-written JavaScript, with no webR/shinylive and no build step. Each lesson loads like any normal web page.
-
-The original **R Shiny / shinylive** implementation is preserved on the [`main`](../../tree/main) and [`shiny_live_version`](../../tree/shiny_live_version) branches (and in git history).
-
-### Why the rewrite?
-
-The shinylive build had a slow cold start (~30s), most of which is the webR/WASM runtime booting R in the browser on every visit. A plain static site removes that floor entirely — the pages load instantly, with no interpreter to boot.
+HTVP is a **dependency-light static website** — plain HTML + hand-written JavaScript, with no build step. Each lesson loads like any normal web page.
 
 ## Running locally
 
@@ -30,8 +24,8 @@ The home page (`index.html`) links to every lesson. (Opening files via `file://`
 ```
 /                     -> home page (index.html) + shared site navbar
 /shared/              -> common engine used by every lesson
-    js/stats.js         R-equivalent numerics (pt/qt/dt/pnorm/qnorm, linreg, ...)
-    js/plots.js         SVG re-implementations of the base-R plots
+    js/stats.js         Numerics matching R (pt/qt/dt/pnorm/qnorm, linreg, ...)
+    js/plots.js         SVG implementations of the plots
     js/boxmodel.js      the box-model / sample-cell helpers
     js/navbar.js        the shared navigation bar (injected on every page)
     css/style.css       shared theme (Bootswatch Lumen)
@@ -46,11 +40,11 @@ Every lesson references the shared engine with `../shared/…` relative paths, s
 
 The eleven lessons: box model parts 1–3 and confidence intervals (Fundamentals); 1-sample and proportion z-tests (Z-Tests); t-curve motivation, 1-sample, paired, 2-sample and regression t-tests (T-Tests).
 
-## Fidelity and testing
+## Testing
 
-The JavaScript reproduces R's statistical functions closely (the distribution/quantile routines match R to ~1e-10 or better), and every lesson's displayed numbers were checked against values computed in R.
+R is the ground truth for every number the site displays. The distribution and quantile routines in `/shared/js/stats.js` match R to ~1e-10 or better, and each lesson's displayed values are checked against values computed in R.
 
-The `tools/generate_*.R` scripts in `/shared/` and each lesson regenerate the R-computed ground truth used by the tests; they are development tooling and are not needed to run the site. Tests run on stock macOS (no Node required):
+The `tools/generate_*.R` scripts in `/shared/` and each lesson regenerate that ground truth; they are development tooling and are not needed to run the site. Tests run on stock macOS (no Node required):
 
 ```sh
 # shared numeric-accuracy suite

@@ -9,13 +9,15 @@
 //   TS = as.character(round((mean - as.numeric(EV_string)) / as.numeric(SE_string), 4))
 //   p-value computed from as.numeric(TS), df = n - 1
 //
-// Deliberate deviations from the R app (both are R-side quirks/bugs):
-//   * Manually entered values that fail to parse are dropped (with the same
-//     warning message); the R app stored them as NA, which made sd() return
-//     NA and broke every later section.
-//   * The optional categorical filter is re-applied consistently when the
-//     numeric column or "(None)" selection changes; the R app could keep
-//     stale filtered data in those flows.
+// Notes on behaviour that is easy to undo by accident:
+//   * Manually entered values that fail to parse are dropped, with a warning
+//     naming how many were unusable.
+//   * The confidence level is DERIVED as 1 - alpha rather than being a second
+//     free input, so the CI and p-value conclusions cannot disagree. This
+//     matches the 1-sample z-test lesson.
+//   * The box is labelled "sigma ~= s": sigma is unknown and s stands in for
+//     it. Do not write "sigma = s" -- that asserts the very thing this lesson
+//     exists to correct.
 
 "use strict";
 
@@ -23,7 +25,7 @@
 
   const state = {
     dataChoice: null,          // null | "pre_uploaded" | "manually_specified"
-    dataset: "Mr. Han's Math Class",
+    dataset: "Mr. Han's Exam Marks",
     column: null,
     factorCol: "(None)",
     factorLevel: null,
@@ -33,7 +35,6 @@
     nullMu: 140,
     altChoice: 1,              // 1 two-sided, 2 greater, 3 less
     alpha: 0.05, alphaWarn: false,
-    conf: 0.95, confWarn: false,
     // strings produced by the test-statistic section, consumed downstream
     tsStr: "", pVal: 0
   };
@@ -97,7 +98,7 @@
     if (choice === "pre_uploaded") {
       // Shiny re-renders the selectInput each switch, resetting to the first
       // dataset; the observers then repopulate the data immediately.
-      state.dataset = "Mr. Han's Math Class";
+      state.dataset = "Mr. Han's Exam Marks";
       setOptions($("dataset-select"), Object.keys(DATASETS), state.dataset);
       onDatasetChange();
     } else {
@@ -182,7 +183,7 @@
     if (state.manualNAs > 0) {
       $("manual-missing-warning-text").innerHTML =
         "Warning: From the data that you uploaded, " + state.manualNAs +
-        " of the values could not be interpreted. This could be becuase these values were not numeric, " +
+        " of the values could not be interpreted. This could be because these values were not numeric, " +
         "or because you did not specify the data into the required format.";
       $("manual-missing-warning").classList.remove("d-none");
     } else {
@@ -232,8 +233,9 @@
     const nullMuStr = Stats.roundStr(state.nullMu, 3);   // null_mean_string()
 
     // --- box model ---
+    // "sigma ~= s": the box's true spread is unknown; s stands in for it.
     $("box-model").innerHTML = boxModelHTML(
-      "&mu; = " + nullMuStr + "; s = " + Stats.roundStr(s, 3),
+      "&mu; = " + nullMuStr + "; &sigma; &asymp; s = " + Stats.roundStr(s, 3),
       "OV = " + Stats.roundStr(xbar, 3),
       "n = " + n
     );
@@ -274,7 +276,7 @@
     else pVal = Stats.pt(ts, df);
     state.pVal = pVal;
 
-    let thirdString = "<p>The test statistics fall on a standard normal curve. ";
+    let thirdString = "<p>Our test statistic falls on that t-curve. ";
     if (state.altChoice === 1) {
       thirdString += "As we are doing a two-sided alternate hypothesis, we are interested in finding the <b>area below " +
         Stats.formatR(-Math.abs(ts)) + " and above " + Stats.formatR(Math.abs(ts)) + ".</p></b>";
@@ -287,7 +289,9 @@
     }
 
     $("p-value-prelude").innerHTML =
-      "<p>The p-value is the probability of observing a test-statistic <b>more extreme that our test statistic of " + state.tsStr + ".</b></p>" +
+      "<p>The p-value is the probability of observing a test-statistic <b>more extreme than our test statistic of " + state.tsStr +
+        "</b>, <b>assuming the null hypothesis is true</b>. That last part is essential: the p-value is calculated in a world where \\( \\mu = " + nullMuStr +
+        " \\), and it measures how unusual our sample would be in that world. It is not the probability that the null hypothesis is true.</p>" +
       "<p>Unlike in a z-test where the test statistics fall on a standard normal curve, in a t-test, the test statistics fall on a t-curve/distribution. " +
       "If you recall from the \"T-Curve Motivation\" exercise, to specify a t-distribution, you need to specify the degree of freedom, which adjusts " +
       "the 'fatness' of the t-curve's tails.</p>" +
@@ -307,20 +311,30 @@
     const p = state.pVal;
     const alpha = state.alpha;
     let mathLine, conclusionLine;
+    // Three displays but two verdicts: p exactly equal to alpha rejects (the
+    // rejection region is p <= alpha), and must not be shown as "alpha > p".
     if (p > alpha) {
       mathLine = "$$\\begin{align*} \\alpha &< p \\\\" + Stats.formatR(alpha) + " &< " + Stats.roundStr(p, 4) + "\\end{align*}$$";
-      conclusionLine = "<span style='color: blue;'><p>As the p value is greater than our significance level, we <b>accept the null hypothesis</b>.</p></span>";
+      conclusionLine = "<span style='color: blue;'><p>As the p value is greater than our significance level, we <b>fail to reject the null hypothesis</b>.</p></span>";
     } else {
-      mathLine = "$$\\begin{align*} \\alpha &> p \\\\" + Stats.formatR(alpha) + " &> " + Stats.roundStr(p, 4) + "\\end{align*}$$";
-      conclusionLine = "<span style='color: blue;'><p>As the p value is less than our significance level, we <b>reject the null hypothesis</b>.</p></span>";
+      const sign = p === alpha ? "=" : ">";
+      mathLine = "$$\\begin{align*} \\alpha &" + sign + " p \\\\" + Stats.formatR(alpha) + " &" + sign + " " + Stats.roundStr(p, 4) + "\\end{align*}$$";
+      conclusionLine = "<span style='color: blue;'><p>As the p value is " + (p === alpha ? "equal to" : "less than") +
+        " our significance level, we <b>reject the null hypothesis</b>.</p></span>";
     }
     $("conclusion-out").innerHTML = mathLine + conclusionLine;
   }
 
+  // Level derived from alpha, with the interval's sidedness matched to the
+  // alternate hypothesis -- together these make this agree with the p-value.
   function renderCI(xbar, se, df, mu0) {
-    const conf = state.conf;
-    const alpha = 1 - conf;
+    const alpha = state.alpha;
+    const conf = 1 - alpha;
     let formulaLine, substitutionLine, answerLine, conclusionText;
+
+    $("conf-level-out").innerHTML =
+      "<p style='font-size: 16px; text-align: center;'>\\( \\text{confidence level} = 1 - " + Stats.formatR(alpha) +
+        " = " + Stats.formatR(conf) + " \\)</p>";
 
     if (state.altChoice === 1) {
       const tVal = Stats.qt(1 - alpha / 2, df);
@@ -356,7 +370,9 @@
     }
 
     $("ci-out").innerHTML = formulaLine + substitutionLine + answerLine +
-      "<span style='color: blue;'><p>" + conclusionText + "</p></span>";
+      "<span style='color: blue;'><p>" + conclusionText + "</p></span>" +
+      "<p><i>This is the same verdict the p-value reached above, as it must be — the interval is built from the same observed mean and the same standard error, " +
+        "at the matching level of " + Stats.formatR(conf) + ".</i></p>";
   }
 
   // ---------- event bindings ----------
@@ -364,7 +380,7 @@
 
     // Static example box model in the intro modal (matches the R modal).
     $("intro-example-box-model").innerHTML = boxModelHTML(
-      "&mu; = 140; s = 4.751",
+      "&mu; = 140; &sigma; &asymp; s = 4.751",
       "OV = 142.843",
       "n = 25"
     );
@@ -378,8 +394,12 @@
     $("category-select").addEventListener("change", onCategoryChange);
     $("upload-btn").addEventListener("click", onManualUpload);
 
+    // An empty or non-numeric box leaves the last valid value in place, rather
+    // than propagating NaN through every displayed quantity.
     $("null-mu").addEventListener("input", function () {
-      state.nullMu = this.value === "" ? NaN : Number(this.value);
+      const v = this.value === "" ? NaN : Number(this.value);
+      if (!Number.isFinite(v)) return;
+      state.nullMu = v;
       if (state.data !== null) renderStats();
     });
 
@@ -390,9 +410,11 @@
       });
     }
 
+    // alpha drives both conclusions: the p-value comparison and, via the
+    // derived 1 - alpha confidence level, the interval.
     $("alpha-input").addEventListener("input", function () {
       const v = this.value === "" ? NaN : Number(this.value);
-      if (Number.isNaN(v) || v < 0 || v > 1) {
+      if (!Number.isFinite(v) || v <= 0 || v >= 1) {
         state.alpha = 0.05;
         state.alphaWarn = true;
       } else {
@@ -400,25 +422,15 @@
         state.alphaWarn = false;
       }
       $("alpha-warning").classList.toggle("d-none", !state.alphaWarn);
-      if (state.data !== null) { renderConclusion(); typeset($("conclusion-out")); }
-    });
-
-    $("conf-input").addEventListener("input", function () {
-      const v = this.value === "" ? NaN : Number(this.value);
-      if (Number.isNaN(v) || v <= 0 || v >= 1) {
-        state.conf = 0.95;
-        state.confWarn = true;
-      } else {
-        state.conf = v;
-        state.confWarn = false;
-      }
-      $("conf-warning").classList.toggle("d-none", !state.confWarn);
       if (state.data !== null) {
         const data = state.data;
         const n = data.length;
+        renderConclusion();
         renderCI(Stats.mean(data), Stats.sd(data) / Math.sqrt(n), n - 1,
                  Number(Stats.roundStr(state.nullMu, 3)));
+        typeset($("conclusion-out"));
         typeset($("ci-out"));
+        typeset($("conf-level-out"));
       }
     });
   });

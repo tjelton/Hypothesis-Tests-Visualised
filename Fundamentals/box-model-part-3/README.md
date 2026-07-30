@@ -1,7 +1,4 @@
-# The Box Model Part 3 (Modelling Using a Normal Distribution) — pure JavaScript port
-
-A dependency-light static-page rewrite of the Shiny "Box Model Part 3" lesson
-(`R/fundamentals_box_model_part_3_*.R`). No webR/shinylive: plain HTML + JS.
+# The Box Model Part 3 (Modelling Using a Normal Distribution)
 
 A **box-model playground**: configure tickets, number of draws and sum/mean,
 then work through the pipeline that turns a box into probability answers:
@@ -35,7 +32,7 @@ The numeric engine, plots, box-model helper and CSS live in **`../../shared/`**.
 
 | File | Purpose |
 |---|---|
-| `index.html` | Static teaching content (ported verbatim from the R UI file) |
+| `index.html` | Static teaching content |
 | `js/app.js` | Box playground + CLT + normal model + probability wiring |
 | `../../shared/js/{stats,plots,boxmodel}.js`, `../../shared/css/style.css` | Shared engine |
 
@@ -48,13 +45,16 @@ External assets (CDN): Bootstrap 5 (Bootswatch Lumen) and MathJax 3.
   shaded region and EV±k·SE ticks) and a `curve: {ev, se}` overlay option on
   `densityHistogramSVG`. The other lessons are unaffected.
 
-## Fidelity to the Shiny version
+## Reference values
 
-* The deterministic pipeline matches R exactly: e.g. the coin box (`1,0`,
-  n = 100, sum) gives EV = 50, SE = 5, and P(sum ≥ 60) = 0.02275, P(sum ≥ 70) =
-  3e-05 — the answers the lesson text quotes.
-* Teaching text is verbatim, including the R source's typos ("Empiricial",
-  "wthin", "seperated", "3e-05").
+The deterministic pipeline is confirmed against R: the coin box (`1,0`, n = 100,
+sum) gives EV = 50, SE = 5, P(sum ≥ 60) = 0.02275 and P(sum ≥ 70) = 3e-05 — the
+answers the lesson text quotes.
+
+## Known issues
+
+Unfixed typos in the teaching text: "Empiricial", "wthin", "seperated", and
+"3e-05" written inline rather than as a rounded probability.
 
 ## Tests
 

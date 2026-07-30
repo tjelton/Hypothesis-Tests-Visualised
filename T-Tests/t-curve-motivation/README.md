@@ -1,8 +1,4 @@
-# Introducing the t-Distribution (Motivation) — pure JavaScript port
-
-A dependency-light static-page rewrite of the Shiny "Introducing the
-t-Distribution (Motivation)" lesson (`R/ttest_t_curve_motivation_*.R`). No
-webR/shinylive: the page is plain HTML + hand-written JS.
+# Introducing the t-Distribution (Motivation)
 
 Unlike the t-test lessons, this one has **no data upload and no hypothesis-test
 chain** — it is a conceptual explainer built around two independent interactive
@@ -10,8 +6,8 @@ demos:
 
 * **Demo 1 (overlay):** a degrees-of-freedom slider (1–25) and a "display
   normal curve" checkbox drive a t-density curve, with an optional standard
-  normal overlay. Matching the R *code* (not its prose), the t-curve is drawn
-  as a black solid line and the normal as a red dashed line.
+  normal overlay. The t-curve is drawn as a black solid line and the normal as a
+  red dashed line.
 * **Demo 2 (p-values):** a test-statistic input and a df slider (1–50) drive two
   side-by-side two-sided shaded plots — a standard normal (z-test) and a t-curve
   (t-test) — with each distribution's p-value shown below. This shows the
@@ -31,7 +27,7 @@ The numeric engine, plots and CSS live in the sibling **`../../shared/`** direct
 
 | File | Purpose |
 |---|---|
-| `index.html` | All static teaching content (ported verbatim from the R UI file) |
+| `index.html` | All static teaching content |
 | `js/app.js` | Wiring for the two demos (no data, no test chain) |
 | `../../shared/js/stats.js` | `pnorm`/`dnorm`/`pt`/`dt`, etc. |
 | `../../shared/js/plots.js` | `densityOverlaySVG` (Demo 1) and `shadedNormalCurveSVG`/`shadedTCurveSVG` (Demo 2) |
@@ -47,17 +43,29 @@ its formulas use `\color{red}{…}` to highlight σ vs s.
 * `plots.js` gained `densityOverlaySVG` and `shadedNormalCurveSVG`, and its
   existing shaded-curve logic was generalised into `shadedCurveSVG(density, …)`
   (with `shadedTCurveSVG` now a thin wrapper — the t-test lessons are
-  unaffected). The renderer also now draws just the curve, with no shading, for
-  a blank/NaN test statistic (matching the R app).
+  unaffected). The renderer draws just the curve, with no shading, for a
+  blank/NaN test statistic.
 
-## Fidelity to the Shiny version
+## Behaviour notes
 
-* Demo 2 p-values follow R exactly: `2 * (1 - pnorm(|ts|))` and
-  `2 * (1 - pt(|ts|, df))`, displayed as `as.character(round(p, 5))`.
-* Teaching text is verbatim, including the R prose's quirk of calling the
-  t-curve "red" and the normal "dashed" while the code actually draws the
-  t-curve black and the normal red-dashed. Fix here and in the R source
-  together, so the two versions stay in sync.
+Demo 2 p-values are `2 * (1 - pnorm(|ts|))` and `2 * (1 - pt(|ts|, df))`,
+displayed rounded to 5 dp, and confirmed against R.
+
+Demo 2's two plots share an x-range but are each scaled to their own curve's
+peak density, so the curves cannot be compared by height across the pair — only
+the printed p-values (and each plot's own shaded fraction) are comparable. The
+prose says so.
+
+Demo 1's y-range is fixed by the taller of the two densities whether or not the
+normal overlay is shown, so the t-curve does not jump scale when the checkbox is
+toggled.
+
+## Content notes
+
+The lesson deliberately leaves two things for later exercises (the conclusion
+says so): how the degrees-of-freedom value is chosen (`df = n - 1` for the
+1-sample case), and the normality assumption under which the test statistic
+follows a t-distribution exactly.
 
 ## Tests
 
@@ -73,7 +81,7 @@ shared `stats.js` accuracy (including the new `dnorm`) is verified by
 
 ## Deploying
 
-Per the migration plan in `CLAUDE.md`: copy `T-Tests/t-curve-motivation/` to the
+Per `CLAUDE.md`: copy `T-Tests/t-curve-motivation/` to the
 **`gh-pages` branch as a top-level dir**, alongside `shared/` and the other
 lessons, served at
 `https://tjelton.github.io/Hypothesis-Tests-Visualised/T-Tests/t-curve-motivation/`.

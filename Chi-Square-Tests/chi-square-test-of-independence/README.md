@@ -1,8 +1,7 @@
-# Chi-Square Test of Independence — pure JavaScript lesson
+# Chi-Square Test of Independence
 
 A dependency-light static-page lesson in the same style as the chi-square
-goodness-of-fit lesson (no webR/shinylive; plain HTML + JS). There is no Shiny
-predecessor — this lesson is new.
+goodness-of-fit lesson (plain HTML + JS).
 
 Tests whether **two** qualitative variables are independent or associated,
 using a contingency table of observed counts. Inputs are entered manually
