@@ -40,7 +40,7 @@ function run(argv) {
   }
 
   // ---- calculation chain on Mr. Han's data, default inputs ----
-  const x = DATASETS["Mr. Han's Math Class"].columns[0].values;
+  const x = DATASETS["Mr. Han's Exam Marks"].columns[0].values;
   const n = x.length, df = n - 1;
   const xbar = Stats.mean(x), s = Stats.sd(x);
   const nullMuStr = Stats.roundStr(140, 3);
@@ -69,11 +69,22 @@ function run(argv) {
   assertEqual(Stats.roundStr(p2, 5), expected.p_greater_5, "p greater (5dp)");
   assertEqual(Stats.roundStr(p3, 5), expected.p_less_5, "p less (5dp)");
 
-  const alpha = 1 - 0.95;
-  assertEqual(Stats.roundStr(xbar - Stats.qt(1 - alpha / 2, df) * SE, 4), expected.ci_two_lower_4, "CI two-sided lower");
-  assertEqual(Stats.roundStr(xbar + Stats.qt(1 - alpha / 2, df) * SE, 4), expected.ci_two_upper_4, "CI two-sided upper");
-  assertEqual(Stats.roundStr(xbar - Stats.qt(1 - alpha, df) * SE, 4), expected.ci_greater_lower_4, "CI greater lower");
-  assertEqual(Stats.roundStr(xbar + Stats.qt(1 - alpha, df) * SE, 4), expected.ci_less_upper_4, "CI less upper");
+  // The confidence level is derived as 1 - alpha, so alpha = 0.05 <-> 95%.
+  const alpha = 0.05;
+  const twoLower = xbar - Stats.qt(1 - alpha / 2, df) * SE;
+  const twoUpper = xbar + Stats.qt(1 - alpha / 2, df) * SE;
+  const greaterLower = xbar - Stats.qt(1 - alpha, df) * SE;
+  const lessUpper = xbar + Stats.qt(1 - alpha, df) * SE;
+  assertEqual(Stats.roundStr(twoLower, 4), expected.ci_two_lower_4, "CI two-sided lower");
+  assertEqual(Stats.roundStr(twoUpper, 4), expected.ci_two_upper_4, "CI two-sided upper");
+  assertEqual(Stats.roundStr(greaterLower, 4), expected.ci_greater_lower_4, "CI greater lower");
+  assertEqual(Stats.roundStr(lessUpper, 4), expected.ci_less_upper_4, "CI less upper");
+
+  // Deriving the level from alpha is what guarantees the two routes agree.
+  const mu0 = 140;
+  assertTrue((mu0 < twoLower || mu0 > twoUpper) === (p1 <= alpha), "CI/p agree, two-sided");
+  assertTrue((mu0 < greaterLower) === (p2 <= alpha), "CI/p agree, greater");
+  assertTrue((mu0 > lessUpper) === (p3 <= alpha), "CI/p agree, less");
 
   // ---- plots generate valid-looking SVG on several datasets ----
   const irisSepal = DATASETS["iris"].columns[0].values;
@@ -101,22 +112,74 @@ function run(argv) {
   assertTrue(bs.lower < bs.median && bs.median < bs.upper, "boxplot hinge ordering");
 
   // ---- box model HTML ----
-  const bm = boxModelHTML("&mu; = 140; s = 4.751", "OV = 142.843", "n = 25");
-  assertTrue(bm.indexOf("&mu; = 140; s = 4.751") !== -1, "box model contains box label");
+  const bm = boxModelHTML("&mu; = 140; &sigma; &asymp; s = 4.751", "OV = 142.843", "n = 25");
+  assertTrue(bm.indexOf("&sigma; &asymp; s = 4.751") !== -1, "box model contains box label");
   assertTrue(bm.indexOf("OV = 142.843") !== -1, "box model contains sample label");
   assertTrue(bm.indexOf("n = 25") !== -1, "box model contains n label");
 
-  // ---- app.js evaluates cleanly against a DOM stub ----
+  // ---- app.js driven through a DOM stub ----
+  // Runs the real module, fires DOMContentLoaded and selects "Pre-uploaded
+  // Data", so this asserts the wiring rather than only that the file parses.
   try {
-    const appSrc = readFile(base + "/js/app.js");
-    new Function("document", "window", "DATASETS", "Stats", "Plots", "boxModelHTML", appSrc)(
-      { addEventListener: function () {}, getElementById: function () { return null; }, querySelectorAll: function () { return []; } },
-      {}, DATASETS, Stats, Plots, boxModelHTML
-    );
-    checks++;
+    const els = {};
+    function makeEl(id) {
+      return {
+        id: id, innerHTML: "", value: "", textContent: "", selected: false,
+        classList: { add: function () {}, remove: function () {}, toggle: function () {} },
+        addEventListener: function (ev, fn) { (this._h = this._h || {})[ev] = fn; },
+        appendChild: function (opt) { if (opt.selected) this.value = opt.value; }
+      };
+    }
+    const radios = [];
+    const doc = {
+      _dom: null,
+      getElementById: function (id) { return els[id] || (els[id] = makeEl(id)); },
+      createElement: function () { return makeEl("opt"); },
+      addEventListener: function (ev, fn) { if (ev === "DOMContentLoaded") this._dom = fn; },
+      querySelectorAll: function (sel) {
+        if (sel.indexOf("data_upload_choice") !== -1) {
+          if (radios.length === 0) {
+            ["pre_uploaded", "manually_specified"].forEach(function (v) {
+              const r = makeEl("radio-" + v); r.value = v; radios.push(r);
+            });
+          }
+          return radios;
+        }
+        return [];   // alternate-hypothesis radios: leave at the state default
+      }
+    };
+
+    new Function("document", "window", "DATASETS", "Stats", "Plots", "boxModelHTML",
+      readFile(base + "/js/app.js"))(doc, {}, DATASETS, Stats, Plots, boxModelHTML);
+
+    doc._dom();
+    radios[0]._h.change({ target: { value: "pre_uploaded" } });
+
+    assertEqual(els["dataset-select"].value, "Mr. Han's Exam Marks", "default data set");
+
+    // The box must say sigma ~= s, never "sigma = s": s is an estimate.
+    assertTrue(els["box-model"].innerHTML.indexOf("&sigma; &asymp; s = " + expected.box_s) !== -1,
+      "box model labels sigma as approximately s");
+    assertTrue(els["box-model"].innerHTML.indexOf("&sigma; = s") === -1, "box model does not assert sigma = s");
+
+    const tsShown = els["ts-out"].innerHTML.match(/&= (-?[\d.]+)\\end\{align\*\}/);
+    assertEqual(tsShown && tsShown[1], expected.ts_string, "displayed TS matches R");
+    const pShown = els["p-value-prelude"].innerHTML.match(/p = ([\d.]+)/);
+    assertEqual(pShown && pShown[1], expected.p_two_sided_5, "displayed p matches R (two-sided default)");
+    assertTrue(els["p-value-prelude"].innerHTML.indexOf("assuming the null hypothesis is true") !== -1,
+      "p-value definition states the null assumption");
+    assertTrue(els["p-value-prelude"].innerHTML.indexOf("falls on that t-curve") !== -1,
+      "p-value section says t-curve, not normal curve");
+    assertTrue(els["p-value-prelude"].innerHTML.indexOf(" = " + expected.df + "\\)") !== -1,
+      "p-value section shows the degrees of freedom");
+
+    assertTrue(els["ci-out"].innerHTML.indexOf(expected.ci_two_lower_4) !== -1, "displayed CI bound matches R");
+    assertTrue(els["ci-out"].innerHTML.indexOf("reject the null hypothesis") !== -1, "CI reaches a verdict");
+    assertTrue(els["conclusion-out"].innerHTML.indexOf("accept the null") === -1, "no 'accept the null' wording");
+    assertTrue(els["conf-level-out"].innerHTML.indexOf("0.95") !== -1, "confidence level derived from alpha");
   } catch (e) {
     checks++; failures++;
-    lines.push("FAIL app.js evaluation: " + e.message);
+    lines.push("FAIL app.js wiring: " + e.message);
   }
 
   lines.push((checks - failures) + "/" + checks + " checks passed");
