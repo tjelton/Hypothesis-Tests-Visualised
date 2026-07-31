@@ -81,7 +81,14 @@ shared `stats.js` accuracy (including the new `dnorm`) is verified by
 
 ## Deploying
 
-Per `CLAUDE.md`: copy `T-Tests/t-curve-motivation/` to the
-**`gh-pages` branch as a top-level dir**, alongside `shared/` and the other
-lessons, served at
-`https://tjelton.github.io/Hypothesis-Tests-Visualised/T-Tests/t-curve-motivation/`.
+The live site is served from the `gh-pages` branch, which mirrors `main` exactly
+— every lesson keeps the same path it has here. `tools/deploy_gh_pages.sh`
+publishes `origin/main` verbatim (plus a `.nojekyll` marker), so there is nothing
+to copy per lesson and no separate step for `../../shared/` or the root
+`index.html`:
+
+```sh
+bash tools/deploy_gh_pages.sh
+```
+
+Served at `https://tjelton.github.io/Hypothesis-Tests-Visualised/T-Tests/t-curve-motivation/`.

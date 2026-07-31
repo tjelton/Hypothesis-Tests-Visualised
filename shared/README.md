@@ -1,10 +1,10 @@
 # shared — common engine
 
-Code shared by every lesson (`t-test-1-sample/`, `t-test-paired/`, …).
-Each lesson is deployed as its own top-level directory on the `gh-pages`
-branch; `shared/` sits alongside them, so pages reference it with `../shared/…`
-(which resolves both locally under `python3 -m http.server` from the repo root
-and on GitHub Pages).
+Code shared by every lesson (`T-Tests/t-test-1-sample/`, `T-Tests/t-test-paired/`, …).
+Each lesson lives one level inside its category directory, with `shared/` at the
+repo root, so pages reference it with `../../shared/…`. The `gh-pages` branch
+mirrors this layout exactly, so those paths resolve both locally under
+`python3 -m http.server` from the repo root and on GitHub Pages.
 
 ## Contents
 
@@ -25,11 +25,11 @@ and on GitHub Pages).
 In the lesson's `index.html`:
 
 ```html
-<link rel="stylesheet" href="../shared/css/style.css">
+<link rel="stylesheet" href="../../shared/css/style.css">
 ...
-<script src="../shared/js/stats.js"></script>
-<script src="../shared/js/boxmodel.js"></script>
-<script src="../shared/js/plots.js"></script>
+<script src="../../shared/js/stats.js"></script>
+<script src="../../shared/js/boxmodel.js"></script>
+<script src="../../shared/js/plots.js"></script>
 <script src="js/datasets.js"></script>   <!-- lesson-specific -->
 <script src="js/app.js"></script>          <!-- lesson-specific -->
 ```
