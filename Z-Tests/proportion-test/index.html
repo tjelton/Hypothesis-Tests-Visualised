@@ -41,7 +41,7 @@
           <p>We start by using the box model to represent our null hypothesis.</p>
           <div class="accordion" id="null-accordion">
             <div class="accordion-item">
-              <h2 class="accordion-header"><button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#null-acc-1"><b>Step 1) Specify NULL Hypotheis (Box Tickets)</b></button></h2>
+              <h2 class="accordion-header"><button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#null-acc-1"><b>Step 1) Specify NULL Hypothesis (Box Tickets)</b></button></h2>
               <div id="null-acc-1" class="accordion-collapse collapse show" data-bs-parent="#null-accordion"><div class="accordion-body">
                 <ul>
                   <li>First, we need to specify the 'null' hypothesis for our proportion test. As it is a proportion, the value must be between <b>0</b> and <b>1</b>.</li>
@@ -54,7 +54,7 @@
                   <div class="col-sm-2"><p style="font-size: 16px; text-align: right;">\( H_0: \) \( p = \)</p></div>
                   <div class="col-sm-3"><input type="number" class="form-control" id="null-prop" value="0.7" min="0" max="1" step="any"></div>
                 </div>
-                <div id="null-prop-warning" class="d-none"><span style="color: red;"><p>Error: The value must be between 0 and 1.</p></span></div>
+                <div id="null-prop-warning" class="d-none"><span style="color: red;"><p>Error: The value must be strictly between 0 and 1 (a box of all "1"s or all "0"s has no variability, so the test statistic would be undefined). Kept the previous value.</p></span></div>
               </div></div>
             </div>
             <div class="accordion-item">
@@ -63,22 +63,14 @@
                 <ul>
                   <li>Specify how large your sample will be in the text box below.</li>
                   <li>You can think of this as how many tickets we are drawing from the box with replacement.</li>
-                  <li>You will enter the observed value (i.e. the proportion you saw from the sample) later.</li>
+                  <li>You will enter how many of those draws landed on your event of interest later.</li>
                 </ul>
                 <div class="row">
                   <div class="col-sm-7"></div>
                   <div class="col-sm-2"><p style="font-size: 16px; text-align: right;">\( n = \)</p></div>
-                  <div class="col-sm-3"><input type="number" class="form-control" id="number-of-draws" value="30" min="1"></div>
+                  <div class="col-sm-3"><input type="number" class="form-control" id="number-of-draws" value="50" min="1"></div>
                 </div>
-                <div id="n-warning" class="d-none"><span style="color: red;"><p>Error: The value for n must be a whole number greater than 0.</p></span></div>
-              </div></div>
-            </div>
-            <div class="accordion-item">
-              <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#null-acc-3"><b>Step 3) Model Using Sum or Sample</b></button></h2>
-              <div id="null-acc-3" class="accordion-collapse collapse" data-bs-parent="#null-accordion"><div class="accordion-body">
-                <p>Third, we need to specify whether we will be modelling the sample using the mean or sum of the draws:<br><br></p>
-                <div class="form-check"><input class="form-check-input" type="radio" name="sum_or_mean" id="mode-mean" value="2" checked><label class="form-check-label" for="mode-mean">Mean</label></div>
-                <div class="form-check"><input class="form-check-input" type="radio" name="sum_or_mean" id="mode-sum" value="1"><label class="form-check-label" for="mode-sum">Sum</label></div>
+                <div id="n-warning" class="d-none"><span style="color: red;"><p>Error: The value for n must be a whole number greater than 0. Kept the previous value.</p></span></div>
               </div></div>
             </div>
           </div>
@@ -135,16 +127,18 @@
           <div class="accordion-item">
             <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#assump-2"><b>Assumption 2: Constant Proportion</b></button></h2>
             <div id="assump-2" class="accordion-collapse collapse" data-bs-parent="#assump-accordion"><div class="accordion-body">
-              <p>The second assumption is that our sample is the <b>constant proportion</b> assumption. This assumption states that the probability that each sample
-                 element falls within the event of interest (stipulated in our hypotheses) is unchanging.</p>
-              <p><span style="color: blue;"><b>How do we check?</b></span> <i>We check by investigating the experimental setup.</i><br><br></p>
+              <p>The second assumption is the <b>constant proportion</b> assumption: every member of our sample has the <i>same</i> chance \( p \) of falling in
+                 our event of interest.</p>
+              <p>For example, say we are trialling a new drug, and our event of interest is that a patient's symptoms improve. Here the assumption is that
+                 <b>each patient in the trial is just as likely to improve as any other</b>.</p>
+              <p><span style="color: blue;"><b>How do we check?</b></span> <i>We check by investigating the experimental setup.</i></p>
             </div></div>
           </div>
           <div class="accordion-item">
             <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#assump-3"><b>Assumption 3: Normal Approximation</b></button></h2>
             <div id="assump-3" class="accordion-collapse collapse" data-bs-parent="#assump-accordion"><div class="accordion-body">
               <div class="row">
-                <div class="col-sm-6"><div id="assump3-text"></div><br><br></div>
+                <div class="col-sm-6"><div id="assump3-text"></div><div id="assump3-check"></div><br><br></div>
                 <div class="col-sm-6"><div id="empirical-hist" style="width:100%;"></div></div>
               </div>
             </div></div>
@@ -164,13 +158,14 @@
         <div class="col-sm-6">
           <p><b>Step 1) Observed Value (OV)</b></p>
           <div id="observed-value-text"></div>
-          <div class="row">
-            <div class="col-2"></div>
-            <div class="col-2"><p style="font-size: 16px; text-align: right;">\( OV = \)</p></div>
-            <div class="col-3"><input type="number" class="form-control" id="observed-value" value="0.73" min="0" max="1" step="any" style="width:100%;"></div>
+          <div class="row align-items-center">
+            <div class="col-1"></div>
+            <div class="col-4"><p style="font-size: 16px; text-align: right; margin-bottom:0;">\( x = \)</p></div>
+            <div class="col-3"><input type="number" class="form-control" id="observed-count" value="37" min="0" step="1" style="width:100%;"></div>
           </div>
-          <div id="observed-val-warning" class="d-none"><span style="color: red;"><p>Error: The observed value must be between 0 and 1.</p></span></div>
-          <p><b>Step 2) Calculate Expected Value (SE) and Standard Error (SE)</b></p>
+          <div id="observed-count-warning" class="d-none"><span style="color: red;"><p>Error: The count must be a whole number between 0 and \( n \). Kept the previous value.</p></span></div>
+          <div id="observed-value-out"></div>
+          <p><b>Step 2) Calculate Expected Value (EV) and Standard Error (SE)</b></p>
           <div id="ev-se-out"></div>
         </div>
         <div class="col-sm-6"><p><b>Step 3) Test Statistic Calculation</b></p><div id="ts-out"></div></div>
@@ -184,7 +179,7 @@
   <div class="row">
     <div class="col-sm-6">
       <div class="tight-card accent">
-        <div class="tight-card-title">Conclusion (p-value)</div>
+        <div class="tight-card-title">p-value</div>
         <div class="tight-card-body" id="p-value-prelude"></div>
       </div>
     </div>
@@ -200,7 +195,7 @@
     <div class="tight-card accent">
       <div class="tight-card-title">Conclusion (p-value)</div>
       <div class="tight-card-body">
-        <p>One way to tell whether we accept or reject the null hypothesis is to observe whether our p-value is below or above the significance level.</p>
+        <p>One way to tell whether we reject the null hypothesis is to observe whether our p-value is below or above the significance level.</p>
         <div class="row">
           <div class="col-sm-6">
             <p><b>Step 1) What is your significance level</b>?</p>
@@ -208,7 +203,7 @@
               <div class="col-2 col-sm-1"><p style="font-size: 16px; text-align: right; margin-bottom:0;">\( \alpha = \)</p></div>
               <div class="col-4 col-sm-3"><input type="number" class="form-control" id="alpha-input" value="0.05" min="0" max="1" step="any" style="width:100%;"></div>
             </div>
-            <div id="alpha-warning" class="d-none"><span style="color: red;"><p>Error: The value for α must be between 0 and 1.</p></span></div>
+            <div id="alpha-warning" class="d-none"><span style="color: red;"><p>Error: The value for α must be strictly between 0 and 1. Reverted to 0.05.</p></span></div>
           </div>
           <div class="col-sm-6"><p><b>Step 2) Final Conclusion</b></p><div id="conclusion-out"></div></div>
         </div>
@@ -223,18 +218,33 @@
     <div class="tight-card accent">
       <div class="tight-card-title">Conclusion (Confidence Interval)</div>
       <div class="tight-card-body">
-        <p>One way to tell whether we accept or reject the null hypothesis is to observe whether our p-value is below or above the significance level.</p>
+        <p>
+          A confidence interval gives us a second route to the same decision. It gives a plausible range for the unknown population proportion \( p \). If the
+          null proportion falls outside that range, the null value is not among the plausible ones, and we reject the null hypothesis.
+        </p>
+        <!-- Step 1 takes the narrower column: it is prose, whereas Step 2 holds
+             the substituted Wilson formula, which is far wider than the interval
+             in the 1-sample z-test and does not fit in a half-width column. -->
         <div class="row">
-          <div class="col-sm-6">
-            <p><b>Step 1) What is your confidence level</b>?</p>
-            <div class="row align-items-center">
-              <div class="col-2 col-sm-1"><p style="font-size: 16px; text-align: right; margin-bottom:0;">\( \alpha = \)</p></div>
-              <div class="col-4 col-sm-3"><input type="number" class="form-control" id="conf-input" value="0.95" min="0" max="1" step="any" style="width:100%;"></div>
-            </div>
-            <div id="conf-warning" class="d-none"><span style="color: red;"><p>Error: The value for confidence level must be between 0 and 1.</p></span></div>
+          <div class="col-sm-4">
+            <p><b>Step 1) Where does the confidence level come from?</b></p>
+            <p>There is nothing to set here. The confidence level is not a free choice alongside \(\alpha\) — it is determined by it:</p>
+            <p style="font-size: 16px; text-align: center;">\( \text{confidence level} = 1 - \alpha \)</p>
+            <div id="conf-level-out"></div>
+            <p>
+              This matters. The confidence interval and the p-value are two ways of reading the <i>same</i> calculation, so they always reach the same verdict —
+              but only when they are set up to describe the same test. That means using \(1 - \alpha\) as the level, and matching the interval to the alternate
+              hypothesis: a two-sided interval for a two-sided test, and a one-sided interval for a one-sided test. Both are done for you below. If you change
+              \(\alpha\) or the alternate hypothesis above, the interval here follows.
+            </p>
+            <p>
+              <i>A note on the formula:</i> there is more than one way to build a confidence interval for a proportion. The one used here is chosen because it
+              always stays inside the range 0 to 1 — as any proportion must — and because it agrees exactly with the p-value conclusion above. Simpler formulas
+              you may have seen can do neither. You do not need to follow the algebra to use it.
+            </p>
           </div>
+          <div class="col-sm-8"><p><b>Step 2) Final Conclusion</b></p><div id="ci-out" style="overflow-x:auto;"></div></div>
         </div>
-        <div class="row"><div class="col-sm-12"><p><b>Step 2) Final Conclusion</b></p><div id="ci-out"></div></div></div>
       </div>
     </div>
   </div></div>
@@ -254,32 +264,32 @@
       <div class="modal-body">
         <p>
           When you walk into a room, you can be assured that lots of people will be Taylor Swift fans (you could say that people are cray-cray for Tay-Tay).<br><br>
-          Let's say that we <b>'hypothesise' that 70% of people are Taylor Swift fans</b>. Now, to test our hypothesis, we go to our data science class of <b>30 students</b>
+          Let's say that we <b>'hypothesise' that 70% of people are Taylor Swift fans</b>. Now, to test our hypothesis, we go to our data science class of <b>50 students</b>
           and ask <b>how many students are Taylor Swift fans</b>. The main goal here is to see if our <b>sample</b> is consistent with our 70% hypothesis.<br><br>
           In this regard, we set up a <b>null hypothesis</b> that the <b>proportion of Taylor Swift fans is 0.7</b> (70%). We mathematically write this as:<br>
         </p>
         <center><p style="font-size: 16px">\( H_{0} : p = 0.7 \)</p></center>
         <p><br>We set up our alternate hypothesis to be that the proportion of Taylor Swift fans is <b>NOT 0.7</b>. We mathematically write this as:</p>
         <center><p style="font-size: 16px">\( H_{1} : p \neq 0.7 \)</p></center>
-        <p><br>The main idea is that from our sample of 30 students, we want to see if there is <b>evidence to support or reject</b> the null hypothesis.</p>
+        <p><br>The main idea is that from our sample of 50 students, we want to see if there is <b>evidence to support or reject</b> the null hypothesis.</p>
         <div class="row">
           <div class="col-sm-8">
             <p>
               <h5><u>How do we go about doing this?</u></h5><br>
               We set up our box assuming that the <b>null hypothesis is true</b>. We add tickets valued <b>"1" to represent our target</b> (in this example, that someone
               likes Taylor Swift), and <b>"0" to represent the complement</b>. The tickets are arranged such that the proportion of "1" tickets is the same as the null
-              hypothesis. As seen in the box model to the right, there are seven "1" tickets and three "0" tickets, meaning the proportion of "1"'s is correctly 70%.<br><br>
+              hypothesis. As seen in the accompanying box model, there are seven "1" tickets and three "0" tickets, meaning the proportion of "1"'s is correctly 70%.<br><br>
               After setting up our box model, we want to see if what we observe from the class is consistent with the null hypothesis. We call what we observe the <b>observed
               value (OV)</b>.<br><br>
-              Let's say that in the class, 22 people like Taylor Swift, and 8 do not. We can represent the observed value derived from this observation using the <b>mean</b>
-              or the <b>sum</b>.<br><br>
-              <u>Mean:</u>
+              Let's say that in the class, <b>37 people like Taylor Swift</b>, and 13 do not. Because our tickets are "1"s and "0"s, taking the <b>mean</b> of the draws
+              gives us exactly the <b>proportion</b> of the class who are fans — which is the quantity our hypotheses are about:
             </p>
             $$\begin{align*} \text{OV} &= \frac{1 \times \text{Number of TS Fans} + 0 \times \text{Number of Non-TS Fans}}{\text{Data Science Class Size}}
-            \\ &= \frac{1 \times 22 + 0 \times 8}{30} \\ &= \frac{22}{30} \\ &= 0.73 \text{ (2 decimal places)} \end{align*}$$
-            <p><u>Sum:</u></p>
-            $$\begin{align*} \text{OV} &= 1 \times \text{Number of TS Fans} + 0 \times \text{Number of Non-TS Fans}
-            \\ &= 1 \times 22 + 0 \times 8 \\ &= 22 \end{align*}$$
+            \\ &= \frac{1 \times 37 + 0 \times 13}{50} \\ &= \frac{37}{50} \\ &= 0.74 \end{align*}$$
+            <p>
+              So all you need to count is <b>how many</b> students were fans. The app divides by \( n \) for you, so the observed value it works with is the exact
+              proportion rather than a rounded-off decimal.
+            </p>
           </div>
           <div class="col-sm-4"><br><div id="intro-example-box-model"></div></div>
         </div>
