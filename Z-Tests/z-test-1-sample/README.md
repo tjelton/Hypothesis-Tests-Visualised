@@ -108,5 +108,14 @@ checking that the file parses. The shared `stats.js` accuracy is verified by
 
 ## Deploying
 
-Per `CLAUDE.md`: copy `Z-Tests/z-test-1-sample/` to the **`gh-pages` branch as a
-top-level dir**, alongside `shared/` and the other lessons.
+The live site is served from the `gh-pages` branch, which mirrors `main` exactly
+— every lesson keeps the same path it has here. `tools/deploy_gh_pages.sh`
+publishes `origin/main` verbatim (plus a `.nojekyll` marker), so there is nothing
+to copy per lesson and no separate step for `../../shared/` or the root
+`index.html`:
+
+```sh
+bash tools/deploy_gh_pages.sh
+```
+
+Served at `https://tjelton.github.io/Hypothesis-Tests-Visualised/Z-Tests/z-test-1-sample/`.

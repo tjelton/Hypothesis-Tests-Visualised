@@ -30,15 +30,17 @@ The home page (`index.html`) links to every lesson. (Opening files via `file://`
     js/navbar.js        the shared navigation bar (injected on every page)
     css/style.css       shared theme (Bootswatch Lumen)
     tests/              stats-accuracy suite (verified against R)
-/t-test-1-sample/     -> one directory per lesson, each with its own
-/t-test-paired/          index.html, js/app.js, js/datasets.js (where needed),
-/box-model-part-1/       and a lesson-chain smoke test in tests/
-...
+/Fundamentals/        -> one directory per category, and inside it one
+/Z-Tests/                directory per lesson (e.g. /T-Tests/t-test-paired/),
+/T-Tests/                each with its own index.html, js/app.js,
+/Chi-Square-Tests/       js/datasets.js (where needed), and a lesson-chain
+                         smoke test in tests/
+/worksheets/          -> the guiding-questions pages, mirroring that structure
 ```
 
-Every lesson references the shared engine with `../shared/…` relative paths, so the same files work both locally and when deployed under a subpath. Edits to `/shared/` affect all lessons at once.
+Every lesson references the shared engine with `../../shared/…` relative paths, so the same files work both locally and when deployed under a subpath. Edits to `/shared/` affect all lessons at once.
 
-The eleven lessons: box model parts 1–3 and confidence intervals (Fundamentals); 1-sample and proportion z-tests (Z-Tests); t-curve motivation, 1-sample, paired, 2-sample and regression t-tests (T-Tests).
+The thirteen lessons: box model parts 1–3 and confidence intervals (Fundamentals); 1-sample and proportion z-tests (Z-Tests); t-curve motivation, 1-sample, paired, 2-sample and regression t-tests (T-Tests); goodness of fit and test of independence (Chi-Square-Tests).
 
 ## Testing
 
@@ -50,8 +52,18 @@ The `tools/generate_*.R` scripts in `/shared/` and each lesson regenerate that g
 # shared numeric-accuracy suite
 osascript -l JavaScript shared/tests/run_jxa.js
 # a lesson's end-to-end calculation chain (one per lesson)
-osascript -l JavaScript t-test-1-sample/tests/smoke_jxa.js
+osascript -l JavaScript T-Tests/t-test-1-sample/tests/smoke_jxa.js
 ```
+
+## Deploying
+
+The live site is served from the `gh-pages` branch, which mirrors `main` exactly. To publish the current `origin/main` (plus a `.nojekyll` marker), from the repo root:
+
+```sh
+bash tools/deploy_gh_pages.sh
+```
+
+The script builds the deploy commit with git plumbing, so it never switches branches or touches your working tree, and it fast-forwards `gh-pages` rather than force-pushing.
 
 ## Found an Issue?
 

@@ -89,7 +89,14 @@ fails). The shared `stats.js`/`plots.js` additions are covered by
 
 ## Deploying
 
-Per `CLAUDE.md`: copy `Chi-Square-Tests/chi-square-goodness-of-fit/` to the **`gh-pages` branch as
-a top-level dir**, alongside `shared/` and the other lessons. The edits to
-`../../shared/` (new `stats.js`/`plots.js`/`navbar.js` code and CSS) and the root
-`index.html` quick-link must be published too.
+The live site is served from the `gh-pages` branch, which mirrors `main` exactly
+— every lesson keeps the same path it has here. `tools/deploy_gh_pages.sh`
+publishes `origin/main` verbatim (plus a `.nojekyll` marker), so there is nothing
+to copy per lesson and no separate step for `../../shared/` or the root
+`index.html`:
+
+```sh
+bash tools/deploy_gh_pages.sh
+```
+
+Served at `https://tjelton.github.io/Hypothesis-Tests-Visualised/Chi-Square-Tests/chi-square-goodness-of-fit/`.
