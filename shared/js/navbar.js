@@ -26,7 +26,8 @@
     ]],
     ["Z-Tests", "Z-Tests", [
       ["z-test-1-sample", "1-Sample Z-Test"],
-      ["proportion-test", "Proportion (Z-test)"]
+      ["proportion-test", "Proportion (Z-test)"],
+      ["wilson-confidence-interval", "Misc: Understanding the Wilson's Confidence Interval"]
     ]],
     ["T-Tests", "T-Tests", [
       ["t-curve-motivation", "T-Curve Motivation"],

@@ -520,9 +520,104 @@ const Plots = (() => {
     return svgWrap(width, height, f.parts, cssHeight);
   }
 
+
+  // ---------- Wilson prediction-interval plot ----------
+  // One proportion axis carrying the observed p-hat as a star, with a dashed
+  // normal prediction curve drawn for each candidate proportion (the left and
+  // right candidates use different dash patterns). `curves` is a list of
+  // { p, se, lo, hi, state }, where [lo, hi] is that candidate's prediction
+  // interval and `state` is "green" (an endpoint lands exactly on p-hat),
+  // "yellow" (covers p-hat but no endpoint on it) or "red" (misses p-hat).
+  // `xdomain` is supplied by the caller and held fixed while the sliders move,
+  // so the axis does not rescale underneath the student.
+  // `ciBar`, when given as {lower, upper}, sketches the finished confidence
+  // interval on its own line below the axis, with dashed risers linking each
+  // endpoint to the centre of the curve it came from.
+  function wilsonPredictionSVG(pHat, curves, xdomain, { width = 860, height = 380,
+      main = "", xlab = "Proportion", ymax = null, ciBar = null, cssHeight = null } = {}) {
+    const FILL = { green: "rgba(40,167,69,0.55)", yellow: "rgba(255,193,7,0.40)", red: "rgba(220,53,69,0.40)" };
+    const EDGE = { green: "#1c7c33", yellow: "#b58100", red: "#a71d2a" };
+    // The two curves overlap around p-hat, so each side gets its own dash
+    // pattern: an even dash on the left, a dash-dot on the right.
+    const DASH = { left: "6,4", right: "10,4,2,4" };
+
+    const dnorm = (x, mu, se) => Stats.dnorm((x - mu) / se) / se;
+    const N = 400;
+    const shown = curves.filter(c => c.se > 0);
+    let ytop = ymax;
+    if (!(ytop > 0)) {
+      ytop = 0;
+      for (const c of shown) ytop = Math.max(ytop, dnorm(c.p, c.p, c.se));
+    }
+    if (!(ytop > 0)) ytop = 1;
+
+    const f = makeFrame(width, height, {
+      xdomain, ydomain: [0, ytop], main, xlab, ylab: "",
+      margins: { top: 34, right: 16, bottom: ciBar ? 104 : 46, left: 16 }, yAxis: false
+    });
+    const y0 = height - f.m.bottom;
+
+    for (const c of shown) {
+      // Clamp the drawn range to the (padded) frame: the axis is held fixed
+      // across slider moves, so a wide curve would otherwise spill over the
+      // tick labels instead of being cut off at the edge.
+      const xs = [], ys = [];
+      const lo = Math.max(c.p - 4 * c.se, f.xlo), hi = Math.min(c.p + 4 * c.se, f.xhi);
+      for (let i = 0; i < N; i++) {
+        const xv = lo + (hi - lo) * i / (N - 1);
+        xs.push(xv); ys.push(dnorm(xv, c.p, c.se));
+      }
+      // Shade the prediction interval itself -- that region IS the interval,
+      // so its colour is what the traffic light refers to.
+      const shade = [];
+      for (let i = 0; i < N; i++) if (xs[i] >= c.lo && xs[i] <= c.hi) shade.push(`${f.sx(xs[i])},${f.sy(ys[i])}`);
+      if (shade.length) {
+        const first = shade[0].split(",")[0], last = shade[shade.length - 1].split(",")[0];
+        f.parts.push(`<polygon points="${first},${f.sy(0)} ${shade.join(" ")} ${last},${f.sy(0)}" fill="${FILL[c.state]}" stroke="none"/>`);
+      }
+      f.parts.push(`<polyline points="${xs.map((xv, i) => `${f.sx(xv)},${f.sy(ys[i])}`).join(" ")}" fill="none" stroke="#333" stroke-width="1.5" stroke-dasharray="${DASH[c.side] || "6,4"}"/>`);
+      // Endpoint drop lines, plus a bar along the axis: the bar's end is what
+      // the student is trying to line up with the star.
+      for (const e of [c.lo, c.hi]) {
+        f.parts.push(`<line x1="${f.sx(e)}" y1="${y0}" x2="${f.sx(e)}" y2="${f.sy(dnorm(e, c.p, c.se))}" stroke="${EDGE[c.state]}" stroke-width="2"/>`);
+      }
+      f.parts.push(`<line x1="${f.sx(c.lo)}" y1="${y0 - 7}" x2="${f.sx(c.hi)}" y2="${y0 - 7}" stroke="${EDGE[c.state]}" stroke-width="3"/>`);
+      // Candidate proportion: a tick at the centre of its own curve.
+      f.parts.push(`<line x1="${f.sx(c.p)}" y1="${y0}" x2="${f.sx(c.p)}" y2="${y0 - 14}" stroke="${EDGE[c.state]}" stroke-width="1.5" stroke-dasharray="3,3"/>`);
+    }
+
+    // p-hat as a five-pointed star sitting on the axis. Drawn last so it is
+    // never hidden behind a shaded interval.
+    const cx = f.sx(pHat), cy = y0, R = 13, r = R * 0.382, pts = [];
+    for (let i = 0; i < 10; i++) {
+      const rad = (i % 2 === 0) ? R : r;
+      const ang = -Math.PI / 2 + i * Math.PI / 5;
+      pts.push(`${(cx + rad * Math.cos(ang)).toFixed(2)},${(cy + rad * Math.sin(ang)).toFixed(2)}`);
+    }
+    f.parts.push(`<polygon points="${pts.join(" ")}" fill="#f5c518" stroke="#7a5c00" stroke-width="1.2"/>`);
+
+    if (ciBar) {
+      const by = y0 + 58, xl = f.sx(ciBar.lower), xr = f.sx(ciBar.upper);
+      // Risers from each curve's centre down to its end of the interval: the
+      // point being made is that the endpoints ARE the two curve centres.
+      for (const e of [ciBar.lower, ciBar.upper]) {
+        f.parts.push(`<line x1="${f.sx(e)}" y1="${y0}" x2="${f.sx(e)}" y2="${by}" stroke="#1c7c33" stroke-width="1" stroke-dasharray="3,3"/>`);
+      }
+      f.parts.push(`<line x1="${xl}" y1="${by}" x2="${xr}" y2="${by}" stroke="#1c7c33" stroke-width="3"/>`);
+      for (const x of [xl, xr]) {
+        f.parts.push(`<line x1="${x}" y1="${by - 7}" x2="${x}" y2="${by + 7}" stroke="#1c7c33" stroke-width="3"/>`);
+      }
+      f.parts.push(`<text x="${xl}" y="${by + 24}" text-anchor="middle" font-size="13" font-weight="bold" fill="#1c7c33" style="${FONT}">${Stats.roundStr(ciBar.lower, 4)}</text>`);
+      f.parts.push(`<text x="${xr}" y="${by + 24}" text-anchor="middle" font-size="13" font-weight="bold" fill="#1c7c33" style="${FONT}">${Stats.roundStr(ciBar.upper, 4)}</text>`);
+      f.parts.push(`<text x="${(xl + xr) / 2}" y="${by - 12}" text-anchor="middle" font-size="13" fill="#1c7c33" style="${FONT}">confidence interval</text>`);
+    }
+
+    return svgWrap(width, height, f.parts, cssHeight);
+  }
+
   return { histogramSVG, densityHistogramSVG, boxplotSVG, boxplotPairSVG, scatterSVG, qqPlotSVG,
            shadedCurveSVG, shadedTCurveSVG, shadedNormalCurveSVG, shadedChiSquareCurveSVG,
-           shadedNormalRegionSVG, densityOverlaySVG, ciPlotSVG, boxplotStats };
+           shadedNormalRegionSVG, densityOverlaySVG, ciPlotSVG, wilsonPredictionSVG, boxplotStats };
 })();
 
 if (typeof module !== "undefined" && module.exports) module.exports = Plots;
