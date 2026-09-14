@@ -61,9 +61,9 @@ appears. It opens with a sketch — the two green curves with the finished
 interval drawn beneath them, a dashed riser tying each endpoint to the centre
 of the curve it came from — then says why those endpoints are the edge, and
 offers two collapsed boxes for getting the same numbers without the searching:
-**Method 1** solves the quadratic to the closed form, **Method 2** runs
-`binom::binom.confint(..., methods = "wilson")` (with `prop.test(...,
-correct = FALSE)` as the base-R equivalent).
+**Method 1** runs `binom::binom.confint(..., methods = "wilson")` (with
+`prop.test(..., correct = FALSE)` as the base-R equivalent), **Method 2**
+solves the quadratic to the closed form.
 
 ## Running locally
 
@@ -136,7 +136,7 @@ osascript -l JavaScript Z-Tests/wilson-confidence-interval/tests/smoke_jxa.js   
 
 Regenerating needs the `binom` package (`install.packages("binom")`) — the
 fixture records `binom::binom.confint(method = "wilson")` because the answer
-box's "Method 2" tells students to run it, so the numbers the page quotes are
+box's "Method 1" tells students to run it, so the numbers the page quotes are
 checked against the function it names. The smoke test itself needs nothing
 beyond stock macOS.
 

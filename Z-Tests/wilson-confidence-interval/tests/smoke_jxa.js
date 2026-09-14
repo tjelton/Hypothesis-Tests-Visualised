@@ -83,7 +83,7 @@ function run(argv) {
   assertEqual(Stats.roundStr(g.ci.upper, 4), expected.prop_test_ci_4[1], "matches prop.test upper");
 
   // ...and binom::binom.confint(method = "wilson"), which the answer box's
-  // "Method 2" tells students to run. The page quotes R's 7 significant
+  // "Method 1" tells students to run. The page quotes R's 7 significant
   // digits, so that rounding is pinned too.
   assertEqual(Stats.roundStr(g.ci.lower, 10), expected.binom_confint_lower_10, "matches binom.confint lower");
   assertEqual(Stats.roundStr(g.ci.upper, 10), expected.binom_confint_upper_10, "matches binom.confint upper");
@@ -227,10 +227,10 @@ function run(argv) {
     assertTrue(answer.innerHTML.indexOf("answer-acc-1") !== -1, "Method 1 is a collapsible box");
     assertTrue(answer.innerHTML.indexOf("answer-acc-2") !== -1, "Method 2 is a collapsible box");
     assertTrue((answer.innerHTML.match(/accordion-button collapsed/g) || []).length === 2, "both methods start collapsed");
-    assertTrue(answer.innerHTML.indexOf('binom.confint(9, 30, conf.level = 0.95, methods = "wilson")') !== -1, "Method 2 shows the binom.confint call");
-    assertTrue(answer.innerHTML.indexOf(expected.binom_confint_lower_7) !== -1, "Method 2 quotes binom.confint's lower bound");
-    assertTrue(answer.innerHTML.indexOf(expected.binom_confint_upper_7) !== -1, "Method 2 quotes binom.confint's upper bound");
-    assertTrue(answer.innerHTML.indexOf("prop.test") === -1, "Method 2 no longer mentions base R");
+    assertTrue(answer.innerHTML.indexOf('binom.confint(9, 30, conf.level = 0.95, methods = "wilson")') !== -1, "Method 1 shows the binom.confint call");
+    assertTrue(answer.innerHTML.indexOf(expected.binom_confint_lower_7) !== -1, "Method 1 quotes binom.confint's lower bound");
+    assertTrue(answer.innerHTML.indexOf(expected.binom_confint_upper_7) !== -1, "Method 1 quotes binom.confint's upper bound");
+    assertTrue(answer.innerHTML.indexOf("prop.test") === -1, "Method 1 no longer mentions base R");
 
     // Moving off the answer hides it again.
     dom.el("left-slider").value = "6"; dom.fire("left-slider");

@@ -248,21 +248,21 @@
       '<div class="accordion" id="answer-accordion">' +
 
       '<div class="accordion-item"><h2 class="accordion-header"><button class="accordion-button collapsed" type="button" ' +
-      'data-bs-toggle="collapse" data-bs-target="#answer-acc-1"><b>Method 1 — solve the equation</b></button></h2>' +
+      'data-bs-toggle="collapse" data-bs-target="#answer-acc-1"><b>Method 1 — in R</b></button></h2>' +
       '<div id="answer-acc-1" class="accordion-collapse collapse" data-bs-parent="#answer-accordion"><div class="accordion-body">' +
-      "$$CI = \\left( \\frac{\\widehat{p} + z^2/(2n) - z\\sqrt{\\widehat{p}(1-\\widehat{p})/n + z^2/(4n^2)}}{1 + z^2/n}, \\; " +
-      "\\frac{\\widehat{p} + z^2/(2n) + z\\sqrt{\\widehat{p}(1-\\widehat{p})/n + z^2/(4n^2)}}{1 + z^2/n} \\right)$$" +
-      "$$CI = \\left( \\begin{aligned} &" + bound("-") + ", \\\\[6pt] &" + bound("+") + " \\end{aligned} \\right)$$" +
-      "$$CI = (" + lo + ", \\; " + hi + ")$$" +
-      "</div></div></div>" +
-
-      '<div class="accordion-item"><h2 class="accordion-header"><button class="accordion-button collapsed" type="button" ' +
-      'data-bs-toggle="collapse" data-bs-target="#answer-acc-2"><b>Method 2 — in R</b></button></h2>' +
-      '<div id="answer-acc-2" class="accordion-collapse collapse" data-bs-parent="#answer-accordion"><div class="accordion-body">' +
       "<p>The <code>binom</code> package computes it directly:</p>" +
       '<pre class="answer-code"><code>install.packages("binom")\nlibrary(binom)\n\n' + rCall + "</code></pre>" +
       "<p class='mb-0'>which returns <code>lower = " + S.roundStr(g.ci.lower, 7) + "</code> and <code>upper = " +
       S.roundStr(g.ci.upper, 7) + "</code>.</p>" +
+      "</div></div></div>" +
+
+      '<div class="accordion-item"><h2 class="accordion-header"><button class="accordion-button collapsed" type="button" ' +
+      'data-bs-toggle="collapse" data-bs-target="#answer-acc-2"><b>Method 2 — solve the equation</b></button></h2>' +
+      '<div id="answer-acc-2" class="accordion-collapse collapse" data-bs-parent="#answer-accordion"><div class="accordion-body">' +
+      "$$CI = \\left( \\frac{\\widehat{p} + z^2/(2n) - z\\sqrt{\\widehat{p}(1-\\widehat{p})/n + z^2/(4n^2)}}{1 + z^2/n}, \\; " +
+      "\\frac{\\widehat{p} + z^2/(2n) + z\\sqrt{\\widehat{p}(1-\\widehat{p})/n + z^2/(4n^2)}}{1 + z^2/n} \\right)$$" +
+      "$$CI = \\left( \\begin{aligned} &" + bound("-") + ", \\\\[6pt] &" + bound("+") + " \\end{aligned} \\right)$$" +
+      "$$CI = (" + lo + ", \\; " + hi + ")$$" +
       "</div></div></div>" +
 
       "</div></div></div>";
