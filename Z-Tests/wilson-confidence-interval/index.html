@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Misc: Understanding the Wilson's Confidence Interval — Hypothesis Tests Visualised</title>
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootswatch@5.3.3/dist/lumen/bootstrap.min.css">
+  <link rel="stylesheet" href="../../shared/css/style.css">
+  <style>
+    #wilson-plot svg { display: block; max-width: 100%; height: auto; }
+    /* The two slider cards sit directly under the halves of the plot they
+       control, so the left/right pairing is read off the layout. */
+    .slider-card { min-height: 100%; }
+    #answer-box .answer-sketch svg { display: block; max-width: 100%; height: auto; }
+    #answer-box .answer-code {
+      background: #f6f8fa;
+      border: 1px solid rgba(0, 0, 0, 0.12);
+      border-radius: 0.25rem;
+      padding: 0.6rem 0.8rem;
+      font-size: 14px;
+      overflow-x: auto;
+    }
+    #answer-box .answer-code code { color: #24292f; background: none; padding: 0; }
+  </style>
+
+  <script>
+    window.MathJax = {
+      tex: { inlineMath: [["\\(", "\\)"]], displayMath: [["$$", "$$"], ["\\[", "\\]"]] },
+      startup: { typeset: true }
+    };
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-chtml.js" defer></script>
+</head>
+<body>
+
+
+<div class="container-fluid px-4" id="wilson-app">
+
+  <!-- Title strip -->
+  <div class="row">
+    <div class="col-sm-12"><h1>Misc: Understanding the Wilson's Confidence Interval</h1></div>
+  </div>
+  <br>
+
+  <!-- ############ SECTION: Instructions ############ -->
+  <div class="row">
+    <div class="col-sm-12">
+      <div class="tight-card accent">
+        <div class="tight-card-title">The logic behind the Wilson formula</div>
+        <div class="tight-card-body">
+          <p>Not a hypothesis test — no null hypothesis, no p-value. Just where the two endpoints of a Wilson confidence interval come from.</p>
+          <ol>
+            <li>You observed \( x \) successes out of \( n \), so \( \widehat{p} = x/n \). That is the <b>★ star</b> on the axis below.</li>
+            <li>Pick a candidate value for the true proportion \( p \), and build a prediction interval around it:
+                $$p \pm z \sqrt{\frac{p(1-p)}{n}}$$
+                The standard error uses the candidate \( p \), not \( \widehat{p} \).</li>
+            <li>Check whether the star falls inside that interval. If it does, this \( p \) is plausible.</li>
+            <li>Do this for every \( p \). The plausible ones <b>are</b> the confidence interval, so only its two extremes matter: the
+                candidates whose interval <b>only just reaches</b> the star. Those are the endpoints — and the only two drawn below.</li>
+          </ol>
+          <p class="mb-0">Use the two sliders below to find them.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <br>
+
+  <!-- ############ SECTION: The task, with the optional data inputs alongside ############ -->
+  <div class="row">
+    <div class="col-sm-8">
+      <div class="tight-card accent">
+        <div class="tight-card-title">Your task</div>
+        <div class="tight-card-body">
+          <p><span style="color: blue;"><b>Move each slider until its prediction interval turns green.</b></span></p>
+          <ul>
+            <li><span class="badge bg-danger">RED</span> — the interval does not reach the star. This candidate is implausible, so it sits
+                outside the confidence interval.</li>
+            <li><span class="badge bg-warning text-dark">YELLOW</span> — the interval covers the star, but not at its end. Plausible, so
+                inside the confidence interval — but not an endpoint.</li>
+            <li><span class="badge bg-success">GREEN</span> — the interval <b>only just reaches</b> the star, which sits exactly on its end.
+                This is an endpoint.</li>
+          </ul>
+          <p class="mb-0">Each slider has exactly one green position. Work in from the red end. When both are green, a box appears below.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- The inputs are collapsed by default: the page ships with a worked
+         example, and changing the numbers is an optional detour. The p-hat
+         readout stays outside the collapse, because the star on the plot is
+         p-hat and the text refers to it throughout. -->
+    <div class="col-sm-4">
+      <div class="tight-card">
+        <div class="tight-card-title">Your data</div>
+        <div class="tight-card-body">
+          <p class="mb-2" id="p-hat-out" style="font-size:16px;"></p>
+          <div class="accordion" id="data-accordion">
+            <div class="accordion-item">
+              <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#data-acc-1" aria-expanded="false" aria-controls="data-acc-1"><b>Optional: use your own example</b></button></h2>
+              <div id="data-acc-1" class="accordion-collapse collapse" data-bs-parent="#data-accordion"><div class="accordion-body">
+                <p style="font-size:15px;">The example above already works — only change these if you want to try numbers of your own.</p>
+                <div class="mb-2">
+                  <label class="form-label mb-1" for="x-input">Successes \( x \)</label>
+                  <input type="number" class="form-control" id="x-input" value="9" min="1" step="1">
+                </div>
+                <div class="mb-2">
+                  <label class="form-label mb-1" for="n-input">Sample size \( n \)</label>
+                  <input type="number" class="form-control" id="n-input" value="30" min="2" step="1">
+                </div>
+                <div class="mb-2">
+                  <label class="form-label mb-1" for="conf-input">Confidence level (%)</label>
+                  <input type="number" class="form-control" id="conf-input" value="95" min="1" max="99" step="any">
+                </div>
+                <div id="x-warning" class="d-none"><span style="color: red;"><p class="mb-0 mt-2">Error: \( x \) must be a whole number strictly between 0 and \( n \). At \( x = 0 \) or \( x = n \) the sample proportion sits on a boundary, one endpoint collapses onto it, and there is nothing left to line up. Kept the previous value.</p></span></div>
+                <div id="n-warning" class="d-none"><span style="color: red;"><p class="mb-0 mt-2">Error: \( n \) must be a whole number of at least 2. Kept the previous value.</p></span></div>
+                <div id="conf-warning" class="d-none"><span style="color: red;"><p class="mb-0 mt-2">Error: the confidence level must be between 1 and 99 percent. Kept the previous value.</p></span></div>
+              </div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <br>
+
+  <!-- ############ SECTION: The visualisation ############ -->
+  <div class="row">
+    <div class="col-sm-12">
+      <div class="tight-card">
+        <div class="tight-card-body">
+          <div id="wilson-plot"></div>
+          <p class="mt-2 mb-0" style="font-size:14px; color:#555;">
+            The ★ is your observed \( \widehat{p} \). Each curve is the distribution of the sample proportion under one candidate \( p \)
+            (its dashed tick on the axis marks the candidate); the shaded part and the bar along the axis are that candidate's prediction interval.
+            A prediction interval can extend past 0 or 1 — that is the normal approximation showing its limits, and it does not affect
+            the endpoints you are looking for.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <br>
+
+  <!-- ############ SECTION: The two sliders ############ -->
+  <div class="row">
+    <div class="col-sm-6">
+      <div class="tight-card slider-card">
+        <div class="tight-card-title">Candidate to the LEFT of the star</div>
+        <div class="tight-card-body">
+          <p style="font-size:15px;">Aim its <b>upper</b> limit at the star.</p>
+          <input type="range" class="form-range" id="left-slider" min="0" max="10" step="1" value="0">
+          <div class="d-flex justify-content-between" style="font-size:12px; color:#666;">
+            <span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span>
+            <span>6</span><span>7</span><span>8</span><span>9</span><span>10</span>
+          </div>
+          <div id="left-status" class="mt-2"></div>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-6">
+      <div class="tight-card slider-card">
+        <div class="tight-card-title">Candidate to the RIGHT of the star</div>
+        <div class="tight-card-body">
+          <p style="font-size:15px;">Aim its <b>lower</b> limit at the star.</p>
+          <input type="range" class="form-range" id="right-slider" min="0" max="10" step="1" value="10">
+          <div class="d-flex justify-content-between" style="font-size:12px; color:#666;">
+            <span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span>
+            <span>6</span><span>7</span><span>8</span><span>9</span><span>10</span>
+          </div>
+          <div id="right-status" class="mt-2"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <br>
+
+  <!-- ############ SECTION: The answer (revealed once both sliders are green) ############ -->
+  <div class="row">
+    <div class="col-sm-12">
+      <div id="answer-box" class="d-none"></div>
+    </div>
+  </div>
+
+  <br><br>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="../../shared/js/navbar.js"></script>
+<script src="../../shared/js/stats.js"></script>
+<script src="../../shared/js/plots.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

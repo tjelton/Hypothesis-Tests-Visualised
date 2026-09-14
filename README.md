@@ -40,7 +40,7 @@ The home page (`index.html`) links to every lesson. (Opening files via `file://`
 
 Every lesson references the shared engine with `../../shared/…` relative paths, so the same files work both locally and when deployed under a subpath. Edits to `/shared/` affect all lessons at once.
 
-The thirteen lessons: box model parts 1–3 and confidence intervals (Fundamentals); 1-sample and proportion z-tests (Z-Tests); t-curve motivation, 1-sample, paired, 2-sample and regression t-tests (T-Tests); goodness of fit and test of independence (Chi-Square-Tests).
+The fourteen lessons: box model parts 1–3 and confidence intervals (Fundamentals); 1-sample and proportion z-tests, and a Wilson confidence interval explainer (Z-Tests); t-curve motivation, 1-sample, paired, 2-sample and regression t-tests (T-Tests); goodness of fit and test of independence (Chi-Square-Tests).
 
 ## Testing
 
