@@ -63,7 +63,8 @@ of the curve it came from — then says why those endpoints are the edge, and
 offers two collapsed boxes for getting the same numbers without the searching:
 **Method 1** runs `binom::binom.confint(..., methods = "wilson")` (with
 `prop.test(..., correct = FALSE)` as the base-R equivalent), **Method 2**
-solves the quadratic to the closed form.
+solves the quadratic to the closed form. Method 2 opens with a disclaimer that
+the closed form is not meant to be evaluated by hand.
 
 ## Running locally
 
