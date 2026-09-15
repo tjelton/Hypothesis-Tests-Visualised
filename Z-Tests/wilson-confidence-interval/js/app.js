@@ -259,6 +259,8 @@
       '<div class="accordion-item"><h2 class="accordion-header"><button class="accordion-button collapsed" type="button" ' +
       'data-bs-toggle="collapse" data-bs-target="#answer-acc-2"><b>Method 2 — solve the equation</b></button></h2>' +
       '<div id="answer-acc-2" class="accordion-collapse collapse" data-bs-parent="#answer-accordion"><div class="accordion-body">' +
+      "<p>Solving that equation for \\( p \\) gives a closed form. In practice nobody evaluates this by hand, and in practice, " +
+      "we use software libraries like in Method 1 to find the endpoints.</p>" +
       "$$CI = \\left( \\frac{\\widehat{p} + z^2/(2n) - z\\sqrt{\\widehat{p}(1-\\widehat{p})/n + z^2/(4n^2)}}{1 + z^2/n}, \\; " +
       "\\frac{\\widehat{p} + z^2/(2n) + z\\sqrt{\\widehat{p}(1-\\widehat{p})/n + z^2/(4n^2)}}{1 + z^2/n} \\right)$$" +
       "$$CI = \\left( \\begin{aligned} &" + bound("-") + ", \\\\[6pt] &" + bound("+") + " \\end{aligned} \\right)$$" +
